@@ -1,4 +1,4 @@
-const CACHE = 'ordits-i-trames-v13';
+const CACHE = 'ordits-i-trames-v14';
 const CORE = [
   './',
   './index.html',
