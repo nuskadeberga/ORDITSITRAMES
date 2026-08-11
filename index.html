@@ -790,6 +790,46 @@ body{overflow-x:hidden}
 
 <link rel="preload" as="image" href="assets/75cdd61ef4dd91e0.webp" media="(max-width:700px)">
 <link rel="preload" as="image" href="assets/77b0311429d54f91.webp" media="(min-width:701px)">
+
+<style>
+/* ===== V17 · FIX HERO BACKGROUND ===== */
+.cinematic-sticky{position:sticky!important;isolation:isolate;background:#51443b!important}
+.cinematic-picture{
+  position:absolute!important;
+  inset:-10%!important;
+  width:120%!important;
+  height:120%!important;
+  display:block!important;
+  z-index:0!important;
+  overflow:hidden!important;
+  pointer-events:none!important;
+}
+.cinematic-picture .cinematic-bg{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  display:block!important;
+  object-fit:cover!important;
+  object-position:center center!important;
+  opacity:1!important;
+  visibility:visible!important;
+  z-index:0!important;
+  transform:translate3d(0,var(--cin-bg-y,0px),0) scale(var(--cin-scale,1.08))!important;
+  filter:saturate(var(--cin-sat,1)) brightness(.9)!important;
+}
+.cinematic-shade{z-index:1!important}
+.cinematic-grain{z-index:2!important}
+.cinematic-logo-stage,.cinematic-panel,.cinematic-progress,.cinematic-scroll{z-index:4!important}
+@media(max-width:700px){
+  .cinematic-picture{
+    inset:-4% 0!important;
+    width:100%!important;
+    height:108%!important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div class="thread-float one"></div>
@@ -822,8 +862,8 @@ body{overflow-x:hidden}
 <div class="cinematic-wrap" id="cinematic">
   <div class="cinematic-sticky">
     <picture class="cinematic-picture">
-      <source media="(max-width:700px)" srcset="assets/75cdd61ef4dd91e0.webp">
-      <img class="cinematic-bg" fetchpriority="high" decoding="async" src="assets/77b0311429d54f91.webp" alt="Ordits i Trames">
+      <source media="(max-width:700px)" srcset="./assets/75cdd61ef4dd91e0.webp">
+      <img class="cinematic-bg" src="./assets/77b0311429d54f91.webp" alt="Ordits i Trames" fetchpriority="high" decoding="async">
     </picture>
     <div class="cinematic-shade"></div>
     <div class="cinematic-grain"></div>

@@ -1,4 +1,4 @@
-const CACHE = 'ordits-i-trames-v16';
+const CACHE = 'ordits-i-trames-v17';
 const SHELL = [
   './manifest.webmanifest',
   './icon-192.png',
