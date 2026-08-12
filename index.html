@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ca">
 <head>
-<!-- ORDITS I TRAMES · V15.30 REPARADA + ABELLA COSTAT TEXT · 2026-08-12 -->
+<!-- ORDITS I TRAMES · V15.31 REPARADA + ABELLA COSTAT TEXT · 2026-08-12 -->
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -1633,6 +1633,29 @@ html[data-supabase="error"] .ordits-db-badge{opacity:1;background:#f5dddd;color:
 #bnModal .rb-dots{padding-top:12px}
 </style>
 
+
+<style id="ordits-v15-31-delete-product-css">
+.adm-product-actions{
+  display:flex;
+  gap:6px;
+  align-items:center;
+  justify-content:flex-end;
+}
+.ordits-delete-row{
+  border:0;
+  border-radius:10px;
+  padding:10px 12px;
+  background:#efe2dc;
+  color:#7d463d;
+  font-weight:800;
+  cursor:pointer;
+}
+.ordits-delete-row:hover{background:#e6d1c8}
+@media(max-width:900px){
+  .adm-product-actions{flex-direction:column;align-items:stretch}
+}
+</style>
+
 </head>
 <body>
 <div class="thread-float one"></div>
@@ -3133,6 +3156,22 @@ orditsLoadSupabaseData();
         rpc('ordits_admin_productes',{p_code:adminCode}),
         rpc('ordits_admin_imatges',{p_code:adminCode})
       ]);
+
+      /*
+        V15.31:
+        les dades que acabem de llegir per l'admin són les més fiables.
+        Les exposem també a la web pública de la mateixa sessió perquè
+        qualsevol canvi de nom/producte/foto es reflecteixi immediatament.
+      */
+      window.ORDITS_ADMIN_DB={
+        productes:adminProducts,
+        imatges:adminImages,
+        connected:true,
+        error:null
+      };
+      window.ORDITS_DB=window.ORDITS_ADMIN_DB;
+      if(typeof refreshPublic==='function') refreshPublic(window.ORDITS_DB);
+
       refreshAdminFilterOptions();
       refreshNewProductOptions();
       renderAdminRows();
@@ -3217,7 +3256,10 @@ orditsLoadSupabaseData();
         <label class="ordits-mini-check adm-featured">Destacat<input class="adm-destacat" type="checkbox"${bool(p.destacat)?' checked':''}></label>
         <label class="ordits-mini-check adm-principal">Principal<input class="adm-principal-grup" type="checkbox"${bool(p.principal_grup)?' checked':''}></label>
         <input class="adm-order" type="number" value="${p.ordre??''}" placeholder="—">
-        <button class="ordits-save-row">Desar</button>
+        <div class="adm-product-actions">
+          <button class="ordits-save-row">Desar</button>
+          <button class="ordits-delete-row" type="button">Eliminar</button>
+        </div>
         ${renderImageManager(p)}
       </div>`;
     }).join('')||'<p style="padding:20px;color:#77675f">No hi ha productes que coincideixin amb els filtres.</p>';
@@ -3333,6 +3375,36 @@ orditsLoadSupabaseData();
         const t=err.message||String(err);
         msg(adminMsg,t.startsWith('PRINCIPAL_EXISTENT|')?'Ja hi ha un principal en aquest grup. Torna-ho a provar i confirma el canvi.':'No s’ha pogut desar: '+t);
       }finally{saveBtn.disabled=false;saveBtn.textContent='Desar'}
+      return;
+    }
+
+    const deleteBtn=e.target.closest('.ordits-delete-row');
+    if(deleteBtn){
+      const row=deleteBtn.closest('[data-admin-id]');
+      const id=row?.dataset.adminId;
+      const p=adminProducts.find(x=>String(x.id)===String(id));
+      if(!p)return;
+
+      const nImgs=adminImages.filter(x=>String(x.producte_id)===String(id)).length;
+      const detail=nImgs
+        ? `\n\nTambé s’eliminaran ${nImgs} associació/ns de foto de la base de dades. Els fitxers físics continuaran a Storage.`
+        : '';
+
+      if(!confirm(`Vols eliminar definitivament el producte “${p.nom}”?${detail}`))return;
+
+      deleteBtn.disabled=true;
+      try{
+        await rpc('ordits_admin_eliminar_producte',{
+          p_code:adminCode,
+          p_id:id
+        });
+        msg(adminMsg,'Producte eliminat.',true);
+        await adminReload();
+      }catch(err){
+        msg(adminMsg,'No s’ha pogut eliminar: '+(err.message||err));
+      }finally{
+        deleteBtn.disabled=false;
+      }
       return;
     }
 
@@ -3577,7 +3649,7 @@ orditsLoadSupabaseData();
     */
     try{
       const api=window.ORDITS_PUBLIC_API;
-      let db=window.ORDITS_DB;
+      let db=window.ORDITS_ADMIN_DB?.connected ? window.ORDITS_ADMIN_DB : window.ORDITS_DB;
 
       if(api){
         try{
