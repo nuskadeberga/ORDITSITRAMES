@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ca">
 <head>
-<!-- ORDITS I TRAMES · V15.31 REPARADA + ABELLA COSTAT TEXT · 2026-08-12 -->
+<!-- ORDITS I TRAMES · V15.32 REPARADA + ABELLA COSTAT TEXT · 2026-08-12 -->
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -3170,6 +3170,7 @@ orditsLoadSupabaseData();
         error:null
       };
       window.ORDITS_DB=window.ORDITS_ADMIN_DB;
+      document.documentElement.dataset.orditsSource='admin';
       if(typeof refreshPublic==='function') refreshPublic(window.ORDITS_DB);
 
       refreshAdminFilterOptions();
@@ -3286,19 +3287,9 @@ orditsLoadSupabaseData();
     const oldText=btn.textContent;
     btn.textContent='Actualitzant…';
     clearMsg(adminMsg);
-    let publicError=null;
     try{
-      try{
-        await reloadPublicData();
-      }catch(e){
-        publicError=e;
-      }
       await adminReload();
-      if(publicError){
-        msg(adminMsg,'Admin actualitzat, però la vista pública no s’ha pogut recarregar: '+(publicError.message||publicError));
-      }else{
-        msg(adminMsg,'Dades actualitzades des de Supabase.',true);
-      }
+      msg(adminMsg,'Dades actualitzades. La web utilitza ara aquesta mateixa informació.',true);
     }catch(e){
       msg(adminMsg,'No s’han pogut actualitzar les dades: '+(e.message||e));
     }finally{
@@ -3370,7 +3361,7 @@ orditsLoadSupabaseData();
           p_ordre:draft.ordre
         });
         msg(adminMsg,'Canvis desats.',true);
-        await reloadPublicData();await adminReload();
+        await adminReload();
       }catch(err){
         const t=err.message||String(err);
         msg(adminMsg,t.startsWith('PRINCIPAL_EXISTENT|')?'Ja hi ha un principal en aquest grup. Torna-ho a provar i confirma el canvi.':'No s’ha pogut desar: '+t);
@@ -3421,7 +3412,7 @@ orditsLoadSupabaseData();
           p_principal:ir.querySelector('.adm-image-principal').checked
         });
         msg(adminMsg,'Foto actualitzada.',true);
-        await adminReload();await reloadPublicData();
+        await adminReload();
       }catch(err){msg(adminMsg,'No s’ha pogut actualitzar la foto: '+(err.message||err))}
       finally{imageSave.disabled=false}
       return;
@@ -3434,7 +3425,7 @@ orditsLoadSupabaseData();
       try{
         await rpc('ordits_admin_eliminar_imatge',{p_code:adminCode,p_id:ir.dataset.imageId});
         msg(adminMsg,'Foto desvinculada.',true);
-        await adminReload();await reloadPublicData();
+        await adminReload();
       }catch(err){msg(adminMsg,'No s’ha pogut desvincular: '+(err.message||err))}
       return;
     }
@@ -3460,7 +3451,7 @@ orditsLoadSupabaseData();
         });
         uploadStatus(status,'Foto pujada i associada correctament.','ok');
         msg(adminMsg,'Foto pujada i associada.',true);
-        await adminReload();await reloadPublicData();
+        await adminReload();
       }catch(err){
         uploadStatus(status,'No s’ha pogut afegir: '+(err.message||err),'err');
       }finally{add.disabled=false}
@@ -3532,7 +3523,7 @@ orditsLoadSupabaseData();
       $('#newDestacat').checked=false;$('#newPrincipal').checked=false;$('#newVisible').checked=true;
       $('#newPhoto').value='';
       refreshNewProductOptions(false);
-      await adminReload();await reloadPublicData();
+      await adminReload();
     }catch(err){msg(adminMsg,'No s’ha pogut crear: '+(err.message||err))}
   });
 
@@ -3652,13 +3643,20 @@ orditsLoadSupabaseData();
       let db=window.ORDITS_ADMIN_DB?.connected ? window.ORDITS_ADMIN_DB : window.ORDITS_DB;
 
       if(api){
-        try{
-          if(window.ORDITS_RELOAD_PUBLIC){
-            const fresh=await window.ORDITS_RELOAD_PUBLIC();
-            if(fresh?.connected) db=fresh;
+        /*
+          Si l'admin ja ha carregat dades, NO fem cap nova lectura pública:
+          l'admin és la font autoritativa de la sessió.
+          Només refresquem via REST si encara no hi ha dades d'admin.
+        */
+        if(!window.ORDITS_ADMIN_DB?.connected){
+          try{
+            if(window.ORDITS_RELOAD_PUBLIC){
+              const fresh=await window.ORDITS_RELOAD_PUBLIC();
+              if(fresh?.connected) db=fresh;
+            }
+          }catch(refreshErr){
+            console.warn('Refresh públic fallit; utilitzem les últimes dades.',refreshErr);
           }
-        }catch(refreshErr){
-          console.warn('Refresh Supabase fallit; utilitzem les últimes dades.',refreshErr);
         }
 
         if(db?.connected){
@@ -3802,6 +3800,15 @@ orditsLoadSupabaseData();
     });
   }, true);
 })();
+</script>
+
+
+<script id="ordits-v15-32-admin-source-marker">
+window.addEventListener('ordits:supabase-ready',()=>{
+  if(!window.ORDITS_ADMIN_DB?.connected){
+    document.documentElement.dataset.orditsSource='public';
+  }
+});
 </script>
 
 </body>
