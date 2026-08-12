@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ca">
 <head>
-<!-- ORDITS I TRAMES · V15.37 ADMIN POLIT REPARADA + ABELLA COSTAT TEXT · 2026-08-12 -->
+<!-- ORDITS I TRAMES · V15.38 TECNIQUES UNIFORMES REPARADA + ABELLA COSTAT TEXT · 2026-08-12 -->
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -3377,6 +3377,18 @@ orditsLoadSupabaseData();
     return String(p.marca||'')+':'+cat+':'+sub;
   }
 
+  function canonicalTechnique(value){
+    const raw=String(value??'')
+      .replace(/\u00a0/g,' ')
+      .replace(/[‘’´`]/g,"'")
+      .trim()
+      .replace(/\s+/g,' ');
+    const n=raw.toLocaleLowerCase('ca');
+    if(n==="feltre d'agulla" || n==="feltre d agulla" || n==="feltre dagulla") return "Feltre d’agulla";
+    if(n==="feltre humit") return "Feltre humit";
+    return raw;
+  }
+
   function uniqueSorted(values){
     return [...new Set(values.filter(Boolean).map(v=>String(v).trim()).filter(Boolean))]
       .sort((a,b)=>a.localeCompare(b,'ca'));
@@ -3385,7 +3397,7 @@ orditsLoadSupabaseData();
     if(adminTaxonomy.length){
       const base=adminTaxonomy.filter(t=>
         (!brand||t.marca===brand) &&
-        (!tech||!t.tecnica||t.tecnica===tech)
+        (!tech||!t.tecnica||canonicalTechnique(t.tecnica)===canonicalTechnique(tech))
       );
       const categories=uniqueSorted(base.map(t=>t.categoria));
       const subcategories=uniqueSorted(
@@ -3396,7 +3408,7 @@ orditsLoadSupabaseData();
     const rows=adminProducts.filter(p=>
       (!brand||p.marca===brand)&&
       (!category||p.categoria===category)&&
-      (!tech||!p.tecnica||p.tecnica===tech)
+      (!tech||!p.tecnica||canonicalTechnique(p.tecnica)===canonicalTechnique(tech))
     );
     return {
       categories:uniqueSorted(adminProducts.filter(p=>!brand||p.marca===brand).map(p=>p.categoria)),
@@ -3424,7 +3436,7 @@ orditsLoadSupabaseData();
     const techs=uniqueSorted(
       adminProducts
         .filter(p=>!brand||p.marca===brand)
-        .map(p=>p.tecnica)
+        .map(p=>canonicalTechnique(p.tecnica))
         .filter(Boolean)
     );
     setOptions(techEl,techs,techs.includes(oldTech)?oldTech:'','Totes les tècniques');
@@ -3495,7 +3507,7 @@ orditsLoadSupabaseData();
 
     const byBrand=adminTaxonomy.filter(t=>!brand||t.marca===brand);
 
-    const techs=uniqueSorted(byBrand.map(t=>t.tecnica).filter(Boolean));
+    const techs=uniqueSorted(byBrand.map(t=>canonicalTechnique(t.tecnica)).filter(Boolean));
     setOptions(
       $('#taxFilterTech'),
       techs,
@@ -3548,7 +3560,7 @@ orditsLoadSupabaseData();
     const rows=[...adminTaxonomy]
       .filter(t=>{
         if(f.brand&&t.marca!==f.brand)return false;
-        if(f.tech&&t.tecnica!==f.tech)return false;
+        if(f.tech&&canonicalTechnique(t.tecnica)!==canonicalTechnique(f.tech))return false;
         if(f.category&&t.categoria!==f.category)return false;
         if(f.subcategory&&t.subcategoria!==f.subcategory)return false;
         return true;
@@ -3581,7 +3593,7 @@ orditsLoadSupabaseData();
       <div class="ordits-tax-row" data-tax-id="${esc(t.id)}">
         <span class="tax-kind">${t.subcategoria?'Subcategoria':'Categoria'}</span>
         <span>${esc(t.marca==='BN'?'@bynuska':'Confeccions Ribera')}</span>
-        <span>${esc(t.tecnica||'—')}</span>
+        <span>${esc(canonicalTechnique(t.tecnica)||'—')}</span>
         <input class="tax-category" value="${esc(t.categoria||'')}" aria-label="Categoria">
         <input class="tax-subcategory${t.subcategoria?'':' category-helper'}"
                value="${esc(t.subcategoria||'')}"
@@ -3787,7 +3799,7 @@ orditsLoadSupabaseData();
 
     const items=adminProducts.filter(p=>{
       if(brand&&p.marca!==brand)return false;
-      if(tech&&p.tecnica!==tech)return false;
+      if(tech&&canonicalTechnique(p.tecnica)!==canonicalTechnique(tech))return false;
       if(cat&&p.categoria!==cat)return false;
       if(sub&&p.subcategoria!==sub)return false;
       if(vis==='yes'&&!bool(p.visible))return false;
@@ -3810,8 +3822,8 @@ orditsLoadSupabaseData();
         <select class="adm-brand"><option value="CR"${p.marca==='CR'?' selected':''}>CR</option><option value="BN"${p.marca==='BN'?' selected':''}>BN</option></select>
         <select class="adm-tech">
           <option value=""${!p.tecnica?' selected':''}>—</option>
-          <option value="Feltre humit"${p.tecnica==='Feltre humit'?' selected':''}>Feltre humit</option>
-          <option value="Feltre d’agulla"${p.tecnica==='Feltre d’agulla'?' selected':''}>Feltre d’agulla</option>
+          <option value="Feltre humit"${canonicalTechnique(p.tecnica)==='Feltre humit'?' selected':''}>Feltre humit</option>
+          <option value="Feltre d’agulla"${canonicalTechnique(p.tecnica)==='Feltre d’agulla'?' selected':''}>Feltre d’agulla</option>
         </select>
         <select class="adm-cat">${selectHTML(tax.categories,p.categoria,'— Categoria —')}</select>
         <select class="adm-sub">${selectHTML(subs,p.subcategoria,'— Subcategoria —')}</select>
