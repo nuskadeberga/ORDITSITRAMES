@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ca">
 <head>
-<!-- ORDITS I TRAMES · V15.26 REPARADA + ABELLA COSTAT TEXT · 2026-08-12 -->
+<!-- ORDITS I TRAMES · V15.27 REPARADA + ABELLA COSTAT TEXT · 2026-08-12 -->
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -1626,6 +1626,13 @@ html[data-supabase="error"] .ordits-db-badge{opacity:1;background:#f5dddd;color:
 #newPhotoStatus.uploading,.adm-upload-status.uploading{color:#8a6b39;font-weight:700}
 @media(max-width:900px){.adm-image-add{grid-template-columns:1fr!important}}
 </style>
+
+<style id="ordits-v15-27-modal-caption">
+/* El nom de la peça ja apareix a la targeta central; no el repetim a sota. */
+#bnModalCaption{display:none!important}
+#bnModal .rb-dots{padding-top:12px}
+</style>
+
 </head>
 <body>
 <div class="thread-float one"></div>
@@ -2788,13 +2795,31 @@ orditsLoadSupabaseData();
 
   function bnGroup(key, products){
     const bn=products.filter(p=>p.marca==='BN');
-    if(key==='mocadors') return bn.filter(p=>isCat(p,'Mocadors i bufandes'));
-    if(key==='bols') return bn.filter(p=>isCat(p,'Bols'));
-    if(key==='altres') return bn.filter(p=>isTech(p,'Feltre humit')&&isCat(p,'Altres'));
-    if(key==='nadal') return bn.filter(p=>isCat(p,'Boles de Nadal')&&!hasSub(p,['ninots de neu']));
-    if(key==='ninots') return bn.filter(p=>isCat(p,'Boles de Nadal')&&(hasSub(p,['ninot'])||norm(p.nom).includes('ninot de neu decoratiu')));
-    if(key==='mobils') return bn.filter(p=>isCat(p,'Bestioles')&&hasSub(p,['mobil']));
-    if(key==='bestioles') return bn.filter(p=>isCat(p,'Bestioles')&&!hasSub(p,['mobil']));
+    if(key==='mocadors') return bn.filter(p=>
+      isCat(p,'Mocadors i bufandes') ||
+      hasSub(p,['mocador','bufanda','only felting'])
+    );
+    if(key==='bols') return bn.filter(p=>isCat(p,'Bols')||hasSub(p,['bol']));
+    if(key==='altres') return bn.filter(p=>
+      isTech(p,'Feltre humit') &&
+      (isCat(p,'Altres')||hasSub(p,['roba','bossa']))
+    );
+    if(key==='nadal') return bn.filter(p=>
+      isCat(p,'Boles de Nadal') &&
+      !hasSub(p,['ninot de neu','ninots de neu'])
+    );
+    if(key==='ninots') return bn.filter(p=>
+      (isCat(p,'Boles de Nadal')||isCat(p,'Ninots de neu')) &&
+      (hasSub(p,['ninot'])||norm(p.nom).includes('ninot de neu'))
+    );
+    if(key==='mobils') return bn.filter(p=>
+      isCat(p,'Mòbils') || isCat(p,'Mobils') ||
+      (isCat(p,'Bestioles')&&hasSub(p,['mobil','mòbil']))
+    );
+    if(key==='bestioles') return bn.filter(p=>
+      isCat(p,'Bestioles') &&
+      !hasSub(p,['mobil','mòbil'])
+    );
     return [];
   }
   function galleryHTML(items,idx){
@@ -2868,9 +2893,14 @@ orditsLoadSupabaseData();
         if(items.length)orditsReinitBn3D(gallery);
       }
       const cover=document.querySelector(`[data-bn-open="${key}"] img`);
-      if(cover&&items.length){
-        cover.src=mainImage(items[0],idx);
-        cover.alt=items[0].nom||'';
+      if(cover){
+        if(items.length){
+          cover.src=mainImage(items[0],idx);
+          cover.alt=items[0].nom||'';
+        }else{
+          cover.removeAttribute('src');
+          cover.alt='';
+        }
       }
     });
     const bn=withImages(products.filter(p=>p.marca==='BN'),idx);
@@ -3209,7 +3239,23 @@ orditsLoadSupabaseData();
   $('#orditsAdminVisibility').addEventListener('change',renderAdminRows);
   $('#orditsAdminFeatured').addEventListener('change',renderAdminRows);
   $('#orditsAdminPrincipal').addEventListener('change',renderAdminRows);
-  $('#orditsAdminReload').addEventListener('click',adminReload);
+  $('#orditsAdminReload').addEventListener('click',async()=>{
+    const btn=$('#orditsAdminReload');
+    btn.disabled=true;
+    const oldText=btn.textContent;
+    btn.textContent='Actualitzant…';
+    clearMsg(adminMsg);
+    try{
+      await reloadPublicData();
+      await adminReload();
+      msg(adminMsg,'Dades actualitzades des de Supabase.',true);
+    }catch(e){
+      msg(adminMsg,'No s’han pogut actualitzar les dades: '+(e.message||e));
+    }finally{
+      btn.disabled=false;
+      btn.textContent=oldText;
+    }
+  });
 
   $('#newMarca').addEventListener('change',()=>refreshNewProductOptions(false));
   $('#newCategoria').addEventListener('change',()=>{
@@ -3412,16 +3458,23 @@ orditsLoadSupabaseData();
 
   async function reloadPublicData(){
     const headers={apikey:CFG.publishableKey,Authorization:'Bearer '+CFG.publishableKey,Accept:'application/json'};
+    const bust='&_ts='+Date.now();
     try{
       const [rp,ri]=await Promise.all([
-        fetch(CFG.url+'/rest/v1/productes?select=*&order=ordre.asc.nullslast',{headers}),
-        fetch(CFG.url+'/rest/v1/producte_imatges?select=*&order=ordre.asc',{headers})
+        fetch(CFG.url+'/rest/v1/productes?select=*&order=ordre.asc.nullslast'+bust,{headers,cache:'no-store'}),
+        fetch(CFG.url+'/rest/v1/producte_imatges?select=*&order=ordre.asc'+bust,{headers,cache:'no-store'})
       ]);
-      if(!rp.ok||!ri.ok)return;
+      if(!rp.ok||!ri.ok)throw new Error('No s’han pogut recarregar les dades públiques.');
       const [productes,imatges]=await Promise.all([rp.json(),ri.json()]);
-      window.ORDITS_DB={productes,imatges,connected:true,error:null};refreshPublic(window.ORDITS_DB);
-    }catch(e){}
+      window.ORDITS_DB={productes,imatges,connected:true,error:null};
+      refreshPublic(window.ORDITS_DB);
+      return window.ORDITS_DB;
+    }catch(e){
+      console.error('Ordits reload public:',e);
+      throw e;
+    }
   }
+  window.ORDITS_RELOAD_PUBLIC=reloadPublicData;
 })();
 </script>
 
@@ -3498,10 +3551,10 @@ orditsLoadSupabaseData();
       dot.classList.toggle('active', i===index);
     });
 
-    caption.textContent = items[index]?.caption || '';
+    caption.textContent = '';
   }
 
-  function openFromButton(btn){
+  async function openFromButton(btn){
     const key = btn.dataset.bnOpen;
     if(!key) return;
 
@@ -3509,8 +3562,15 @@ orditsLoadSupabaseData();
       btn.querySelector('h3')?.textContent?.trim() ||
       'Galeria';
 
+    // Sempre demanem dades noves abans d'obrir el popup.
+    try{
+      if(window.ORDITS_RELOAD_PUBLIC) await window.ORDITS_RELOAD_PUBLIC();
+    }catch(e){
+      console.warn('S’obre el carrusel amb les últimes dades disponibles.',e);
+    }
+
     /*
-      V15.26:
+      V15.27:
       Primer intentem construir la modal directament amb les dades VIVES
       carregades de Supabase. Així els canvis fets a l'admin no depenen
       dels captions o slides que venien incrustats a l'HTML.
