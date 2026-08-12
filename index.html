@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ca">
 <head>
-<!-- ORDITS I TRAMES · V15.34 REPARADA + ABELLA COSTAT TEXT · 2026-08-12 -->
+<!-- ORDITS I TRAMES · V15.35 RECUPERACIÓ REPARADA + ABELLA COSTAT TEXT · 2026-08-12 -->
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -3329,6 +3329,10 @@ orditsLoadSupabaseData();
   function renderTaxonomyManager(){
     if(!$('#taxList'))return;
     refreshTaxCreateUI();
+    if(!adminTaxonomy.length){
+      $('#taxList').innerHTML='<p style="padding:10px 2px;color:#7a6960">El gestor avançat de categories encara no té taxonomia pròpia carregada. Els desplegables continuen funcionant amb les categories dels productes existents.</p>';
+      return;
+    }
     const rows=[...adminTaxonomy].sort((a,b)=>
       String(a.marca).localeCompare(String(b.marca),'ca') ||
       String(a.tecnica||'').localeCompare(String(b.tecnica||''),'ca') ||
@@ -3412,11 +3416,17 @@ orditsLoadSupabaseData();
   async function adminReload(){
     clearMsg(adminMsg);
     try{
-      [adminProducts,adminImages,adminTaxonomy]=await Promise.all([
+      const [productsRes,imagesRes,taxRes]=await Promise.all([
         rpc('ordits_admin_productes',{p_code:adminCode}),
         rpc('ordits_admin_imatges',{p_code:adminCode}),
-        rpc('ordits_admin_taxonomia',{p_code:adminCode})
+        rpc('ordits_admin_taxonomia',{p_code:adminCode}).catch(err=>{
+          console.warn('Taxonomia administrable no disponible; utilitzem les categories dels productes.',err);
+          return [];
+        })
       ]);
+      adminProducts=productsRes||[];
+      adminImages=imagesRes||[];
+      adminTaxonomy=taxRes||[];
 
       /*
         V15.31:
@@ -3588,14 +3598,14 @@ orditsLoadSupabaseData();
     if(!row)return;
     if(e.target.classList.contains('adm-brand')){
       const brand=e.target.value;
-      const tech=row.querySelector('.adm-tech')?.value||'';
-      const cats=taxonomyFor(brand,'',tech).categories;
+      const techSelect=row.querySelector('.adm-tech');
+      const techValue=techSelect?.value||'';
+      const cats=taxonomyFor(brand,'',techValue).categories;
       setOptions(row.querySelector('.adm-cat'),cats,'','— Categoria —');
       setOptions(row.querySelector('.adm-sub'),[],'','— Subcategoria —');
-      const tech=row.querySelector('.adm-tech');
-      if(tech){
-        if(brand==='CR'){ tech.value=''; tech.disabled=true; }
-        else tech.disabled=false;
+      if(techSelect){
+        if(brand==='CR'){ techSelect.value=''; techSelect.disabled=true; }
+        else techSelect.disabled=false;
       }
     }
     if(e.target.classList.contains('adm-tech')){
