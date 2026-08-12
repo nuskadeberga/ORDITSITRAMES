@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ca">
 <head>
-<!-- ORDITS I TRAMES · V15.24 REPARADA + ABELLA COSTAT TEXT · 2026-08-12 -->
+<!-- ORDITS I TRAMES · V15.25 REPARADA + ABELLA COSTAT TEXT · 2026-08-12 -->
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -1609,6 +1609,23 @@ html[data-supabase="error"] .ordits-db-badge{opacity:1;background:#f5dddd;color:
 }
 </style>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style id="ordits-v15-25-direct-upload-css">
+.adm-image-add{
+  grid-template-columns:minmax(220px,1.2fr) minmax(180px,1fr) 120px auto!important;
+}
+.adm-image-add input[type=file],
+.ordits-new-photo-label input[type=file]{
+  border:1px solid #ddd1c8;background:#fff;border-radius:10px;padding:7px;box-sizing:border-box;max-width:100%;
+}
+.adm-upload-status{font-size:12px;margin-top:7px;color:#6f625b;min-height:16px}
+.adm-upload-status.ok{color:#39736f;font-weight:700}
+.adm-upload-status.err{color:#9b443b;font-weight:700}
+.ordits-new-photo-label{display:flex!important;align-items:center!important;gap:7px!important;flex-wrap:wrap}
+#newPhotoStatus.uploading,.adm-upload-status.uploading{color:#8a6b39;font-weight:700}
+@media(max-width:900px){.adm-image-add{grid-template-columns:1fr!important}}
+</style>
 </head>
 <body>
 <div class="thread-float one"></div>
@@ -2638,8 +2655,9 @@ if ('serviceWorker' in navigator) {
             <label><input id="newVisible" type="checkbox" checked> Visible</label>
             <label><input id="newDestacat" type="checkbox"> Destacat</label>
             <label><input id="newPrincipal" type="checkbox"> Principal</label>
+            <label class="ordits-new-photo-label">Foto inicial <input id="newPhoto" type="file" accept="image/jpeg,image/png,image/webp"></label>
             <button class="ordits-admin-btn" id="orditsCreateProduct">Crear producte</button>
-            <small>Després podràs associar una o més fotos al producte.</small>
+            <small id="newPhotoStatus">La foto és opcional; si la selecciones, es pujarà automàticament.</small>
           </div>
         </details>
 
@@ -2900,6 +2918,59 @@ orditsLoadSupabaseData();
     return data;
   }
 
+
+  function uploadStatus(el,text,kind=''){
+    if(!el)return;
+    el.textContent=text||'';
+    el.classList.remove('ok','err','uploading');
+    if(kind)el.classList.add(kind);
+  }
+
+  function validateImageFile(file){
+    if(!file)throw new Error('Selecciona una foto del teu ordinador.');
+    const allowed=['image/jpeg','image/png','image/webp'];
+    if(!allowed.includes(file.type))throw new Error('Format no admès. Utilitza JPG, PNG o WebP.');
+    if(file.size>15*1024*1024)throw new Error('La foto supera els 15 MB.');
+  }
+
+  async function requestSignedUpload(file){
+    const r=await fetch(CFG.url+'/functions/v1/ordits-upload-url',{
+      method:'POST',
+      headers:{
+        apikey:CFG.publishableKey,
+        'Content-Type':'application/json',
+        Accept:'application/json'
+      },
+      body:JSON.stringify({code:adminCode,filename:file.name})
+    });
+    const data=await r.json().catch(()=>null);
+    if(!r.ok)throw new Error((data&&(data.error||data.message))||('Error preparant la pujada · HTTP '+r.status));
+    if(!data?.path||!data?.token)throw new Error('Supabase no ha retornat l’autorització de pujada.');
+    return data;
+  }
+
+  async function uploadFileToStorage(file,statusEl){
+    validateImageFile(file);
+    uploadStatus(statusEl,'Preparant la pujada…','uploading');
+    const signed=await requestSignedUpload(file);
+    if(!window.supabase?.createClient)throw new Error('No s’ha pogut carregar el mòdul de Supabase Storage.');
+    const client=window.supabase.createClient(CFG.url,CFG.publishableKey,{
+      auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}
+    });
+    uploadStatus(statusEl,'Pujant la foto…','uploading');
+    const {error}=await client.storage.from(CFG.bucket).uploadToSignedUrl(
+      signed.path,signed.token,file,{contentType:file.type,cacheControl:'3600'}
+    );
+    if(error)throw new Error(error.message||'No s’ha pogut pujar la foto.');
+    return signed.path;
+  }
+
+  function nextImageOrder(productId){
+    const vals=adminImages.filter(x=>String(x.producte_id)===String(productId))
+      .map(x=>Number(x.ordre)).filter(Number.isFinite);
+    return vals.length?Math.max(...vals)+1:1;
+  }
+
   async function validateCode(code){
     const data=await rpc('ordits_admin_validar',{p_code:code});
     return data===true;
@@ -3058,12 +3129,13 @@ orditsLoadSupabaseData();
             </div>`).join('')||'<small style="color:#817169">Aquest producte encara no té cap foto associada.</small>'}
         </div>
         <div class="adm-image-add">
-          <input class="adm-new-image-path" type="text" placeholder="Nom del fitxer a Storage, p. ex. foto-bossa.webp">
-          <input class="adm-new-image-alt" type="text" placeholder="Text alternatiu">
-          <input class="adm-new-image-order" type="number" placeholder="Ordre">
-          <button class="adm-image-btn adm-image-add-btn" type="button">Afegir foto</button>
+          <input class="adm-new-image-file" type="file" accept="image/jpeg,image/png,image/webp">
+          <input class="adm-new-image-alt" type="text" placeholder="Text alternatiu (opcional)">
+          <input class="adm-new-image-order" type="number" min="1" placeholder="Ordre automàtic">
+          <button class="adm-image-btn adm-image-add-btn" type="button">Pujar i afegir</button>
         </div>
-        <small class="adm-image-help">Primer puja el fitxer al bucket <strong>productes</strong> de Supabase. Aquí només l’associem a aquest producte.</small>
+        <small class="adm-image-help">Selecciona una foto del teu ordinador. L’admin la puja automàticament a Supabase i l’associa a aquest producte.</small>
+        <div class="adm-upload-status" aria-live="polite"></div>
       </details>`;
   }
 
@@ -3232,22 +3304,29 @@ orditsLoadSupabaseData();
     const add=e.target.closest('.adm-image-add-btn');
     if(add){
       const details=add.closest('[data-image-product]');
-      const path=details.querySelector('.adm-new-image-path').value.trim();
-      if(!path){msg(adminMsg,'Escriu el nom del fitxer que ja has pujat a Storage.');return}
+      const status=details.querySelector('.adm-upload-status');
+      const file=details.querySelector('.adm-new-image-file').files?.[0];
       add.disabled=true;
       try{
+        const path=await uploadFileToStorage(file,status);
+        const orderField=details.querySelector('.adm-new-image-order');
+        const order=orderField.value===''?nextImageOrder(details.dataset.imageProduct):Number(orderField.value);
+        uploadStatus(status,'Associant la foto al producte…','uploading');
         await rpc('ordits_admin_afegir_imatge',{
           p_code:adminCode,
           p_producte_id:details.dataset.imageProduct,
           p_storage_path:path,
-          p_alt_text:details.querySelector('.adm-new-image-alt').value.trim()||null,
-          p_ordre:details.querySelector('.adm-new-image-order').value===''?null:Number(details.querySelector('.adm-new-image-order').value),
+          p_alt_text:details.querySelector('.adm-new-image-alt').value.trim()||file.name.replace(/\.[^.]+$/,''),
+          p_ordre:order,
           p_principal:false
         });
-        msg(adminMsg,'Foto associada al producte.',true);
+        uploadStatus(status,'Foto pujada i associada correctament.','ok');
+        msg(adminMsg,'Foto pujada i associada.',true);
         await adminReload();await reloadPublicData();
-      }catch(err){msg(adminMsg,'No s’ha pogut afegir la foto: '+(err.message||err))}
-      finally{add.disabled=false}
+      }catch(err){
+        uploadStatus(status,'No s’ha pogut afegir: '+(err.message||err),'err');
+      }finally{add.disabled=false}
+      return;
     }
   });
 
@@ -3274,7 +3353,7 @@ orditsLoadSupabaseData();
       }
     }
     try{
-      await rpc('ordits_admin_crear_producte',{
+      const createdRaw=await rpc('ordits_admin_crear_producte',{
         p_code:adminCode,
         p_marca:draft.marca,
         p_nom:draft.nom,
@@ -3287,9 +3366,33 @@ orditsLoadSupabaseData();
         p_confirmar_principal:confirmPrincipal,
         p_ordre:draft.ordre
       });
-      msg(adminMsg,'Producte creat. Ara ja hi pots associar una o més fotos.',true);
+      const created=Array.isArray(createdRaw)?createdRaw[0]:createdRaw;
+      const initialFile=$('#newPhoto').files?.[0];
+      const photoStatus=$('#newPhotoStatus');
+      if(initialFile&&created?.id){
+        try{
+          const path=await uploadFileToStorage(initialFile,photoStatus);
+          uploadStatus(photoStatus,'Associant la foto inicial…','uploading');
+          await rpc('ordits_admin_afegir_imatge',{
+            p_code:adminCode,
+            p_producte_id:created.id,
+            p_storage_path:path,
+            p_alt_text:draft.nom,
+            p_ordre:1,
+            p_principal:true
+          });
+          uploadStatus(photoStatus,'Producte i foto creats correctament.','ok');
+          msg(adminMsg,'Producte creat amb la foto inicial.',true);
+        }catch(photoErr){
+          uploadStatus(photoStatus,'Producte creat, però la foto ha fallat: '+(photoErr.message||photoErr),'err');
+          msg(adminMsg,'Producte creat, però cal tornar a intentar afegir la foto.');
+        }
+      }else{
+        msg(adminMsg,'Producte creat.',true);
+      }
       ['newNom','newTecnica','newOrdre'].forEach(id=>$('#'+id).value='');
       $('#newDestacat').checked=false;$('#newPrincipal').checked=false;$('#newVisible').checked=true;
+      $('#newPhoto').value='';
       refreshNewProductOptions(false);
       await adminReload();await reloadPublicData();
     }catch(err){msg(adminMsg,'No s’ha pogut crear: '+(err.message||err))}
