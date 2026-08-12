@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ca">
 <head>
-<!-- ORDITS I TRAMES · V15.36 TAXONOMIA FILTRABLE REPARADA + ABELLA COSTAT TEXT · 2026-08-12 -->
+<!-- ORDITS I TRAMES · V15.37 ADMIN POLIT REPARADA + ABELLA COSTAT TEXT · 2026-08-12 -->
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -1812,6 +1812,43 @@ html[data-supabase="error"] .ordits-db-badge{opacity:1;background:#f5dddd;color:
 }
 </style>
 
+
+<style id="ordits-v15-37-admin-polish">
+.ordits-products-section{
+  margin-top:18px;
+  padding-top:2px;
+}
+.ordits-section-heading{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:18px;
+  margin:0 0 12px;
+  padding:0 2px 12px;
+  border-bottom:1px solid #e9ddd5;
+}
+.ordits-section-heading h3{
+  margin:0;
+  font-size:19px;
+}
+.ordits-section-heading p{
+  margin:0;
+  color:#7a6960;
+  font-size:12px;
+}
+#orditsAdminTechnique:disabled{
+  opacity:.5;
+  background:#f2ede9;
+}
+.ordits-tax-row .tax-subcategory.category-helper{
+  border-style:dashed;
+  background:#fcfaf8;
+}
+.ordits-tax-row .tax-subcategory.category-helper::placeholder{
+  color:#a08d82;
+}
+</style>
+
 </head>
 <body>
 <div class="thread-float one"></div>
@@ -2919,9 +2956,17 @@ if ('serviceWorker' in navigator) {
           </div>
         </details>
 
+        <section class="ordits-products-section">
+          <div class="ordits-section-heading">
+            <h3>Gestionar productes</h3>
+            <p>Filtra, edita, ordena o elimina els productes existents.</p>
+          </div>
         <div class="ordits-admin-toolbar">
           <input id="orditsAdminSearch" placeholder="Cerca per nom, categoria o subcategoria…">
           <select id="orditsAdminBrand"><option value="">Totes les marques</option><option value="CR">Confeccions Ribera</option><option value="BN">@bynuska</option></select>
+          <select id="orditsAdminTechnique">
+            <option value="">Totes les tècniques</option>
+          </select>
           <select id="orditsAdminCategory"><option value="">Totes les categories</option></select>
           <select id="orditsAdminSubcategory"><option value="">Totes les subcategories</option></select>
           <select id="orditsAdminVisibility"><option value="">Visible: tots</option><option value="yes">Visible: sí</option><option value="no">Visible: no</option></select>
@@ -2932,6 +2977,7 @@ if ('serviceWorker' in navigator) {
         <div class="ordits-admin-message" id="orditsAdminMessage"></div>
         <div class="ordits-row-head"><span>Foto</span><span>Nom</span><span>Marca</span><span>Tècnica</span><span>Categoria</span><span>Subcategoria</span><span>Visible</span><span>Destacat</span><span>Principal</span><span>Ordre</span><span></span></div>
         <div class="ordits-admin-grid" id="orditsAdminGrid"></div>
+        </section>
       </div>
     </div>
   </section>
@@ -3372,12 +3418,30 @@ orditsLoadSupabaseData();
 
   function refreshAdminFilterOptions(){
     const brand=$('#orditsAdminBrand').value;
+    const techEl=$('#orditsAdminTechnique');
+    const oldTech=techEl?.value||'';
+
+    const techs=uniqueSorted(
+      adminProducts
+        .filter(p=>!brand||p.marca===brand)
+        .map(p=>p.tecnica)
+        .filter(Boolean)
+    );
+    setOptions(techEl,techs,techs.includes(oldTech)?oldTech:'','Totes les tècniques');
+
+    if(techEl){
+      techEl.disabled=brand==='CR';
+      if(brand==='CR') techEl.value='';
+    }
+
+    const tech=techEl?.value||'';
     const currentCat=$('#orditsAdminCategory').value;
-    const cats=taxonomyFor(brand,'',$('#newTecnica')?.value||'').categories;
+    const cats=taxonomyFor(brand,'',tech).categories;
     setOptions($('#orditsAdminCategory'),cats,cats.includes(currentCat)?currentCat:'','Totes les categories');
+
     const cat=$('#orditsAdminCategory').value;
     const currentSub=$('#orditsAdminSubcategory').value;
-    const subs=taxonomyFor(brand,cat,$('#newTecnica')?.value||'').subcategories;
+    const subs=taxonomyFor(brand,cat,tech).subcategories;
     setOptions($('#orditsAdminSubcategory'),subs,subs.includes(currentSub)?currentSub:'','Totes les subcategories');
   }
 
@@ -3519,7 +3583,10 @@ orditsLoadSupabaseData();
         <span>${esc(t.marca==='BN'?'@bynuska':'Confeccions Ribera')}</span>
         <span>${esc(t.tecnica||'—')}</span>
         <input class="tax-category" value="${esc(t.categoria||'')}" aria-label="Categoria">
-        <input class="tax-subcategory" value="${esc(t.subcategoria||'')}" ${t.subcategoria?'':'disabled'} aria-label="Subcategoria">
+        <input class="tax-subcategory${t.subcategoria?'':' category-helper'}"
+               value="${esc(t.subcategoria||'')}"
+               placeholder="${t.subcategoria?'Subcategoria':'＋ Afegir subcategoria'}"
+               aria-label="Subcategoria">
         <div class="ordits-tax-actions">
           <button class="ordits-tax-save" type="button">Desar</button>
           <button class="ordits-tax-delete" type="button">Eliminar</button>
@@ -3580,14 +3647,29 @@ orditsLoadSupabaseData();
 
     if(e.target.closest('.ordits-tax-save')){
       const newCat=row.querySelector('.tax-category').value.trim();
-      const newSub=item.subcategoria ? row.querySelector('.tax-subcategory').value.trim() : null;
+      const subInput=row.querySelector('.tax-subcategory').value.trim();
+      const newSub=item.subcategoria ? subInput : null;
       if(!newCat || (item.subcategoria&&!newSub)){taxMsg('El nom no pot quedar buit.','err');return}
       try{
         await rpc('ordits_admin_taxonomia_renombrar',{
           p_code:adminCode,p_id:item.id,
           p_categoria_nova:newCat,p_subcategoria_nova:newSub
         });
-        taxMsg('Canvi desat i aplicat als productes.','ok');
+
+        // En una fila de categoria, escriure al segon camp crea una subcategoria
+        // sense fer desaparèixer la categoria pare.
+        if(!item.subcategoria && subInput){
+          await rpc('ordits_admin_taxonomia_crear',{
+            p_code:adminCode,
+            p_marca:item.marca,
+            p_tecnica:item.tecnica||null,
+            p_categoria:newCat,
+            p_subcategoria:subInput
+          });
+          taxMsg('Categoria actualitzada i subcategoria creada.','ok');
+        }else{
+          taxMsg('Canvi desat i aplicat als productes.','ok');
+        }
         await adminReload();
       }catch(err){taxMsg(err.message||String(err),'err')}
       return;
@@ -3604,7 +3686,12 @@ orditsLoadSupabaseData();
         await adminReload();
       }catch(err){
         const msgTxt=err.message||String(err);
-        taxMsg(msgTxt.includes('EN_US')?'No es pot eliminar perquè encara hi ha productes associats.':msgTxt,'err');
+        if(msgTxt.includes('TAXONOMIA_EN_US|')){
+          const productes=msgTxt.split('TAXONOMIA_EN_US|')[1]?.split('\n')[0]||'';
+          taxMsg('No es pot eliminar. Productes associats: '+productes,'err');
+        }else{
+          taxMsg(msgTxt,'err');
+        }
       }
     }
   });
@@ -3691,6 +3778,7 @@ orditsLoadSupabaseData();
   function renderAdminRows(){
     const q=norm($('#orditsAdminSearch').value);
     const brand=$('#orditsAdminBrand').value;
+    const tech=$('#orditsAdminTechnique').value;
     const cat=$('#orditsAdminCategory').value;
     const sub=$('#orditsAdminSubcategory').value;
     const vis=$('#orditsAdminVisibility').value;
@@ -3699,6 +3787,7 @@ orditsLoadSupabaseData();
 
     const items=adminProducts.filter(p=>{
       if(brand&&p.marca!==brand)return false;
+      if(tech&&p.tecnica!==tech)return false;
       if(cat&&p.categoria!==cat)return false;
       if(sub&&p.subcategoria!==sub)return false;
       if(vis==='yes'&&!bool(p.visible))return false;
@@ -3744,10 +3833,23 @@ orditsLoadSupabaseData();
     renderAdminRows();
   }
   $('#orditsAdminSearch').addEventListener('input',renderAdminRows);
-  $('#orditsAdminBrand').addEventListener('change',filterChanged);
+  $('#orditsAdminBrand').addEventListener('change',()=>{
+    refreshAdminFilterOptions();
+    renderAdminRows();
+  });
+  $('#orditsAdminTechnique').addEventListener('change',()=>{
+    const brand=$('#orditsAdminBrand').value;
+    const tech=$('#orditsAdminTechnique').value;
+    const cats=taxonomyFor(brand,'',tech).categories;
+    setOptions($('#orditsAdminCategory'),cats,'','Totes les categories');
+    setOptions($('#orditsAdminSubcategory'),[],'','Totes les subcategories');
+    renderAdminRows();
+  });
   $('#orditsAdminCategory').addEventListener('change',()=>{
-    const brand=$('#orditsAdminBrand').value,cat=$('#orditsAdminCategory').value;
-    setOptions($('#orditsAdminSubcategory'),taxonomyFor(brand,cat).subcategories,'','Totes les subcategories');
+    const brand=$('#orditsAdminBrand').value;
+    const tech=$('#orditsAdminTechnique').value;
+    const cat=$('#orditsAdminCategory').value;
+    setOptions($('#orditsAdminSubcategory'),taxonomyFor(brand,cat,tech).subcategories,'','Totes les subcategories');
     renderAdminRows();
   });
   $('#orditsAdminSubcategory').addEventListener('change',renderAdminRows);
