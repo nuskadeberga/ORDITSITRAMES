@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ca">
 <head>
-<!-- ORDITS I TRAMES · V15.22 REPARADA + ABELLA COSTAT TEXT · 2026-08-12 -->
+<!-- ORDITS I TRAMES · V15.24 REPARADA + ABELLA COSTAT TEXT · 2026-08-12 -->
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -1486,6 +1486,129 @@ html[data-supabase="error"] .ordits-db-badge{opacity:1;background:#f5dddd;color:
 }
 </style>
 
+
+<style id="ordits-v15-23-admin-principal-css">
+/* ADMIN més ample i amb columna Principal */
+.ordits-admin{width:min(1480px,97vw)!important}
+.ordits-product-row{
+  grid-template-columns:54px minmax(190px,1.55fr) 88px 150px 150px 72px 76px 76px 72px auto!important;
+}
+.ordits-row-head{
+  grid-template-columns:54px minmax(190px,1.55fr) 88px 150px 150px 72px 76px 76px 72px auto!important;
+}
+.ordits-create-grid{
+  grid-template-columns:1fr 1.5fr 1fr 1.15fr 1.15fr 90px!important;
+}
+.ordits-create-checks{
+  margin-top:10px;display:flex;gap:14px;align-items:center;flex-wrap:wrap
+}
+.ordits-create-checks small{color:#7a6b63}
+.ordits-admin-toolbar select{max-width:190px}
+.ordits-product-row .adm-images{
+  grid-column:1/-1;
+  margin:3px 2px 0;
+  border-top:1px solid #eee5de;
+  padding-top:7px;
+}
+.adm-images summary{cursor:pointer;font-size:12px;font-weight:800;color:#665850}
+.adm-image-list{display:grid;gap:7px;margin-top:9px}
+.adm-image-row{
+  display:grid;
+  grid-template-columns:48px minmax(150px,1.2fr) minmax(160px,1fr) 90px 90px auto auto;
+  gap:7px;align-items:center;background:#f8f4ef;border:1px solid #eadfd7;border-radius:12px;padding:7px
+}
+.adm-image-row img{width:48px!important;height:48px!important;border-radius:9px!important}
+.adm-image-file{font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#665850}
+.adm-image-row input[type=text],.adm-image-row input[type=number]{
+  width:100%;box-sizing:border-box;border:1px solid #ddd1c8;border-radius:8px;padding:7px;background:white
+}
+.adm-image-actions{display:flex;gap:5px}
+.adm-image-btn{border:0;border-radius:9px;padding:7px 9px;font-weight:800;cursor:pointer;background:#78a9a7;color:white}
+.adm-image-btn.unlink{background:#eee3dc;color:#724d42}
+.adm-image-add{
+  display:grid;grid-template-columns:minmax(190px,1.3fr) minmax(150px,1fr) 80px auto;
+  gap:7px;margin-top:9px
+}
+.adm-image-help{display:block;color:#817169;font-size:11px;margin-top:6px}
+
+/* MÒBIL: titular + logo a la mateixa franja */
+@media(max-width:820px){
+  .brand-hero-ribera,
+  .brand-hero-bynuska{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) 104px!important;
+    grid-template-areas:none!important;
+    column-gap:14px!important;
+    row-gap:12px!important;
+    align-items:start!important;
+    padding-top:32px!important;
+  }
+  .brand-hero-ribera .brand-copy-panel,
+  .brand-hero-bynuska .brand-copy-panel{
+    display:contents!important;
+  }
+  .brand-hero-ribera .brand-copy-panel .kicker,
+  .brand-hero-bynuska .brand-copy-panel .kicker{
+    grid-column:1;grid-row:1;align-self:end
+  }
+  .brand-hero-ribera .brand-copy-panel h1,
+  .brand-hero-bynuska .brand-copy-panel h1{
+    grid-column:1;grid-row:2;
+    font-size:clamp(47px,13vw,70px)!important;
+    margin:0!important;
+    line-height:.92!important
+  }
+  .brand-hero-ribera .brand-logo-panel,
+  .brand-hero-bynuska .brand-logo-panel{
+    grid-column:2!important;grid-row:1/3!important;
+    width:104px!important;height:104px!important;min-height:104px!important;
+    padding:0!important;margin:0!important;
+    align-self:center!important;justify-self:center!important;
+    display:flex!important;align-items:center!important;justify-content:center!important
+  }
+  .brand-hero-ribera .brand-logo-panel img,
+  .brand-hero-bynuska .brand-logo-panel img{
+    width:96px!important;height:96px!important;max-width:96px!important;max-height:96px!important
+  }
+  .brand-hero-ribera .brand-copy-panel p,
+  .brand-hero-bynuska .brand-copy-panel p{
+    grid-column:1/-1;grid-row:3;margin-top:10px!important
+  }
+  .brand-hero-ribera .brand-info-card,
+  .brand-hero-bynuska .brand-info-card{
+    grid-column:1/-1!important;grid-row:4!important;margin-top:6px!important
+  }
+
+  .ordits-product-row{
+    grid-template-columns:45px minmax(150px,1fr) 70px 70px 70px auto!important;
+  }
+  .ordits-product-row .adm-cat,
+  .ordits-product-row .adm-sub,
+  .ordits-product-row .adm-brand{
+    display:none
+  }
+  .ordits-product-row .adm-featured,
+  .ordits-product-row .adm-principal{
+    display:flex!important
+  }
+  .adm-image-row{grid-template-columns:44px 1fr 80px}
+  .adm-image-row .adm-image-file,.adm-image-row .adm-image-alt,.adm-image-row .adm-image-actions{grid-column:auto}
+  .adm-image-add{grid-template-columns:1fr}
+}
+</style>
+
+
+<style id="ordits-v15-24-ribera-logo-desktop">
+/* V15.24 · únic canvi: equilibrar visualment el logo Ribera amb @bynuska */
+@media(min-width:821px){
+  .brand-hero-ribera .brand-logo-panel img{
+    width:min(205px,72%) !important;
+    max-width:205px !important;
+    max-height:205px !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div class="thread-float one"></div>
@@ -1681,7 +1804,7 @@ html[data-supabase="error"] .ordits-db-badge{opacity:1;background:#f5dddd;color:
       <section class="brand-hero brand-hero-bynuska reveal">
         <div class="brand-copy-panel">
           <div class="kicker">@bynuska</div>
-          <h1>Feltre, llana<br>i molta textura.</h1>
+          <h1>Llana de feltre<br>i molta textura.</h1>
           <p>Hola, sóc l’Anna. Després de treballar amb el vidre, vaig trobar en el feltre el material amb què em sentia més còmoda creant. M’interessa per la seva calidesa, el color i la possibilitat de fer peces que no siguin mai iguals.</p>
           </div>
         <div class="brand-logo-panel">
@@ -2482,7 +2605,7 @@ if ('serviceWorker' in navigator) {
     <header class="ordits-admin-head">
       <div>
         <h2>Ordits i Trames · Admin</h2>
-        <small>Productes, visibilitat, destacats i ordre</small>
+        <small>Productes, categories, visibilitat, destacats, principals i fotos</small>
       </div>
       <div class="ordits-admin-spacer"></div>
       
@@ -2507,26 +2630,31 @@ if ('serviceWorker' in navigator) {
             <select id="newMarca"><option value="CR">Confeccions Ribera</option><option value="BN">@bynuska</option></select>
             <input id="newNom" placeholder="Nom de la peça">
             <input id="newTecnica" placeholder="Tècnica">
-            <input id="newCategoria" placeholder="Categoria">
-            <input id="newSubcategoria" placeholder="Subcategoria">
+            <select id="newCategoria"><option value="">— Categoria —</option></select>
+            <select id="newSubcategoria"><option value="">— Subcategoria —</option></select>
             <input id="newOrdre" type="number" placeholder="Ordre">
           </div>
-          <div style="margin-top:10px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+          <div class="ordits-create-checks">
             <label><input id="newVisible" type="checkbox" checked> Visible</label>
             <label><input id="newDestacat" type="checkbox"> Destacat</label>
+            <label><input id="newPrincipal" type="checkbox"> Principal</label>
             <button class="ordits-admin-btn" id="orditsCreateProduct">Crear producte</button>
-            <small style="color:#7a6b63">La foto es podrà associar en el pas següent del gestor d’imatges.</small>
+            <small>Després podràs associar una o més fotos al producte.</small>
           </div>
         </details>
 
         <div class="ordits-admin-toolbar">
           <input id="orditsAdminSearch" placeholder="Cerca per nom, categoria o subcategoria…">
           <select id="orditsAdminBrand"><option value="">Totes les marques</option><option value="CR">Confeccions Ribera</option><option value="BN">@bynuska</option></select>
-          <select id="orditsAdminVisibility"><option value="">Tots</option><option value="visible">Només visibles</option><option value="hidden">Només ocults</option></select>
+          <select id="orditsAdminCategory"><option value="">Totes les categories</option></select>
+          <select id="orditsAdminSubcategory"><option value="">Totes les subcategories</option></select>
+          <select id="orditsAdminVisibility"><option value="">Visible: tots</option><option value="yes">Visible: sí</option><option value="no">Visible: no</option></select>
+          <select id="orditsAdminFeatured"><option value="">Destacat: tots</option><option value="yes">Destacat: sí</option><option value="no">Destacat: no</option></select>
+          <select id="orditsAdminPrincipal"><option value="">Principal: tots</option><option value="yes">Principal: sí</option><option value="no">Principal: no</option></select>
           <button class="ordits-admin-btn secondary" id="orditsAdminReload">Actualitzar</button>
         </div>
         <div class="ordits-admin-message" id="orditsAdminMessage"></div>
-        <div class="ordits-row-head"><span>Foto</span><span>Nom</span><span>Marca</span><span>Categoria</span><span>Subcategoria</span><span>Visible</span><span>Destacat</span><span>Ordre</span><span></span></div>
+        <div class="ordits-row-head"><span>Foto</span><span>Nom</span><span>Marca</span><span>Categoria</span><span>Subcategoria</span><span>Visible</span><span>Destacat</span><span>Principal</span><span>Ordre</span><span></span></div>
         <div class="ordits-admin-grid" id="orditsAdminGrid"></div>
       </div>
     </div>
@@ -2594,7 +2722,7 @@ orditsLoadSupabaseData();
   const norm = v => String(v ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
   const bool = v => v === true || v === 'true' || v === 1;
   const ordVal = v => (v === null || v === undefined || v === '' || Number.isNaN(Number(v))) ? 999999 : Number(v);
-  const sortItems = (a,b) => ordVal(a.ordre)-ordVal(b.ordre) || String(a.nom||'').localeCompare(String(b.nom||''),'ca');
+  const sortItems = (a,b) => Number(bool(b.principal_grup))-Number(bool(a.principal_grup)) || ordVal(a.ordre)-ordVal(b.ordre) || String(a.nom||'').localeCompare(String(b.nom||''),'ca');
 
   function imageIndex(db){
     const m = new Map();
@@ -2815,6 +2943,77 @@ orditsLoadSupabaseData();
     if(logoClicks.length>=5){logoClicks=[];openAdmin()}
   });
 
+  function adminGroupKey(p){
+    const cat=norm(p.categoria),sub=norm(p.subcategoria),tech=norm(p.tecnica),name=norm(p.nom);
+    if(p.marca==='CR'){
+      if(cat==='superbosses'||sub.includes('superbossa'))return 'cr:superbosses';
+      if(cat==='bosses')return 'cr:bosses';
+      if(cat==='totebags'||sub.includes('totebag'))return 'cr:totebags';
+      if(cat==='motxilles'||sub.includes('motxill'))return 'cr:motxilles';
+      if(cat==='bandoleres'||sub.includes('bandoler'))return 'cr:bandoleres';
+      if(cat==='necessers'||sub.includes('necess'))return 'cr:necessers';
+      if(cat==='altres'||cat==='decoracio'||sub.includes('cuina')||sub.includes('bol')||sub.includes('portaulleres')||sub.includes('follet'))return 'cr:altres';
+      return 'cr:'+cat;
+    }
+    if(p.marca==='BN'){
+      if(cat==='mocadors i bufandes')return 'bn:mocadors';
+      if(cat==='bols')return 'bn:bols';
+      if(tech==='feltre humit'&&cat==='altres')return 'bn:altres';
+      if(cat==='boles de nadal'&&(sub.includes('ninot')||name.includes('ninot de neu decoratiu')))return 'bn:ninots';
+      if(cat==='boles de nadal')return 'bn:nadal';
+      if(cat==='mobils'||cat==='mòbils'||(cat==='bestioles'&&(sub.includes('mobil')||sub.includes('mòbil'))))return 'bn:mobils';
+      if(cat==='bestioles')return 'bn:bestioles';
+      return 'bn:'+cat;
+    }
+    return String(p.marca||'')+':'+cat+':'+sub;
+  }
+
+  function uniqueSorted(values){
+    return [...new Set(values.filter(Boolean).map(v=>String(v).trim()).filter(Boolean))]
+      .sort((a,b)=>a.localeCompare(b,'ca'));
+  }
+  function taxonomyFor(brand,category=''){
+    const rows=adminProducts.filter(p=>(!brand||p.marca===brand)&&(!category||p.categoria===category));
+    return {
+      categories:uniqueSorted(adminProducts.filter(p=>!brand||p.marca===brand).map(p=>p.categoria)),
+      subcategories:uniqueSorted(rows.map(p=>p.subcategoria))
+    };
+  }
+  function selectHTML(values,current,emptyLabel){
+    const vals=[...values];
+    if(current&&!vals.includes(current))vals.push(current);
+    vals.sort((a,b)=>a.localeCompare(b,'ca'));
+    return `<option value="">${esc(emptyLabel)}</option>`+
+      vals.map(v=>`<option value="${esc(v)}"${v===current?' selected':''}>${esc(v)}</option>`).join('');
+  }
+  function setOptions(el,values,current,emptyLabel){
+    if(!el)return;
+    el.innerHTML=selectHTML(values,current,emptyLabel);
+    el.value=current||'';
+  }
+
+  function refreshAdminFilterOptions(){
+    const brand=$('#orditsAdminBrand').value;
+    const currentCat=$('#orditsAdminCategory').value;
+    const cats=taxonomyFor(brand).categories;
+    setOptions($('#orditsAdminCategory'),cats,cats.includes(currentCat)?currentCat:'','Totes les categories');
+    const cat=$('#orditsAdminCategory').value;
+    const currentSub=$('#orditsAdminSubcategory').value;
+    const subs=taxonomyFor(brand,cat).subcategories;
+    setOptions($('#orditsAdminSubcategory'),subs,subs.includes(currentSub)?currentSub:'','Totes les subcategories');
+  }
+
+  function refreshNewProductOptions(preserve=true){
+    const brand=$('#newMarca').value;
+    const catEl=$('#newCategoria'),subEl=$('#newSubcategoria');
+    const oldCat=preserve?catEl.value:'',oldSub=preserve?subEl.value:'';
+    const cats=taxonomyFor(brand).categories;
+    const cat=cats.includes(oldCat)?oldCat:'';
+    setOptions(catEl,cats,cat,'— Categoria —');
+    const subs=taxonomyFor(brand,cat).subcategories;
+    setOptions(subEl,subs,subs.includes(oldSub)?oldSub:'','— Subcategoria —');
+  }
+
   async function adminReload(){
     clearMsg(adminMsg);
     try{
@@ -2822,6 +3021,8 @@ orditsLoadSupabaseData();
         rpc('ordits_admin_productes',{p_code:adminCode}),
         rpc('ordits_admin_imatges',{p_code:adminCode})
       ]);
+      refreshAdminFilterOptions();
+      refreshNewProductOptions();
       renderAdminRows();
     }catch(e){
       if(String(e.message).toLowerCase().includes('codi')){
@@ -2829,76 +3030,267 @@ orditsLoadSupabaseData();
       }else msg(adminMsg,e.message||String(e));
     }
   }
+
+  function adminImagesFor(p){
+    return adminImages.filter(x=>x.producte_id===p.id)
+      .sort((a,b)=>Number(b.principal)-Number(a.principal)||ordVal(a.ordre)-ordVal(b.ordre));
+  }
   function adminImage(p){
-    const ims=adminImages.filter(x=>x.producte_id===p.id).sort((a,b)=>Number(b.principal)-Number(a.principal)||ordVal(a.ordre)-ordVal(b.ordre));
+    const ims=adminImagesFor(p);
     return ims[0]?STORAGE+ims[0].storage_path:'';
   }
+
+  function renderImageManager(p){
+    const ims=adminImagesFor(p);
+    return `
+      <details class="adm-images" data-image-product="${esc(p.id)}">
+        <summary>Fotos del producte (${ims.length})${ims.length>1?' · múltiples':''}</summary>
+        <div class="adm-image-list">
+          ${ims.map(im=>`
+            <div class="adm-image-row" data-image-id="${esc(im.id)}">
+              <img src="${esc(STORAGE+im.storage_path)}" alt="">
+              <span class="adm-image-file" title="${esc(im.storage_path)}">${esc(im.storage_path)}</span>
+              <input class="adm-image-alt" type="text" value="${esc(im.alt_text||'')}" placeholder="Text alternatiu">
+              <label class="ordits-mini-check">Foto principal<input class="adm-image-principal" type="checkbox"${bool(im.principal)?' checked':''}></label>
+              <input class="adm-image-order" type="number" value="${im.ordre??''}" placeholder="Ordre">
+              <button class="adm-image-btn adm-image-save" type="button">Desar foto</button>
+              <button class="adm-image-btn unlink adm-image-unlink" type="button">Desvincular</button>
+            </div>`).join('')||'<small style="color:#817169">Aquest producte encara no té cap foto associada.</small>'}
+        </div>
+        <div class="adm-image-add">
+          <input class="adm-new-image-path" type="text" placeholder="Nom del fitxer a Storage, p. ex. foto-bossa.webp">
+          <input class="adm-new-image-alt" type="text" placeholder="Text alternatiu">
+          <input class="adm-new-image-order" type="number" placeholder="Ordre">
+          <button class="adm-image-btn adm-image-add-btn" type="button">Afegir foto</button>
+        </div>
+        <small class="adm-image-help">Primer puja el fitxer al bucket <strong>productes</strong> de Supabase. Aquí només l’associem a aquest producte.</small>
+      </details>`;
+  }
+
   function renderAdminRows(){
-    const q=norm($('#orditsAdminSearch').value),brand=$('#orditsAdminBrand').value,vis=$('#orditsAdminVisibility').value;
+    const q=norm($('#orditsAdminSearch').value);
+    const brand=$('#orditsAdminBrand').value;
+    const cat=$('#orditsAdminCategory').value;
+    const sub=$('#orditsAdminSubcategory').value;
+    const vis=$('#orditsAdminVisibility').value;
+    const feat=$('#orditsAdminFeatured').value;
+    const princ=$('#orditsAdminPrincipal').value;
+
     const items=adminProducts.filter(p=>{
       if(brand&&p.marca!==brand)return false;
-      if(vis==='visible'&&!bool(p.visible))return false;
-      if(vis==='hidden'&&bool(p.visible))return false;
+      if(cat&&p.categoria!==cat)return false;
+      if(sub&&p.subcategoria!==sub)return false;
+      if(vis==='yes'&&!bool(p.visible))return false;
+      if(vis==='no'&&bool(p.visible))return false;
+      if(feat==='yes'&&!bool(p.destacat))return false;
+      if(feat==='no'&&bool(p.destacat))return false;
+      if(princ==='yes'&&!bool(p.principal_grup))return false;
+      if(princ==='no'&&bool(p.principal_grup))return false;
       if(q&&!norm([p.nom,p.categoria,p.subcategoria,p.tecnica].join(' ')).includes(q))return false;
       return true;
     });
-    $('#orditsAdminGrid').innerHTML=items.map(p=>`
+
+    $('#orditsAdminGrid').innerHTML=items.map(p=>{
+      const tax=taxonomyFor(p.marca);
+      const subs=taxonomyFor(p.marca,p.categoria).subcategories;
+      return `
       <div class="ordits-product-row" data-admin-id="${esc(p.id)}">
         ${adminImage(p)?`<img src="${esc(adminImage(p))}" alt="">`:`<div style="width:54px;height:54px;border-radius:11px;background:#eee"></div>`}
         <input class="adm-name" type="text" value="${esc(p.nom)}">
         <select class="adm-brand"><option value="CR"${p.marca==='CR'?' selected':''}>CR</option><option value="BN"${p.marca==='BN'?' selected':''}>BN</option></select>
-        <input class="adm-cat" type="text" value="${esc(p.categoria)}" placeholder="Categoria">
-        <input class="adm-sub" type="text" value="${esc(p.subcategoria)}" placeholder="Subcategoria">
+        <select class="adm-cat">${selectHTML(tax.categories,p.categoria,'— Categoria —')}</select>
+        <select class="adm-sub">${selectHTML(subs,p.subcategoria,'— Subcategoria —')}</select>
         <label class="ordits-mini-check">Visible<input class="adm-visible" type="checkbox"${bool(p.visible)?' checked':''}></label>
         <label class="ordits-mini-check adm-featured">Destacat<input class="adm-destacat" type="checkbox"${bool(p.destacat)?' checked':''}></label>
+        <label class="ordits-mini-check adm-principal">Principal<input class="adm-principal-grup" type="checkbox"${bool(p.principal_grup)?' checked':''}></label>
         <input class="adm-order" type="number" value="${p.ordre??''}" placeholder="—">
         <button class="ordits-save-row">Desar</button>
-      </div>`).join('')||'<p style="padding:20px;color:#77675f">No hi ha productes que coincideixin amb els filtres.</p>';
+        ${renderImageManager(p)}
+      </div>`;
+    }).join('')||'<p style="padding:20px;color:#77675f">No hi ha productes que coincideixin amb els filtres.</p>';
+  }
+
+  function filterChanged(){
+    refreshAdminFilterOptions();
+    renderAdminRows();
   }
   $('#orditsAdminSearch').addEventListener('input',renderAdminRows);
-  $('#orditsAdminBrand').addEventListener('change',renderAdminRows);
+  $('#orditsAdminBrand').addEventListener('change',filterChanged);
+  $('#orditsAdminCategory').addEventListener('change',()=>{
+    const brand=$('#orditsAdminBrand').value,cat=$('#orditsAdminCategory').value;
+    setOptions($('#orditsAdminSubcategory'),taxonomyFor(brand,cat).subcategories,'','Totes les subcategories');
+    renderAdminRows();
+  });
+  $('#orditsAdminSubcategory').addEventListener('change',renderAdminRows);
   $('#orditsAdminVisibility').addEventListener('change',renderAdminRows);
+  $('#orditsAdminFeatured').addEventListener('change',renderAdminRows);
+  $('#orditsAdminPrincipal').addEventListener('change',renderAdminRows);
   $('#orditsAdminReload').addEventListener('click',adminReload);
 
+  $('#newMarca').addEventListener('change',()=>refreshNewProductOptions(false));
+  $('#newCategoria').addEventListener('change',()=>{
+    const brand=$('#newMarca').value,cat=$('#newCategoria').value;
+    setOptions($('#newSubcategoria'),taxonomyFor(brand,cat).subcategories,'','— Subcategoria —');
+  });
+
+  $('#orditsAdminGrid').addEventListener('change',e=>{
+    const row=e.target.closest('[data-admin-id]');
+    if(!row)return;
+    if(e.target.classList.contains('adm-brand')){
+      const brand=e.target.value;
+      const cats=taxonomyFor(brand).categories;
+      setOptions(row.querySelector('.adm-cat'),cats,'','— Categoria —');
+      setOptions(row.querySelector('.adm-sub'),[],'','— Subcategoria —');
+    }
+    if(e.target.classList.contains('adm-cat')){
+      const brand=row.querySelector('.adm-brand').value;
+      const cat=e.target.value;
+      setOptions(row.querySelector('.adm-sub'),taxonomyFor(brand,cat).subcategories,'','— Subcategoria —');
+    }
+  });
+
   $('#orditsAdminGrid').addEventListener('click',async e=>{
-    const btn=e.target.closest('.ordits-save-row');if(!btn)return;
-    const row=btn.closest('[data-admin-id]');
-    btn.disabled=true;btn.textContent='…';
-    try{
-      await rpc('ordits_admin_desar_producte',{
-        p_code:adminCode,
-        p_id:row.dataset.adminId,
-        p_nom:row.querySelector('.adm-name').value.trim(),
-        p_marca:row.querySelector('.adm-brand').value,
-        p_categoria:row.querySelector('.adm-cat').value.trim()||null,
-        p_subcategoria:row.querySelector('.adm-sub').value.trim()||null,
-        p_visible:row.querySelector('.adm-visible').checked,
-        p_destacat:row.querySelector('.adm-destacat').checked,
-        p_ordre:row.querySelector('.adm-order').value===''?null:Number(row.querySelector('.adm-order').value)
-      });
-      msg(adminMsg,'Canvis desats.',true);
-      await reloadPublicData();await adminReload();
-    }catch(err){msg(adminMsg,'No s’ha pogut desar: '+(err.message||err))}
-    finally{btn.disabled=false;btn.textContent='Desar'}
+    const saveBtn=e.target.closest('.ordits-save-row');
+    if(saveBtn){
+      const row=saveBtn.closest('[data-admin-id]');
+      const old=adminProducts.find(p=>String(p.id)===String(row.dataset.adminId));
+      const draft={
+        id:row.dataset.adminId,
+        nom:row.querySelector('.adm-name').value.trim(),
+        marca:row.querySelector('.adm-brand').value,
+        categoria:row.querySelector('.adm-cat').value||null,
+        subcategoria:row.querySelector('.adm-sub').value||null,
+        tecnica:old?.tecnica||null,
+        visible:row.querySelector('.adm-visible').checked,
+        destacat:row.querySelector('.adm-destacat').checked,
+        principal_grup:row.querySelector('.adm-principal-grup').checked,
+        ordre:row.querySelector('.adm-order').value===''?null:Number(row.querySelector('.adm-order').value)
+      };
+      let confirmPrincipal=false;
+      if(draft.principal_grup){
+        const other=adminProducts.find(p=>String(p.id)!==String(draft.id)&&bool(p.principal_grup)&&adminGroupKey(p)===adminGroupKey(draft));
+        if(other){
+          if(!confirm(`Ja hi ha un producte principal en aquest grup: “${other.nom}”.\n\nVols substituir-lo per “${draft.nom}”?`))return;
+          confirmPrincipal=true;
+        }
+      }
+      saveBtn.disabled=true;saveBtn.textContent='…';
+      try{
+        await rpc('ordits_admin_desar_producte',{
+          p_code:adminCode,
+          p_id:draft.id,
+          p_nom:draft.nom,
+          p_marca:draft.marca,
+          p_categoria:draft.categoria,
+          p_subcategoria:draft.subcategoria,
+          p_visible:draft.visible,
+          p_destacat:draft.destacat,
+          p_principal_grup:draft.principal_grup,
+          p_confirmar_principal:confirmPrincipal,
+          p_ordre:draft.ordre
+        });
+        msg(adminMsg,'Canvis desats.',true);
+        await reloadPublicData();await adminReload();
+      }catch(err){
+        const t=err.message||String(err);
+        msg(adminMsg,t.startsWith('PRINCIPAL_EXISTENT|')?'Ja hi ha un principal en aquest grup. Torna-ho a provar i confirma el canvi.':'No s’ha pogut desar: '+t);
+      }finally{saveBtn.disabled=false;saveBtn.textContent='Desar'}
+      return;
+    }
+
+    const imageSave=e.target.closest('.adm-image-save');
+    if(imageSave){
+      const ir=imageSave.closest('[data-image-id]');
+      imageSave.disabled=true;
+      try{
+        await rpc('ordits_admin_desar_imatge',{
+          p_code:adminCode,
+          p_id:ir.dataset.imageId,
+          p_alt_text:ir.querySelector('.adm-image-alt').value.trim()||null,
+          p_ordre:ir.querySelector('.adm-image-order').value===''?null:Number(ir.querySelector('.adm-image-order').value),
+          p_principal:ir.querySelector('.adm-image-principal').checked
+        });
+        msg(adminMsg,'Foto actualitzada.',true);
+        await adminReload();await reloadPublicData();
+      }catch(err){msg(adminMsg,'No s’ha pogut actualitzar la foto: '+(err.message||err))}
+      finally{imageSave.disabled=false}
+      return;
+    }
+
+    const unlink=e.target.closest('.adm-image-unlink');
+    if(unlink){
+      const ir=unlink.closest('[data-image-id]');
+      if(!confirm('Vols desvincular aquesta foto del producte?\n\nEl fitxer continuarà existint a Storage.'))return;
+      try{
+        await rpc('ordits_admin_eliminar_imatge',{p_code:adminCode,p_id:ir.dataset.imageId});
+        msg(adminMsg,'Foto desvinculada.',true);
+        await adminReload();await reloadPublicData();
+      }catch(err){msg(adminMsg,'No s’ha pogut desvincular: '+(err.message||err))}
+      return;
+    }
+
+    const add=e.target.closest('.adm-image-add-btn');
+    if(add){
+      const details=add.closest('[data-image-product]');
+      const path=details.querySelector('.adm-new-image-path').value.trim();
+      if(!path){msg(adminMsg,'Escriu el nom del fitxer que ja has pujat a Storage.');return}
+      add.disabled=true;
+      try{
+        await rpc('ordits_admin_afegir_imatge',{
+          p_code:adminCode,
+          p_producte_id:details.dataset.imageProduct,
+          p_storage_path:path,
+          p_alt_text:details.querySelector('.adm-new-image-alt').value.trim()||null,
+          p_ordre:details.querySelector('.adm-new-image-order').value===''?null:Number(details.querySelector('.adm-new-image-order').value),
+          p_principal:false
+        });
+        msg(adminMsg,'Foto associada al producte.',true);
+        await adminReload();await reloadPublicData();
+      }catch(err){msg(adminMsg,'No s’ha pogut afegir la foto: '+(err.message||err))}
+      finally{add.disabled=false}
+    }
   });
 
   $('#orditsCreateProduct').addEventListener('click',async()=>{
     const nom=$('#newNom').value.trim();
     if(!nom){msg(adminMsg,'Cal indicar el nom del producte.');return}
+    const draft={
+      marca:$('#newMarca').value,
+      nom,
+      tecnica:$('#newTecnica').value.trim()||null,
+      categoria:$('#newCategoria').value||null,
+      subcategoria:$('#newSubcategoria').value||null,
+      visible:$('#newVisible').checked,
+      destacat:$('#newDestacat').checked,
+      principal_grup:$('#newPrincipal').checked,
+      ordre:$('#newOrdre').value===''?null:Number($('#newOrdre').value)
+    };
+    let confirmPrincipal=false;
+    if(draft.principal_grup){
+      const other=adminProducts.find(p=>bool(p.principal_grup)&&adminGroupKey(p)===adminGroupKey(draft));
+      if(other){
+        if(!confirm(`Ja hi ha un producte principal en aquest grup: “${other.nom}”.\n\nVols substituir-lo per “${draft.nom}”?`))return;
+        confirmPrincipal=true;
+      }
+    }
     try{
       await rpc('ordits_admin_crear_producte',{
         p_code:adminCode,
-        p_marca:$('#newMarca').value,
-        p_nom:nom,
-        p_tecnica:$('#newTecnica').value.trim()||null,
-        p_categoria:$('#newCategoria').value.trim()||null,
-        p_subcategoria:$('#newSubcategoria').value.trim()||null,
-        p_visible:$('#newVisible').checked,
-        p_destacat:$('#newDestacat').checked,
-        p_ordre:$('#newOrdre').value===''?null:Number($('#newOrdre').value)
+        p_marca:draft.marca,
+        p_nom:draft.nom,
+        p_tecnica:draft.tecnica,
+        p_categoria:draft.categoria,
+        p_subcategoria:draft.subcategoria,
+        p_visible:draft.visible,
+        p_destacat:draft.destacat,
+        p_principal_grup:draft.principal_grup,
+        p_confirmar_principal:confirmPrincipal,
+        p_ordre:draft.ordre
       });
-      msg(adminMsg,'Producte creat. Ara ja el pots gestionar a la llista.',true);
-      ['newNom','newTecnica','newCategoria','newSubcategoria','newOrdre'].forEach(id=>$('#'+id).value='');
+      msg(adminMsg,'Producte creat. Ara ja hi pots associar una o més fotos.',true);
+      ['newNom','newTecnica','newOrdre'].forEach(id=>$('#'+id).value='');
+      $('#newDestacat').checked=false;$('#newPrincipal').checked=false;$('#newVisible').checked=true;
+      refreshNewProductOptions(false);
       await adminReload();await reloadPublicData();
     }catch(err){msg(adminMsg,'No s’ha pogut crear: '+(err.message||err))}
   });
