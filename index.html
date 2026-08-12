@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ca">
 <head>
-<!-- ORDITS I TRAMES · V15.35 RECUPERACIÓ REPARADA + ABELLA COSTAT TEXT · 2026-08-12 -->
+<!-- ORDITS I TRAMES · V15.36 TAXONOMIA FILTRABLE REPARADA + ABELLA COSTAT TEXT · 2026-08-12 -->
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -1743,6 +1743,75 @@ html[data-supabase="error"] .ordits-db-badge{opacity:1;background:#f5dddd;color:
 }
 </style>
 
+
+<style id="ordits-v15-36-taxonomy-filters">
+.ordits-tax-filters{
+  display:grid;
+  grid-template-columns:auto 160px 160px 190px 200px auto 1fr;
+  gap:8px;
+  align-items:center;
+  margin:16px 0 10px;
+  padding:12px;
+  border:1px solid #e8dcd3;
+  border-radius:14px;
+  background:#fff;
+}
+.ordits-tax-filters strong{
+  font-size:13px;
+  color:#584c46;
+  white-space:nowrap;
+}
+.ordits-tax-filters select{
+  border:1px solid #ddd1c8;
+  background:#fff;
+  border-radius:10px;
+  padding:9px 10px;
+  min-width:0;
+}
+#taxFilterReset{
+  border:0;
+  border-radius:10px;
+  padding:9px 11px;
+  background:#efe8e2;
+  color:#5d514b;
+  font-weight:800;
+  cursor:pointer;
+  white-space:nowrap;
+}
+#taxFilterCount{
+  justify-self:end;
+  font-size:12px;
+  font-weight:800;
+  color:#7a6960;
+}
+.ordits-tax-group-label{
+  grid-column:1/-1;
+  margin-top:6px;
+  padding:8px 2px 3px;
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:#7b5b4c;
+}
+@media(max-width:1100px){
+  .ordits-tax-filters{
+    grid-template-columns:1fr 1fr;
+  }
+  .ordits-tax-filters strong,
+  #taxFilterReset,
+  #taxFilterCount{
+    grid-column:auto;
+    justify-self:stretch;
+  }
+}
+@media(max-width:650px){
+  .ordits-tax-filters{
+    grid-template-columns:1fr;
+  }
+}
+</style>
+
 </head>
 <body>
 <div class="thread-float one"></div>
@@ -2826,6 +2895,25 @@ if ('serviceWorker' in navigator) {
               <input id="taxNewName" type="text" placeholder="Nom">
               <button class="ordits-admin-btn" id="taxCreateBtn" type="button">Crear</button>
             </div>
+            <div class="ordits-tax-filters">
+              <strong>Filtrar taxonomia</strong>
+              <select id="taxFilterBrand">
+                <option value="">Totes les botigues</option>
+                <option value="BN">@bynuska</option>
+                <option value="CR">Confeccions Ribera</option>
+              </select>
+              <select id="taxFilterTech">
+                <option value="">Totes les tècniques</option>
+              </select>
+              <select id="taxFilterCategory">
+                <option value="">Totes les categories</option>
+              </select>
+              <select id="taxFilterSubcategory">
+                <option value="">Totes les subcategories</option>
+              </select>
+              <button type="button" id="taxFilterReset">Netejar filtres</button>
+              <span id="taxFilterCount"></span>
+            </div>
             <div class="ordits-tax-message" id="taxMessage"></div>
             <div class="ordits-tax-list" id="taxList"></div>
           </div>
@@ -3326,20 +3414,106 @@ orditsLoadSupabaseData();
     $('#taxParentCategory').disabled=!isSub;
   }
 
+  function taxFilterValues(){
+    return {
+      brand:$('#taxFilterBrand')?.value||'',
+      tech:$('#taxFilterTech')?.value||'',
+      category:$('#taxFilterCategory')?.value||'',
+      subcategory:$('#taxFilterSubcategory')?.value||''
+    };
+  }
+
+  function refreshTaxFilterOptions(preserve=true){
+    if(!$('#taxFilterBrand'))return;
+
+    const old=preserve?taxFilterValues():{brand:'',tech:'',category:'',subcategory:''};
+    const brand=old.brand;
+
+    const byBrand=adminTaxonomy.filter(t=>!brand||t.marca===brand);
+
+    const techs=uniqueSorted(byBrand.map(t=>t.tecnica).filter(Boolean));
+    setOptions(
+      $('#taxFilterTech'),
+      techs,
+      techs.includes(old.tech)?old.tech:'',
+      'Totes les tècniques'
+    );
+
+    const tech=$('#taxFilterTech').value;
+    const byTech=byBrand.filter(t=>!tech||t.tecnica===tech||(!t.tecnica&&brand==='CR'));
+
+    const cats=uniqueSorted(byTech.map(t=>t.categoria));
+    setOptions(
+      $('#taxFilterCategory'),
+      cats,
+      cats.includes(old.category)?old.category:'',
+      'Totes les categories'
+    );
+
+    const category=$('#taxFilterCategory').value;
+    const byCat=byTech.filter(t=>!category||t.categoria===category);
+
+    const subs=uniqueSorted(byCat.map(t=>t.subcategoria).filter(Boolean));
+    setOptions(
+      $('#taxFilterSubcategory'),
+      subs,
+      subs.includes(old.subcategory)?old.subcategory:'',
+      'Totes les subcategories'
+    );
+
+    const techEl=$('#taxFilterTech');
+    if(techEl){
+      techEl.disabled=brand==='CR';
+      if(brand==='CR') techEl.value='';
+    }
+  }
+
   function renderTaxonomyManager(){
     if(!$('#taxList'))return;
     refreshTaxCreateUI();
+
     if(!adminTaxonomy.length){
       $('#taxList').innerHTML='<p style="padding:10px 2px;color:#7a6960">El gestor avançat de categories encara no té taxonomia pròpia carregada. Els desplegables continuen funcionant amb les categories dels productes existents.</p>';
+      if($('#taxFilterCount')) $('#taxFilterCount').textContent='0 elements';
       return;
     }
-    const rows=[...adminTaxonomy].sort((a,b)=>
-      String(a.marca).localeCompare(String(b.marca),'ca') ||
-      String(a.tecnica||'').localeCompare(String(b.tecnica||''),'ca') ||
-      String(a.categoria||'').localeCompare(String(b.categoria||''),'ca') ||
-      String(a.subcategoria||'').localeCompare(String(b.subcategoria||''),'ca')
-    );
-    $('#taxList').innerHTML=rows.map(t=>`
+
+    refreshTaxFilterOptions(true);
+    const f=taxFilterValues();
+
+    const rows=[...adminTaxonomy]
+      .filter(t=>{
+        if(f.brand&&t.marca!==f.brand)return false;
+        if(f.tech&&t.tecnica!==f.tech)return false;
+        if(f.category&&t.categoria!==f.category)return false;
+        if(f.subcategory&&t.subcategoria!==f.subcategory)return false;
+        return true;
+      })
+      .sort((a,b)=>
+        String(a.marca).localeCompare(String(b.marca),'ca') ||
+        String(a.tecnica||'').localeCompare(String(b.tecnica||''),'ca') ||
+        String(a.categoria||'').localeCompare(String(b.categoria||''),'ca') ||
+        String(a.subcategoria||'').localeCompare(String(b.subcategoria||''),'ca')
+      );
+
+    if($('#taxFilterCount')){
+      $('#taxFilterCount').textContent=rows.length+' element'+(rows.length===1?'':'s');
+    }
+
+    let lastGroup='';
+    $('#taxList').innerHTML=rows.map(t=>{
+      const group=[
+        t.marca==='BN'?'@bynuska':'Confeccions Ribera',
+        t.tecnica||'Sense tècnica',
+        t.categoria||''
+      ].join(' · ');
+
+      const groupLabel=group!==lastGroup
+        ? `<div class="ordits-tax-group-label">${esc(group)}</div>`
+        : '';
+      lastGroup=group;
+
+      return `${groupLabel}
       <div class="ordits-tax-row" data-tax-id="${esc(t.id)}">
         <span class="tax-kind">${t.subcategoria?'Subcategoria':'Categoria'}</span>
         <span>${esc(t.marca==='BN'?'@bynuska':'Confeccions Ribera')}</span>
@@ -3350,8 +3524,30 @@ orditsLoadSupabaseData();
           <button class="ordits-tax-save" type="button">Desar</button>
           <button class="ordits-tax-delete" type="button">Eliminar</button>
         </div>
-      </div>`).join('');
+      </div>`;
+    }).join('') || '<p style="padding:12px 2px;color:#7a6960">No hi ha cap element que coincideixi amb aquests filtres.</p>';
   }
+
+  $('#taxFilterBrand')?.addEventListener('change',()=>{
+    refreshTaxFilterOptions(true);
+    renderTaxonomyManager();
+  });
+  $('#taxFilterTech')?.addEventListener('change',()=>{
+    refreshTaxFilterOptions(true);
+    renderTaxonomyManager();
+  });
+  $('#taxFilterCategory')?.addEventListener('change',()=>{
+    refreshTaxFilterOptions(true);
+    renderTaxonomyManager();
+  });
+  $('#taxFilterSubcategory')?.addEventListener('change',renderTaxonomyManager);
+  $('#taxFilterReset')?.addEventListener('click',()=>{
+    ['taxFilterBrand','taxFilterTech','taxFilterCategory','taxFilterSubcategory'].forEach(id=>{
+      if($('#'+id)) $('#'+id).value='';
+    });
+    refreshTaxFilterOptions(false);
+    renderTaxonomyManager();
+  });
 
   $('#taxBrand')?.addEventListener('change',refreshTaxCreateUI);
   $('#taxTech')?.addEventListener('change',refreshTaxCreateUI);
