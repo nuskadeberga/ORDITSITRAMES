@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ca">
 <head>
-<!-- ORDITS I TRAMES · V15.33 REPARADA + ABELLA COSTAT TEXT · 2026-08-12 -->
+<!-- ORDITS I TRAMES · V15.34 REPARADA + ABELLA COSTAT TEXT · 2026-08-12 -->
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -1670,6 +1670,79 @@ html[data-supabase="error"] .ordits-db-badge{opacity:1;background:#f5dddd;color:
 }
 </style>
 
+
+<style id="ordits-v15-34-mobile-carousel">
+@media(max-width:700px){
+  .rb-track-wrap{
+    touch-action:pan-y!important;
+    overflow:hidden!important;
+  }
+  .rb-track-wrap .rb-nav{
+    display:grid!important;
+    place-items:center!important;
+    visibility:visible!important;
+    opacity:1!important;
+    z-index:30!important;
+    width:44px!important;
+    height:44px!important;
+    top:50%!important;
+  }
+  .rb-track-wrap .rb-prev{left:4px!important}
+  .rb-track-wrap .rb-next{right:4px!important}
+  .rb-slide{
+    transition:transform .45s cubic-bezier(.2,.8,.2,1),opacity .35s ease,filter .35s ease!important;
+  }
+}
+</style>
+
+
+<style id="ordits-v15-34-taxonomy-css">
+.ordits-tax-manager{
+  margin:12px 0 18px;
+  border:1px solid #e8dcd3;
+  border-radius:20px;
+  background:#faf7f3;
+  overflow:hidden;
+}
+.ordits-tax-manager>summary{
+  cursor:pointer;
+  padding:16px 18px;
+  font-weight:900;
+}
+.ordits-tax-inner{padding:0 18px 18px}
+.ordits-tax-create{
+  display:grid;
+  grid-template-columns:160px 150px 170px 200px minmax(180px,1fr) auto;
+  gap:8px;
+}
+.ordits-tax-create select,.ordits-tax-create input,
+.ordits-tax-row select,.ordits-tax-row input{
+  border:1px solid #ddd1c8;background:#fff;border-radius:10px;padding:9px 10px;box-sizing:border-box;
+}
+.ordits-tax-message{min-height:20px;margin:8px 0;font-size:13px;color:#765d52}
+.ordits-tax-message.ok{color:#39736f;font-weight:800}
+.ordits-tax-message.err{color:#98483f;font-weight:800}
+.ordits-tax-list{display:grid;gap:7px}
+.ordits-tax-row{
+  display:grid;
+  grid-template-columns:105px 135px 150px minmax(170px,1fr) minmax(170px,1fr) auto;
+  gap:8px;align-items:center;
+  padding:8px 10px;border:1px solid #eadfd7;border-radius:12px;background:#fff;
+}
+.ordits-tax-row .tax-kind{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:#7a6960}
+.ordits-tax-actions{display:flex;gap:5px}
+.ordits-tax-save,.ordits-tax-delete{
+  border:0;border-radius:9px;padding:8px 10px;font-weight:850;cursor:pointer;
+}
+.ordits-tax-save{background:#78a9a7;color:#fff}
+.ordits-tax-delete{background:#efe2dc;color:#7d463d}
+@media(max-width:1000px){
+  .ordits-tax-create{grid-template-columns:1fr 1fr}
+  .ordits-tax-row{grid-template-columns:1fr 1fr}
+  .ordits-tax-actions{grid-column:1/-1}
+}
+</style>
+
 </head>
 <body>
 <div class="thread-float one"></div>
@@ -2546,6 +2619,26 @@ cinematicMotion();
   document.querySelectorAll('[data-rb-close]').forEach(b => b.addEventListener('click',close));
   prev.addEventListener('click',()=>{const n=RB[key].images.length; index=(index-1+n)%n; render();});
   next.addEventListener('click',()=>{const n=RB[key].images.length; index=(index+1)%n; render();});
+
+  // Swipe mòbil · Confeccions Ribera
+  (() => {
+    const area=modal.querySelector('.rb-track-wrap');
+    if(!area)return;
+    let sx=0,sy=0,active=false;
+    area.addEventListener('touchstart',e=>{
+      const t=e.touches[0]; if(!t)return;
+      sx=t.clientX; sy=t.clientY; active=true;
+    },{passive:true});
+    area.addEventListener('touchend',e=>{
+      if(!active)return; active=false;
+      const t=e.changedTouches[0]; if(!t)return;
+      const dx=t.clientX-sx,dy=t.clientY-sy;
+      if(Math.abs(dx)>45 && Math.abs(dx)>Math.abs(dy)*1.15){
+        if(dx<0) next.click(); else prev.click();
+      }
+    },{passive:true});
+  })();
+
   document.addEventListener('keydown',e=>{
     if(!modal.classList.contains('open')) return;
     if(e.key==='Escape') close();
@@ -2706,6 +2799,35 @@ if ('serviceWorker' in navigator) {
             <label class="ordits-new-photo-label">Foto inicial <input id="newPhoto" type="file" accept="image/jpeg,image/png,image/webp"></label>
             <button class="ordits-admin-btn" id="orditsCreateProduct">Crear producte</button>
             <small id="newPhotoStatus">La foto és opcional; si la selecciones, es pujarà automàticament.</small>
+          </div>
+        </details>
+
+
+        <details class="ordits-tax-manager" id="orditsTaxManager">
+          <summary>⚙ Gestionar categories i subcategories</summary>
+          <div class="ordits-tax-inner">
+            <div class="ordits-tax-create">
+              <select id="taxBrand">
+                <option value="BN">@bynuska</option>
+                <option value="CR">Confeccions Ribera</option>
+              </select>
+              <select id="taxTech">
+                <option value="">— No aplica —</option>
+                <option value="Feltre humit">Feltre humit</option>
+                <option value="Feltre d’agulla">Feltre d’agulla</option>
+              </select>
+              <select id="taxType">
+                <option value="category">Nova categoria</option>
+                <option value="subcategory">Nova subcategoria</option>
+              </select>
+              <select id="taxParentCategory">
+                <option value="">— Categoria pare —</option>
+              </select>
+              <input id="taxNewName" type="text" placeholder="Nom">
+              <button class="ordits-admin-btn" id="taxCreateBtn" type="button">Crear</button>
+            </div>
+            <div class="ordits-tax-message" id="taxMessage"></div>
+            <div class="ordits-tax-list" id="taxList"></div>
           </div>
         </details>
 
@@ -2972,7 +3094,7 @@ orditsLoadSupabaseData();
   const overlay=$('#orditsAdminOverlay'),loginView=$('#orditsLoginView'),adminView=$('#orditsAdminView');
   const loginMsg=$('#orditsLoginMessage'),adminMsg=$('#orditsAdminMessage');
   let adminCode=sessionStorage.getItem('orditsAdminCode')||'';
-  let adminProducts=[],adminImages=[];
+  let adminProducts=[],adminImages=[],adminTaxonomy=[];
 
   function msg(el,text,ok=false){
     el.textContent=text;el.classList.add('show');
@@ -3125,8 +3247,23 @@ orditsLoadSupabaseData();
     return [...new Set(values.filter(Boolean).map(v=>String(v).trim()).filter(Boolean))]
       .sort((a,b)=>a.localeCompare(b,'ca'));
   }
-  function taxonomyFor(brand,category=''){
-    const rows=adminProducts.filter(p=>(!brand||p.marca===brand)&&(!category||p.categoria===category));
+  function taxonomyFor(brand,category='',tech=''){
+    if(adminTaxonomy.length){
+      const base=adminTaxonomy.filter(t=>
+        (!brand||t.marca===brand) &&
+        (!tech||!t.tecnica||t.tecnica===tech)
+      );
+      const categories=uniqueSorted(base.map(t=>t.categoria));
+      const subcategories=uniqueSorted(
+        base.filter(t=>!category||t.categoria===category).map(t=>t.subcategoria)
+      );
+      return {categories,subcategories};
+    }
+    const rows=adminProducts.filter(p=>
+      (!brand||p.marca===brand)&&
+      (!category||p.categoria===category)&&
+      (!tech||!p.tecnica||p.tecnica===tech)
+    );
     return {
       categories:uniqueSorted(adminProducts.filter(p=>!brand||p.marca===brand).map(p=>p.categoria)),
       subcategories:uniqueSorted(rows.map(p=>p.subcategoria))
@@ -3148,11 +3285,11 @@ orditsLoadSupabaseData();
   function refreshAdminFilterOptions(){
     const brand=$('#orditsAdminBrand').value;
     const currentCat=$('#orditsAdminCategory').value;
-    const cats=taxonomyFor(brand).categories;
+    const cats=taxonomyFor(brand,'',$('#newTecnica')?.value||'').categories;
     setOptions($('#orditsAdminCategory'),cats,cats.includes(currentCat)?currentCat:'','Totes les categories');
     const cat=$('#orditsAdminCategory').value;
     const currentSub=$('#orditsAdminSubcategory').value;
-    const subs=taxonomyFor(brand,cat).subcategories;
+    const subs=taxonomyFor(brand,cat,$('#newTecnica')?.value||'').subcategories;
     setOptions($('#orditsAdminSubcategory'),subs,subs.includes(currentSub)?currentSub:'','Totes les subcategories');
   }
 
@@ -3167,12 +3304,118 @@ orditsLoadSupabaseData();
     setOptions(subEl,subs,subs.includes(oldSub)?oldSub:'','— Subcategoria —');
   }
 
+
+  function taxMsg(text='',kind=''){
+    const el=$('#taxMessage'); if(!el)return;
+    el.textContent=text; el.className='ordits-tax-message'+(kind?' '+kind:'');
+  }
+  function taxTechniqueForUI(){
+    return $('#taxBrand')?.value==='CR' ? '' : ($('#taxTech')?.value||'');
+  }
+  function refreshTaxCreateUI(){
+    const brand=$('#taxBrand')?.value||'BN';
+    const techEl=$('#taxTech');
+    if(techEl){
+      techEl.disabled=brand==='CR';
+      if(brand==='CR')techEl.value='';
+    }
+    const tech=taxTechniqueForUI();
+    const cats=taxonomyFor(brand,'',tech).categories;
+    setOptions($('#taxParentCategory'),cats,$('#taxParentCategory')?.value||'','— Categoria pare —');
+    const isSub=$('#taxType')?.value==='subcategory';
+    $('#taxParentCategory').disabled=!isSub;
+  }
+
+  function renderTaxonomyManager(){
+    if(!$('#taxList'))return;
+    refreshTaxCreateUI();
+    const rows=[...adminTaxonomy].sort((a,b)=>
+      String(a.marca).localeCompare(String(b.marca),'ca') ||
+      String(a.tecnica||'').localeCompare(String(b.tecnica||''),'ca') ||
+      String(a.categoria||'').localeCompare(String(b.categoria||''),'ca') ||
+      String(a.subcategoria||'').localeCompare(String(b.subcategoria||''),'ca')
+    );
+    $('#taxList').innerHTML=rows.map(t=>`
+      <div class="ordits-tax-row" data-tax-id="${esc(t.id)}">
+        <span class="tax-kind">${t.subcategoria?'Subcategoria':'Categoria'}</span>
+        <span>${esc(t.marca==='BN'?'@bynuska':'Confeccions Ribera')}</span>
+        <span>${esc(t.tecnica||'—')}</span>
+        <input class="tax-category" value="${esc(t.categoria||'')}" aria-label="Categoria">
+        <input class="tax-subcategory" value="${esc(t.subcategoria||'')}" ${t.subcategoria?'':'disabled'} aria-label="Subcategoria">
+        <div class="ordits-tax-actions">
+          <button class="ordits-tax-save" type="button">Desar</button>
+          <button class="ordits-tax-delete" type="button">Eliminar</button>
+        </div>
+      </div>`).join('');
+  }
+
+  $('#taxBrand')?.addEventListener('change',refreshTaxCreateUI);
+  $('#taxTech')?.addEventListener('change',refreshTaxCreateUI);
+  $('#taxType')?.addEventListener('change',refreshTaxCreateUI);
+
+  $('#taxCreateBtn')?.addEventListener('click',async()=>{
+    taxMsg();
+    const brand=$('#taxBrand').value;
+    const tecnica=taxTechniqueForUI()||null;
+    const type=$('#taxType').value;
+    const name=$('#taxNewName').value.trim();
+    const categoria=type==='category'?name:$('#taxParentCategory').value;
+    const subcategoria=type==='subcategory'?name:null;
+    if(!name){taxMsg('Escriu un nom.','err');return}
+    if(type==='subcategory'&&!categoria){taxMsg('Selecciona la categoria pare.','err');return}
+    try{
+      await rpc('ordits_admin_taxonomia_crear',{
+        p_code:adminCode,p_marca:brand,p_tecnica:tecnica,
+        p_categoria:categoria,p_subcategoria:subcategoria
+      });
+      $('#taxNewName').value='';
+      taxMsg(type==='category'?'Categoria creada.':'Subcategoria creada.','ok');
+      await adminReload();
+    }catch(e){taxMsg(e.message||String(e),'err')}
+  });
+
+  $('#taxList')?.addEventListener('click',async e=>{
+    const row=e.target.closest('[data-tax-id]'); if(!row)return;
+    const item=adminTaxonomy.find(t=>String(t.id)===String(row.dataset.taxId)); if(!item)return;
+
+    if(e.target.closest('.ordits-tax-save')){
+      const newCat=row.querySelector('.tax-category').value.trim();
+      const newSub=item.subcategoria ? row.querySelector('.tax-subcategory').value.trim() : null;
+      if(!newCat || (item.subcategoria&&!newSub)){taxMsg('El nom no pot quedar buit.','err');return}
+      try{
+        await rpc('ordits_admin_taxonomia_renombrar',{
+          p_code:adminCode,p_id:item.id,
+          p_categoria_nova:newCat,p_subcategoria_nova:newSub
+        });
+        taxMsg('Canvi desat i aplicat als productes.','ok');
+        await adminReload();
+      }catch(err){taxMsg(err.message||String(err),'err')}
+      return;
+    }
+
+    if(e.target.closest('.ordits-tax-delete')){
+      const label=item.subcategoria
+        ? `la subcategoria “${item.subcategoria}”`
+        : `la categoria “${item.categoria}”`;
+      if(!confirm(`Vols eliminar ${label}?\n\nNomés es podrà eliminar si cap producte la utilitza.`))return;
+      try{
+        await rpc('ordits_admin_taxonomia_eliminar',{p_code:adminCode,p_id:item.id});
+        taxMsg('Element eliminat.','ok');
+        await adminReload();
+      }catch(err){
+        const msgTxt=err.message||String(err);
+        taxMsg(msgTxt.includes('EN_US')?'No es pot eliminar perquè encara hi ha productes associats.':msgTxt,'err');
+      }
+    }
+  });
+
   async function adminReload(){
     clearMsg(adminMsg);
     try{
-      [adminProducts,adminImages]=await Promise.all([
+      [adminProducts,adminImages,adminTaxonomy]=await Promise.all([
         rpc('ordits_admin_productes',{p_code:adminCode}),
-        rpc('ordits_admin_imatges',{p_code:adminCode})
+        rpc('ordits_admin_imatges',{p_code:adminCode}),
+        rpc('ordits_admin_taxonomia',{p_code:adminCode})
       ]);
 
       /*
@@ -3194,6 +3437,7 @@ orditsLoadSupabaseData();
       refreshAdminFilterOptions();
       refreshNewProductOptions();
       renderAdminRows();
+      renderTaxonomyManager();
     }catch(e){
       if(String(e.message).toLowerCase().includes('codi')){
         adminCode='';sessionStorage.removeItem('orditsAdminCode');showLogin();msg(loginMsg,'El codi ja no és vàlid.');
@@ -3262,8 +3506,8 @@ orditsLoadSupabaseData();
     });
 
     $('#orditsAdminGrid').innerHTML=items.map(p=>{
-      const tax=taxonomyFor(p.marca);
-      const subs=taxonomyFor(p.marca,p.categoria).subcategories;
+      const tax=taxonomyFor(p.marca,'',p.tecnica||'');
+      const subs=taxonomyFor(p.marca,p.categoria,p.tecnica||'').subcategories;
       return `
       <div class="ordits-product-row" data-admin-id="${esc(p.id)}">
         ${adminImage(p)?`<img src="${esc(adminImage(p))}" alt="">`:`<div style="width:54px;height:54px;border-radius:11px;background:#eee"></div>`}
@@ -3333,6 +3577,7 @@ orditsLoadSupabaseData();
   });
   // Estat inicial
   if($('#newMarca').value==='CR') $('#newTecnica').disabled=true;
+  $('#newTecnica').addEventListener('change',()=>refreshNewProductOptions(false));
   $('#newCategoria').addEventListener('change',()=>{
     const brand=$('#newMarca').value,cat=$('#newCategoria').value;
     setOptions($('#newSubcategoria'),taxonomyFor(brand,cat).subcategories,'','— Subcategoria —');
@@ -3343,7 +3588,8 @@ orditsLoadSupabaseData();
     if(!row)return;
     if(e.target.classList.contains('adm-brand')){
       const brand=e.target.value;
-      const cats=taxonomyFor(brand).categories;
+      const tech=row.querySelector('.adm-tech')?.value||'';
+      const cats=taxonomyFor(brand,'',tech).categories;
       setOptions(row.querySelector('.adm-cat'),cats,'','— Categoria —');
       setOptions(row.querySelector('.adm-sub'),[],'','— Subcategoria —');
       const tech=row.querySelector('.adm-tech');
@@ -3352,10 +3598,18 @@ orditsLoadSupabaseData();
         else tech.disabled=false;
       }
     }
+    if(e.target.classList.contains('adm-tech')){
+      const brand=row.querySelector('.adm-brand').value;
+      const tech=e.target.value||'';
+      const cats=taxonomyFor(brand,'',tech).categories;
+      setOptions(row.querySelector('.adm-cat'),cats,'','— Categoria —');
+      setOptions(row.querySelector('.adm-sub'),[],'','— Subcategoria —');
+    }
     if(e.target.classList.contains('adm-cat')){
       const brand=row.querySelector('.adm-brand').value;
       const cat=e.target.value;
-      setOptions(row.querySelector('.adm-sub'),taxonomyFor(brand,cat).subcategories,'','— Subcategoria —');
+      const tech=row.querySelector('.adm-tech')?.value||'';
+      setOptions(row.querySelector('.adm-sub'),taxonomyFor(brand,cat,tech).subcategories,'','— Subcategoria —');
     }
   });
 
@@ -3812,6 +4066,25 @@ orditsLoadSupabaseData();
     index=(index+1)%items.length;
     paint();
   });
+
+  // Swipe mòbil · @bynuska
+  (() => {
+    const area=modal.querySelector('.rb-track-wrap');
+    if(!area)return;
+    let sx=0,sy=0,active=false;
+    area.addEventListener('touchstart',e=>{
+      const t=e.touches[0]; if(!t)return;
+      sx=t.clientX; sy=t.clientY; active=true;
+    },{passive:true});
+    area.addEventListener('touchend',e=>{
+      if(!active)return; active=false;
+      const t=e.changedTouches[0]; if(!t)return;
+      const dx=t.clientX-sx,dy=t.clientY-sy;
+      if(Math.abs(dx)>45 && Math.abs(dx)>Math.abs(dy)*1.15){
+        if(dx<0) next.click(); else prev.click();
+      }
+    },{passive:true});
+  })();
 
   modal.querySelectorAll('[data-bn-modal-close]').forEach(el=>{
     el.addEventListener('click',close);
