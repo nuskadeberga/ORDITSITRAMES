@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ca">
 <head>
-<!-- ORDITS I TRAMES · V15.27 REPARADA + ABELLA COSTAT TEXT · 2026-08-12 -->
+<!-- ORDITS I TRAMES · V15.30 REPARADA + ABELLA COSTAT TEXT · 2026-08-12 -->
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -2795,10 +2795,14 @@ orditsLoadSupabaseData();
 
   function bnGroup(key, products){
     const bn=products.filter(p=>p.marca==='BN');
-    if(key==='mocadors') return bn.filter(p=>
-      isCat(p,'Mocadors i bufandes') ||
-      hasSub(p,['mocador','bufanda','only felting'])
-    );
+    if(key==='mocadors') return bn.filter(p=>{
+      const all=norm([p.categoria,p.subcategoria,p.nom,p.tecnica].join(' '));
+      return isCat(p,'Mocadors i bufandes') ||
+        all.includes('mocador') ||
+        all.includes('bufanda') ||
+        all.includes('only felting') ||
+        all.includes('onlyfelting');
+    });
     if(key==='bols') return bn.filter(p=>isCat(p,'Bols')||hasSub(p,['bol']));
     if(key==='altres') return bn.filter(p=>
       isTech(p,'Feltre humit') &&
@@ -2888,19 +2892,14 @@ orditsLoadSupabaseData();
       const items=withImages(bnGroup(key,products),idx);
       const gallery=document.querySelector(`[data-bn-gallery="${key}"]`);
       const track=gallery?.querySelector('.bn-track');
-      if(track){
-        track.innerHTML=items.length?galleryHTML(items,idx):'';
-        if(items.length)orditsReinitBn3D(gallery);
+      if(track&&items.length){
+        track.innerHTML=galleryHTML(items,idx);
+        orditsReinitBn3D(gallery);
       }
       const cover=document.querySelector(`[data-bn-open="${key}"] img`);
-      if(cover){
-        if(items.length){
-          cover.src=mainImage(items[0],idx);
-          cover.alt=items[0].nom||'';
-        }else{
-          cover.removeAttribute('src');
-          cover.alt='';
-        }
+      if(cover&&items.length){
+        cover.src=mainImage(items[0],idx);
+        cover.alt=items[0].nom||'';
       }
     });
     const bn=withImages(products.filter(p=>p.marca==='BN'),idx);
@@ -3245,10 +3244,19 @@ orditsLoadSupabaseData();
     const oldText=btn.textContent;
     btn.textContent='Actualitzant…';
     clearMsg(adminMsg);
+    let publicError=null;
     try{
-      await reloadPublicData();
+      try{
+        await reloadPublicData();
+      }catch(e){
+        publicError=e;
+      }
       await adminReload();
-      msg(adminMsg,'Dades actualitzades des de Supabase.',true);
+      if(publicError){
+        msg(adminMsg,'Admin actualitzat, però la vista pública no s’ha pogut recarregar: '+(publicError.message||publicError));
+      }else{
+        msg(adminMsg,'Dades actualitzades des de Supabase.',true);
+      }
     }catch(e){
       msg(adminMsg,'No s’han pogut actualitzar les dades: '+(e.message||e));
     }finally{
@@ -3458,11 +3466,10 @@ orditsLoadSupabaseData();
 
   async function reloadPublicData(){
     const headers={apikey:CFG.publishableKey,Authorization:'Bearer '+CFG.publishableKey,Accept:'application/json'};
-    const bust='&_ts='+Date.now();
     try{
       const [rp,ri]=await Promise.all([
-        fetch(CFG.url+'/rest/v1/productes?select=*&order=ordre.asc.nullslast'+bust,{headers,cache:'no-store'}),
-        fetch(CFG.url+'/rest/v1/producte_imatges?select=*&order=ordre.asc'+bust,{headers,cache:'no-store'})
+        fetch(CFG.url+'/rest/v1/productes?select=*&order=ordre.asc.nullslast',{headers,cache:'no-store'}),
+        fetch(CFG.url+'/rest/v1/producte_imatges?select=*&order=ordre.asc',{headers,cache:'no-store'})
       ]);
       if(!rp.ok||!ri.ok)throw new Error('No s’han pogut recarregar les dades públiques.');
       const [productes,imatges]=await Promise.all([rp.json(),ri.json()]);
@@ -3562,57 +3569,80 @@ orditsLoadSupabaseData();
       btn.querySelector('h3')?.textContent?.trim() ||
       'Galeria';
 
-    // Sempre demanem dades noves abans d'obrir el popup.
-    try{
-      if(window.ORDITS_RELOAD_PUBLIC) await window.ORDITS_RELOAD_PUBLIC();
-    }catch(e){
-      console.warn('S’obre el carrusel amb les últimes dades disponibles.',e);
-    }
+    items=[];
 
     /*
-      V15.27:
-      Primer intentem construir la modal directament amb les dades VIVES
-      carregades de Supabase. Així els canvis fets a l'admin no depenen
-      dels captions o slides que venien incrustats a l'HTML.
+      1) Intentem dades VIVES de Supabase.
+      Qualsevol error queda encapsulat i NO pot impedir obrir el carrusel.
     */
-    const api=window.ORDITS_PUBLIC_API;
-    const db=window.ORDITS_DB;
+    try{
+      const api=window.ORDITS_PUBLIC_API;
+      let db=window.ORDITS_DB;
 
-    if(api && db?.connected){
-      const idx=api.imageIndex(db);
-      const products=api.visibleProducts(db);
-      const live=api.bnGroup(key,products)
-        .filter(p=>api.mainImage(p,idx))
-        .sort(api.sortItems);
+      if(api){
+        try{
+          if(window.ORDITS_RELOAD_PUBLIC){
+            const fresh=await window.ORDITS_RELOAD_PUBLIC();
+            if(fresh?.connected) db=fresh;
+          }
+        }catch(refreshErr){
+          console.warn('Refresh Supabase fallit; utilitzem les últimes dades.',refreshErr);
+        }
 
-      items=live.map(p=>({
-        src:api.mainImage(p,idx),
-        alt:p.nom||'',
-        caption:p.nom||''
-      }));
-    } else {
+        if(db?.connected){
+          const idx=api.imageIndex(db);
+          const products=api.visibleProducts(db);
+          const grouped=api.bnGroup(key,products)||[];
+
+          items=grouped
+            .map(p=>({
+              p,
+              src:api.mainImage(p,idx)
+            }))
+            .filter(x=>x.src)
+            .sort((a,b)=>api.sortItems(a.p,b.p))
+            .map(x=>({
+              src:x.src,
+              alt:String(x.p.nom||''),
+              caption:String(x.p.nom||'')
+            }));
+        }
+      }
+    }catch(liveErr){
+      console.warn('No s’han pogut preparar dades vives del carrusel.',liveErr);
       items=[];
     }
 
     /*
-      Fallback: només si Supabase encara no està disponible.
-      Això manté la web utilitzable fins i tot sense connexió.
+      2) FALLBACK INCONDICIONAL:
+      si no tenim dades vives, llegim la galeria existent al DOM.
+      Això garanteix que Mocadors, Bols, etc. sempre es puguin obrir.
     */
     if(!items.length){
-      const panel = btn.closest('.bn-tech-panel');
-      const gallery = panel?.querySelector('[data-bn-gallery="'+CSS.escape(key)+'"]');
-      const slides = gallery ? [...gallery.querySelectorAll('.bn-slide')] : [];
-      items = slides.map(slide => {
-        const img = slide.querySelector('img');
-        return {
-          src: img?.currentSrc || img?.src || '',
-          alt: img?.alt || '',
-          caption: slide.querySelector('figcaption')?.textContent?.trim() || img?.alt || ''
-        };
-      }).filter(x => x.src);
+      try{
+        const panel = btn.closest('.bn-tech-panel');
+        const gallery = root.querySelector('[data-bn-gallery="'+CSS.escape(key)+'"]')
+          || panel?.querySelector('[data-bn-gallery="'+CSS.escape(key)+'"]');
+
+        const slides = gallery ? [...gallery.querySelectorAll('.bn-slide')] : [];
+        items = slides.map(slide => {
+          const img = slide.querySelector('img');
+          return {
+            src: img?.currentSrc || img?.src || '',
+            alt: String(img?.alt || ''),
+            caption: String(slide.querySelector('figcaption')?.textContent?.trim() || img?.alt || '')
+          };
+        }).filter(x => x.src);
+      }catch(fallbackErr){
+        console.error('Fallback de carrusel fallit.',fallbackErr);
+        items=[];
+      }
     }
 
-    if(!items.length) return;
+    if(!items.length){
+      console.warn('Carrusel buit:',key);
+      return;
+    }
 
     index = 0;
     title.textContent = galleryTitle;
@@ -3622,9 +3652,16 @@ orditsLoadSupabaseData();
     items.forEach((item,i)=>{
       const fig = document.createElement('figure');
       fig.className = 'rb-slide';
-      fig.innerHTML = `
-        <img src="${item.src}" alt="${item.alt.replace(/"/g,'&quot;')}" decoding="async">
-        <figcaption>${item.caption}</figcaption>`;
+
+      const img=document.createElement('img');
+      img.src=item.src;
+      img.alt=item.alt||'';
+      img.decoding='async';
+
+      const cap=document.createElement('figcaption');
+      cap.textContent=item.caption||'';
+
+      fig.append(img,cap);
       fig.addEventListener('click',()=>{
         index=i;
         paint();
@@ -3688,7 +3725,9 @@ orditsLoadSupabaseData();
     e.preventDefault();
     e.stopPropagation();
     e.stopImmediatePropagation();
-    openFromButton(btn);
+    Promise.resolve(openFromButton(btn)).catch(err=>{
+      console.error('Error obrint carrusel @bynuska:',err);
+    });
   }, true);
 })();
 </script>
