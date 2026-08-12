@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ca">
 <head>
-<!-- ORDITS I TRAMES · V15.32 REPARADA + ABELLA COSTAT TEXT · 2026-08-12 -->
+<!-- ORDITS I TRAMES · V15.33 REPARADA + ABELLA COSTAT TEXT · 2026-08-12 -->
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -1656,6 +1656,20 @@ html[data-supabase="error"] .ordits-db-badge{opacity:1;background:#f5dddd;color:
 }
 </style>
 
+
+<style id="ordits-v15-33-technique-select">
+.ordits-product-row{
+  grid-template-columns:54px minmax(180px,1.45fr) 78px 130px 145px 145px 70px 72px 72px 70px auto!important;
+}
+.ordits-row-head{
+  grid-template-columns:54px minmax(180px,1.45fr) 78px 130px 145px 145px 70px 72px 72px 70px auto!important;
+}
+.adm-tech:disabled{opacity:.55;background:#f4f0ec}
+@media(max-width:900px){
+  .ordits-product-row .adm-tech{display:none}
+}
+</style>
+
 </head>
 <body>
 <div class="thread-float one"></div>
@@ -2676,7 +2690,11 @@ if ('serviceWorker' in navigator) {
           <div class="ordits-create-grid">
             <select id="newMarca"><option value="CR">Confeccions Ribera</option><option value="BN">@bynuska</option></select>
             <input id="newNom" placeholder="Nom de la peça">
-            <input id="newTecnica" placeholder="Tècnica">
+            <select id="newTecnica">
+              <option value="">— Tècnica —</option>
+              <option value="Feltre humit">Feltre humit</option>
+              <option value="Feltre d’agulla">Feltre d’agulla</option>
+            </select>
             <select id="newCategoria"><option value="">— Categoria —</option></select>
             <select id="newSubcategoria"><option value="">— Subcategoria —</option></select>
             <input id="newOrdre" type="number" placeholder="Ordre">
@@ -2702,7 +2720,7 @@ if ('serviceWorker' in navigator) {
           <button class="ordits-admin-btn secondary" id="orditsAdminReload">Actualitzar</button>
         </div>
         <div class="ordits-admin-message" id="orditsAdminMessage"></div>
-        <div class="ordits-row-head"><span>Foto</span><span>Nom</span><span>Marca</span><span>Categoria</span><span>Subcategoria</span><span>Visible</span><span>Destacat</span><span>Principal</span><span>Ordre</span><span></span></div>
+        <div class="ordits-row-head"><span>Foto</span><span>Nom</span><span>Marca</span><span>Tècnica</span><span>Categoria</span><span>Subcategoria</span><span>Visible</span><span>Destacat</span><span>Principal</span><span>Ordre</span><span></span></div>
         <div class="ordits-admin-grid" id="orditsAdminGrid"></div>
       </div>
     </div>
@@ -3251,6 +3269,11 @@ orditsLoadSupabaseData();
         ${adminImage(p)?`<img src="${esc(adminImage(p))}" alt="">`:`<div style="width:54px;height:54px;border-radius:11px;background:#eee"></div>`}
         <input class="adm-name" type="text" value="${esc(p.nom)}">
         <select class="adm-brand"><option value="CR"${p.marca==='CR'?' selected':''}>CR</option><option value="BN"${p.marca==='BN'?' selected':''}>BN</option></select>
+        <select class="adm-tech">
+          <option value=""${!p.tecnica?' selected':''}>—</option>
+          <option value="Feltre humit"${p.tecnica==='Feltre humit'?' selected':''}>Feltre humit</option>
+          <option value="Feltre d’agulla"${p.tecnica==='Feltre d’agulla'?' selected':''}>Feltre d’agulla</option>
+        </select>
         <select class="adm-cat">${selectHTML(tax.categories,p.categoria,'— Categoria —')}</select>
         <select class="adm-sub">${selectHTML(subs,p.subcategoria,'— Subcategoria —')}</select>
         <label class="ordits-mini-check">Visible<input class="adm-visible" type="checkbox"${bool(p.visible)?' checked':''}></label>
@@ -3298,7 +3321,18 @@ orditsLoadSupabaseData();
     }
   });
 
-  $('#newMarca').addEventListener('change',()=>refreshNewProductOptions(false));
+  $('#newMarca').addEventListener('change',()=>{
+    refreshNewProductOptions(false);
+    const tech=$('#newTecnica');
+    if($('#newMarca').value==='CR'){
+      tech.value='';
+      tech.disabled=true;
+    }else{
+      tech.disabled=false;
+    }
+  });
+  // Estat inicial
+  if($('#newMarca').value==='CR') $('#newTecnica').disabled=true;
   $('#newCategoria').addEventListener('change',()=>{
     const brand=$('#newMarca').value,cat=$('#newCategoria').value;
     setOptions($('#newSubcategoria'),taxonomyFor(brand,cat).subcategories,'','— Subcategoria —');
@@ -3312,6 +3346,11 @@ orditsLoadSupabaseData();
       const cats=taxonomyFor(brand).categories;
       setOptions(row.querySelector('.adm-cat'),cats,'','— Categoria —');
       setOptions(row.querySelector('.adm-sub'),[],'','— Subcategoria —');
+      const tech=row.querySelector('.adm-tech');
+      if(tech){
+        if(brand==='CR'){ tech.value=''; tech.disabled=true; }
+        else tech.disabled=false;
+      }
     }
     if(e.target.classList.contains('adm-cat')){
       const brand=row.querySelector('.adm-brand').value;
@@ -3331,7 +3370,7 @@ orditsLoadSupabaseData();
         marca:row.querySelector('.adm-brand').value,
         categoria:row.querySelector('.adm-cat').value||null,
         subcategoria:row.querySelector('.adm-sub').value||null,
-        tecnica:old?.tecnica||null,
+        tecnica:row.querySelector('.adm-tech').value||null,
         visible:row.querySelector('.adm-visible').checked,
         destacat:row.querySelector('.adm-destacat').checked,
         principal_grup:row.querySelector('.adm-principal-grup').checked,
@@ -3352,6 +3391,7 @@ orditsLoadSupabaseData();
           p_id:draft.id,
           p_nom:draft.nom,
           p_marca:draft.marca,
+          p_tecnica:draft.tecnica,
           p_categoria:draft.categoria,
           p_subcategoria:draft.subcategoria,
           p_visible:draft.visible,
