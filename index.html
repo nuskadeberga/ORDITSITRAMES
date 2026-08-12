@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ca">
 <head>
-<!-- ORDITS I TRAMES · V15.25 REPARADA + ABELLA COSTAT TEXT · 2026-08-12 -->
+<!-- ORDITS I TRAMES · V15.26 REPARADA + ABELLA COSTAT TEXT · 2026-08-12 -->
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -2861,15 +2861,17 @@ orditsLoadSupabaseData();
     const products=visibleProducts(db);
     ['mocadors','bols','altres','nadal','ninots','mobils','bestioles'].forEach(key=>{
       const items=withImages(bnGroup(key,products),idx);
-      if(!items.length)return;
       const gallery=document.querySelector(`[data-bn-gallery="${key}"]`);
       const track=gallery?.querySelector('.bn-track');
       if(track){
-        track.innerHTML=galleryHTML(items,idx);
-        orditsReinitBn3D(gallery);
+        track.innerHTML=items.length?galleryHTML(items,idx):'';
+        if(items.length)orditsReinitBn3D(gallery);
       }
       const cover=document.querySelector(`[data-bn-open="${key}"] img`);
-      if(cover){cover.src=mainImage(items[0],idx);cover.alt=items[0].nom||''}
+      if(cover&&items.length){
+        cover.src=mainImage(items[0],idx);
+        cover.alt=items[0].nom||'';
+      }
     });
     const bn=withImages(products.filter(p=>p.marca==='BN'),idx);
     if(typeof PRODUCTS!=='undefined'&&bn.length){
@@ -2883,6 +2885,16 @@ orditsLoadSupabaseData();
     const idx=imageIndex(db);refreshRibera(db,idx);refreshBynuska(db,idx);
     document.documentElement.dataset.dynamic='ready';
   }
+
+  // API pública interna perquè les modals sempre llegeixin les dades VIVES de Supabase.
+  window.ORDITS_PUBLIC_API = {
+    imageIndex,
+    mainImage,
+    visibleProducts,
+    bnGroup,
+    rbGroup,
+    sortItems
+  };
   window.addEventListener('ordits:supabase-ready',e=>refreshPublic(e.detail));
   if(window.ORDITS_DB?.connected)refreshPublic(window.ORDITS_DB);
 
@@ -3491,27 +3503,54 @@ orditsLoadSupabaseData();
 
   function openFromButton(btn){
     const key = btn.dataset.bnOpen;
-    const panel = btn.closest('.bn-tech-panel');
-    if(!panel || !key) return;
-
-    /* Llegim la galeria EXISTENT. No la movem ni la reconstruïm. */
-    const gallery = panel.querySelector('[data-bn-gallery="'+CSS.escape(key)+'"]');
-    if(!gallery) return;
+    if(!key) return;
 
     const galleryTitle =
-      gallery.querySelector('.bn-gallery-head h3')?.textContent?.trim() ||
       btn.querySelector('h3')?.textContent?.trim() ||
       'Galeria';
 
-    const slides = [...gallery.querySelectorAll('.bn-slide')];
-    items = slides.map(slide => {
-      const img = slide.querySelector('img');
-      return {
-        src: img?.currentSrc || img?.src || '',
-        alt: img?.alt || '',
-        caption: slide.querySelector('figcaption')?.textContent?.trim() || img?.alt || ''
-      };
-    }).filter(x => x.src);
+    /*
+      V15.26:
+      Primer intentem construir la modal directament amb les dades VIVES
+      carregades de Supabase. Així els canvis fets a l'admin no depenen
+      dels captions o slides que venien incrustats a l'HTML.
+    */
+    const api=window.ORDITS_PUBLIC_API;
+    const db=window.ORDITS_DB;
+
+    if(api && db?.connected){
+      const idx=api.imageIndex(db);
+      const products=api.visibleProducts(db);
+      const live=api.bnGroup(key,products)
+        .filter(p=>api.mainImage(p,idx))
+        .sort(api.sortItems);
+
+      items=live.map(p=>({
+        src:api.mainImage(p,idx),
+        alt:p.nom||'',
+        caption:p.nom||''
+      }));
+    } else {
+      items=[];
+    }
+
+    /*
+      Fallback: només si Supabase encara no està disponible.
+      Això manté la web utilitzable fins i tot sense connexió.
+    */
+    if(!items.length){
+      const panel = btn.closest('.bn-tech-panel');
+      const gallery = panel?.querySelector('[data-bn-gallery="'+CSS.escape(key)+'"]');
+      const slides = gallery ? [...gallery.querySelectorAll('.bn-slide')] : [];
+      items = slides.map(slide => {
+        const img = slide.querySelector('img');
+        return {
+          src: img?.currentSrc || img?.src || '',
+          alt: img?.alt || '',
+          caption: slide.querySelector('figcaption')?.textContent?.trim() || img?.alt || ''
+        };
+      }).filter(x => x.src);
+    }
 
     if(!items.length) return;
 
