@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ca">
 <head>
-<!-- ORDITS I TRAMES · V15.42 ORDRE CATEGORIES PERSISTENT REPARADA + ABELLA COSTAT TEXT · 2026-08-12 -->
+<!-- ORDITS I TRAMES · V15.43 RIBERA GRAELLA UNIFORME REPARADA + ABELLA COSTAT TEXT · 2026-08-12 -->
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -1878,6 +1878,182 @@ html[data-supabase="error"] .ordits-db-badge{opacity:1;background:#f5dddd;color:
   justify-content:center;
   min-height:38px;
   color:#b2a59d;
+}
+</style>
+
+
+<style id="ordits-v15-43-ribera-grid-uniforme">
+/* =========================================================
+   CONFECCIONS RIBERA · targetes de categoria com @bynuska
+   ========================================================= */
+
+#view-ribera .rb-grid{
+  display:grid!important;
+  grid-template-columns:repeat(auto-fit,minmax(210px,1fr))!important;
+  gap:18px!important;
+  align-items:stretch!important;
+}
+
+/* Eliminem qualsevol tractament especial per posició */
+#view-ribera .rb-cat,
+#view-ribera .rb-cat:nth-child(1),
+#view-ribera .rb-cat:nth-child(4){
+  grid-column:auto!important;
+  min-height:0!important;
+  height:auto!important;
+}
+
+/* Mateixa estructura visual que @bynuska */
+#view-ribera .rb-cat{
+  position:relative!important;
+  display:flex!important;
+  flex-direction:column!important;
+  text-align:left!important;
+  border:0!important;
+  background:#fff!important;
+  border-radius:28px!important;
+  padding:0!important;
+  overflow:hidden!important;
+  box-shadow:0 14px 44px rgba(56,45,35,.10)!important;
+  cursor:pointer!important;
+  transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s!important;
+}
+
+#view-ribera .rb-cat:hover{
+  transform:translateY(-9px) rotate(.25deg)!important;
+  box-shadow:0 25px 60px rgba(56,45,35,.16)!important;
+}
+
+/* Imatge quadrada/equivalent i uniforme */
+#view-ribera .rb-cat-img{
+  position:relative!important;
+  inset:auto!important;
+  height:310px!important;
+  background:linear-gradient(145deg,#f4efe5,#eef7f5)!important;
+  display:grid!important;
+  place-items:center!important;
+  overflow:hidden!important;
+  flex:0 0 310px!important;
+}
+
+#view-ribera .rb-cat-img:after{
+  content:none!important;
+}
+
+#view-ribera .rb-cat-img img{
+  width:100%!important;
+  height:100%!important;
+  object-fit:contain!important;
+  padding:10px!important;
+  transform:none!important;
+  filter:none!important;
+  transition:transform .65s cubic-bezier(.2,.8,.2,1)!important;
+}
+
+#view-ribera .rb-cat:hover .rb-cat-img img{
+  transform:scale(1.07) rotate(-1deg)!important;
+}
+
+/* Text sota la imatge, igual que @bynuska */
+#view-ribera .rb-cat-copy{
+  position:relative!important;
+  left:auto!important;
+  right:auto!important;
+  bottom:auto!important;
+  padding:22px 24px 26px!important;
+  color:inherit!important;
+  text-shadow:none!important;
+  z-index:2!important;
+  flex:1!important;
+}
+
+#view-ribera .rb-cat-copy span{
+  font-size:10px!important;
+  font-weight:900!important;
+  letter-spacing:.18em!important;
+  text-transform:uppercase!important;
+  opacity:1!important;
+  color:#7c9693!important;
+}
+
+#view-ribera .rb-cat-copy h3{
+  margin:6px 0 7px!important;
+  font-family:Georgia,serif!important;
+  font-size:29px!important;
+  line-height:1.05!important;
+  font-weight:500!important;
+  color:#211b18!important;
+}
+
+#view-ribera .rb-cat-copy p{
+  margin:0!important;
+  max-width:none!important;
+  font-size:14px!important;
+  line-height:1.55!important;
+  color:#52615e!important;
+  opacity:1!important;
+}
+
+/* Fletxa com a @bynuska: superior dreta */
+#view-ribera .rb-arrow{
+  position:absolute!important;
+  top:18px!important;
+  right:18px!important;
+  bottom:auto!important;
+  width:42px!important;
+  height:42px!important;
+  border-radius:50%!important;
+  background:rgba(255,255,255,.92)!important;
+  color:#171311!important;
+  display:grid!important;
+  place-items:center!important;
+  z-index:4!important;
+  transition:transform .35s ease!important;
+}
+
+#view-ribera .rb-cat:hover .rb-arrow{
+  transform:rotate(45deg)!important;
+}
+
+/* Tauleta */
+@media(max-width:950px){
+  #view-ribera .rb-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+}
+
+/* Mòbil: mateix criteri que @bynuska */
+@media(max-width:620px){
+  #view-ribera .rb-grid{
+    grid-template-columns:1fr!important;
+  }
+
+  #view-ribera .rb-cat{
+    display:grid!important;
+    grid-template-columns:42% 58%!important;
+    min-height:190px!important;
+  }
+
+  #view-ribera .rb-cat-img{
+    height:100%!important;
+    min-height:190px!important;
+    flex:auto!important;
+  }
+
+  #view-ribera .rb-cat-copy{
+    padding:20px 18px!important;
+  }
+
+  #view-ribera .rb-cat-copy h3{
+    font-size:25px!important;
+  }
+
+  #view-ribera .rb-arrow{
+    width:38px!important;
+    height:38px!important;
+    top:12px!important;
+    right:12px!important;
+  }
 }
 </style>
 
