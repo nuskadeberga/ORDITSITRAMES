@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ca">
 <head>
-<!-- ORDITS I TRAMES · V15.41 ORDRE CATEGORIES REPARADA + ABELLA COSTAT TEXT · 2026-08-12 -->
+<!-- ORDITS I TRAMES · V15.42 ORDRE CATEGORIES PERSISTENT REPARADA + ABELLA COSTAT TEXT · 2026-08-12 -->
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -1870,6 +1870,17 @@ html[data-supabase="error"] .ordits-db-badge{opacity:1;background:#f5dddd;color:
 }
 </style>
 
+
+<style id="ordits-v15-42-order-only-category">
+.tax-order-spacer{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:38px;
+  color:#b2a59d;
+}
+</style>
+
 </head>
 <body>
 <div class="thread-float one"></div>
@@ -3028,18 +3039,26 @@ async function orditsLoadSupabaseData() {
   };
 
   try {
-    const [rp, ri] = await Promise.all([
+    const [rp, ri, rt] = await Promise.all([
       fetch(cfg.url + "/rest/v1/productes?select=*&order=ordre.asc.nullslast", { headers }),
-      fetch(cfg.url + "/rest/v1/producte_imatges?select=*&order=ordre.asc", { headers })
+      fetch(cfg.url + "/rest/v1/producte_imatges?select=*&order=ordre.asc", { headers }),
+      fetch(cfg.url + "/rest/v1/rpc/ordits_taxonomia_publica", {
+        method: "POST",
+        headers: { ...headers, "Content-Type": "application/json" },
+        body: "{}"
+      })
     ]);
 
     if (!rp.ok) throw new Error("productes: HTTP " + rp.status);
     if (!ri.ok) throw new Error("producte_imatges: HTTP " + ri.status);
+    if (!rt.ok) throw new Error("taxonomia: HTTP " + rt.status);
 
-    const [productes, imatges] = await Promise.all([rp.json(), ri.json()]);
+    const [productes, imatges, taxonomia] = await Promise.all([rp.json(), ri.json(), rt.json()]);
+    window.ORDITS_TAXONOMY = Array.isArray(taxonomia) ? taxonomia : [];
     window.ORDITS_DB = {
       productes,
       imatges,
+      taxonomia: window.ORDITS_TAXONOMY,
       connected: true,
       error: null
     };
@@ -3836,7 +3855,10 @@ orditsLoadSupabaseData();
                value="${esc(t.subcategoria||'')}"
                placeholder="${t.subcategoria?'Subcategoria':'＋ Afegir subcategoria'}"
                aria-label="Subcategoria">
-        <input class="tax-order" type="number" value="${t.ordre??''}" placeholder="Ordre" aria-label="Ordre">
+        ${t.subcategoria
+          ? '<span class="tax-order-spacer">—</span>'
+          : `<input class="tax-order" type="number" value="${t.ordre??0}" placeholder="Ordre" aria-label="Ordre de categoria">`
+        }
         <div class="ordits-tax-actions">
           <button class="ordits-tax-save" type="button">Desar</button>
           <button class="ordits-tax-delete" type="button">Eliminar</button>
@@ -3899,17 +3921,20 @@ orditsLoadSupabaseData();
       const newCat=row.querySelector('.tax-category').value.trim();
       const subInput=row.querySelector('.tax-subcategory').value.trim();
       const newSub=item.subcategoria ? subInput : null;
-      const ordreRaw=row.querySelector('.tax-order')?.value;
-      const newOrder=ordreRaw===''?0:Number(ordreRaw);
+      const ordreInput=row.querySelector('.tax-order');
+      const ordreRaw=ordreInput?.value;
+      const newOrder=ordreRaw===''||ordreRaw==null?0:Number(ordreRaw);
       if(!newCat || (item.subcategoria&&!newSub)){taxMsg('El nom no pot quedar buit.','err');return}
       try{
         await rpc('ordits_admin_taxonomia_renombrar',{
           p_code:adminCode,p_id:item.id,
           p_categoria_nova:newCat,p_subcategoria_nova:newSub
         });
-        await rpc('ordits_admin_taxonomia_ordre',{
-          p_code:adminCode,p_id:item.id,p_ordre:newOrder
-        });
+        if(!item.subcategoria){
+          await rpc('ordits_admin_taxonomia_ordre',{
+            p_code:adminCode,p_id:item.id,p_ordre:newOrder
+          });
+        }
 
         // En una fila de categoria, escriure al segon camp crea una subcategoria
         // sense fer desaparèixer la categoria pare.
@@ -4389,13 +4414,20 @@ orditsLoadSupabaseData();
   async function reloadPublicData(){
     const headers={apikey:CFG.publishableKey,Authorization:'Bearer '+CFG.publishableKey,Accept:'application/json'};
     try{
-      const [rp,ri]=await Promise.all([
+      const [rp,ri,rt]=await Promise.all([
         fetch(CFG.url+'/rest/v1/productes?select=*&order=ordre.asc.nullslast',{headers,cache:'no-store'}),
-        fetch(CFG.url+'/rest/v1/producte_imatges?select=*&order=ordre.asc',{headers,cache:'no-store'})
+        fetch(CFG.url+'/rest/v1/producte_imatges?select=*&order=ordre.asc',{headers,cache:'no-store'}),
+        fetch(CFG.url+'/rest/v1/rpc/ordits_taxonomia_publica',{
+          method:'POST',
+          headers:{...headers,'Content-Type':'application/json'},
+          body:'{}',
+          cache:'no-store'
+        })
       ]);
-      if(!rp.ok||!ri.ok)throw new Error('No s’han pogut recarregar les dades públiques.');
-      const [productes,imatges]=await Promise.all([rp.json(),ri.json()]);
-      window.ORDITS_DB={productes,imatges,connected:true,error:null};
+      if(!rp.ok||!ri.ok||!rt.ok)throw new Error('No s’han pogut recarregar les dades públiques.');
+      const [productes,imatges,taxonomia]=await Promise.all([rp.json(),ri.json(),rt.json()]);
+      window.ORDITS_TAXONOMY=Array.isArray(taxonomia)?taxonomia:[];
+      window.ORDITS_DB={productes,imatges,taxonomia:window.ORDITS_TAXONOMY,connected:true,error:null};
       refreshPublic(window.ORDITS_DB);
       return window.ORDITS_DB;
     }catch(e){
