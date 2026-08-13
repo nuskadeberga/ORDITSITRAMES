@@ -1,7 +1,10 @@
 <!doctype html>
 <html lang="ca">
 <head>
-<!-- ORDITS I TRAMES · V15.48 FILTRE FAMILIES RIBERA REPARADA + ABELLA COSTAT TEXT · 2026-08-12 -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<!-- ORDITS I TRAMES · V15.49 RIBERA FILTRE I CACHE GITHUB REPARADA + ABELLA COSTAT TEXT · 2026-08-12 -->
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -2099,7 +2102,7 @@ html[data-supabase="error"] .ordits-db-badge{opacity:1;background:#f5dddd;color:
 }
 #view-ribera .rb-family-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+  grid-template-columns:repeat(auto-fill,minmax(210px,1fr));
   gap:18px;
   align-items:stretch;
 }
@@ -2160,6 +2163,44 @@ html[data-supabase="error"] .ordits-db-badge{opacity:1;background:#f5dddd;color:
     flex:1 1 auto;
     text-align:center;
     padding:10px 14px;
+  }
+}
+</style>
+
+
+<style id="ordits-v15-49-ribera-final-grid">
+/* Ribera: mateixa mida de targeta encara que una família tingui poques categories */
+#view-ribera .rb-family-grid{
+  display:grid!important;
+  grid-template-columns:repeat(auto-fill,minmax(210px,1fr))!important;
+  gap:18px!important;
+  align-items:stretch!important;
+}
+#view-ribera .rb-family-grid .rb-cat{
+  width:100%!important;
+  min-width:0!important;
+}
+#view-ribera .rb-family-grid .rb-cat-img{
+  height:310px!important;
+  flex:0 0 310px!important;
+}
+@media(min-width:1180px){
+  #view-ribera .rb-family-grid{
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  }
+}
+@media(max-width:950px){
+  #view-ribera .rb-family-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+}
+@media(max-width:620px){
+  #view-ribera .rb-family-grid{
+    grid-template-columns:1fr!important;
+  }
+  #view-ribera .rb-family-grid .rb-cat-img{
+    height:100%!important;
+    flex:auto!important;
   }
 }
 </style>
@@ -3076,9 +3117,20 @@ cinematicMotion();
 
 
 <script>
+/* V15.49 · Evitem que GitHub Pages mostri una còpia antiga de l'index.
+   El web no necessita mode offline: eliminem service workers i caches previs. */
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js').then(reg => reg.update()).catch(() => {});
+  window.addEventListener('load', async () => {
+    try {
+      const regs = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map(reg => reg.unregister()));
+    } catch(e) {}
+    try {
+      if ('caches' in window) {
+        const keys = await caches.keys();
+        await Promise.all(keys.map(key => caches.delete(key)));
+      }
+    } catch(e) {}
   });
 }
 </script>
@@ -3468,13 +3520,18 @@ orditsLoadSupabaseData();
       RB_ACTIVE_FAMILY=families[0];
     }
 
+    const displayName=name=>{
+      const n=norm(name);
+      return n==='altres' ? 'Complements' : String(name||'').trim();
+    };
+
     filter.innerHTML=families.map(name=>`
       <button
         type="button"
         class="rb-family-pill${name===RB_ACTIVE_FAMILY?' active':''}"
         data-rb-family-filter="${esc(name)}"
         aria-pressed="${name===RB_ACTIVE_FAMILY?'true':'false'}">
-        ${esc(name)}
+        ${esc(displayName(name))}
       </button>
     `).join('');
 
@@ -3526,8 +3583,22 @@ orditsLoadSupabaseData();
       bucket.groups.get(catKey).items.push(p);
     });
 
+    const familyDisplayName=name=>{
+      const n=norm(name);
+      if(n==='altres') return 'Complements';
+      return String(name||'').trim();
+    };
+
+    const familyRank=name=>{
+      const n=norm(name);
+      if(n==='bosses') return 10;
+      if(n==='complements' || n==='altres') return 20;
+      return 100;
+    };
+
     const familyRows=[...families.values()].sort((a,b)=>
-      String(a.family||'').localeCompare(String(b.family||''),'ca')
+      familyRank(a.family)-familyRank(b.family) ||
+      familyDisplayName(a.family).localeCompare(familyDisplayName(b.family),'ca')
     );
 
     renderRiberaFamilyFilter(familyRows);
