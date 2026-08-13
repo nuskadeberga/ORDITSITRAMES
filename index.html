@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ca">
 <head>
-<!-- ORDITS I TRAMES · V15.46 SUPERBOSSES CAPITALITZAT REPARADA + ABELLA COSTAT TEXT · 2026-08-12 -->
+<!-- ORDITS I TRAMES · V15.47 TECNIQUES I FAMILIES REPARADA + ABELLA COSTAT TEXT · 2026-08-12 -->
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -2059,6 +2059,63 @@ html[data-supabase="error"] .ordits-db-badge{opacity:1;background:#f5dddd;color:
 
 
 
+
+<style id="ordits-v15-47-techniques-families">
+.ordits-tech-list{display:grid;gap:7px;margin:10px 0 18px}
+.ordits-tech-heading{
+  margin-top:6px;padding:8px 2px 3px;font-size:12px;font-weight:900;
+  letter-spacing:.08em;text-transform:uppercase;color:#7b5b4c;
+}
+.ordits-tech-row{
+  display:grid;
+  grid-template-columns:150px 150px minmax(220px,1fr) 80px auto;
+  gap:8px;align-items:center;padding:8px 10px;
+  border:1px solid #eadfd7;border-radius:12px;background:#fff;
+}
+.ordits-tech-row input,.tax-tech-edit{
+  border:1px solid #ddd1c8;background:#fff;border-radius:10px;padding:9px 10px;box-sizing:border-box;
+}
+.ordits-tech-save,.ordits-tech-delete{
+  border:0;border-radius:9px;padding:8px 10px;font-weight:850;cursor:pointer;
+}
+.ordits-tech-save{background:#78a9a7;color:#fff}
+.ordits-tech-delete{background:#efe2dc;color:#7d463d}
+
+#view-ribera .rb-grid{
+  display:block!important;
+}
+#view-ribera .rb-family-group{
+  margin:0 0 44px;
+}
+#view-ribera .rb-family-heading{
+  margin:0 0 16px;
+}
+#view-ribera .rb-family-heading span{
+  display:block;font-size:10px;font-weight:900;letter-spacing:.18em;
+  text-transform:uppercase;color:#8fa5a1;margin-bottom:4px;
+}
+#view-ribera .rb-family-heading h3{
+  margin:0;font-family:Georgia,serif;font-size:34px;line-height:1.08;font-weight:500;color:#211b18;
+}
+#view-ribera .rb-family-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+  gap:18px;
+  align-items:stretch;
+}
+#view-ribera .rb-empty-categories{
+  padding:20px 0;color:#766b65;
+}
+@media(max-width:950px){
+  #view-ribera .rb-family-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .ordits-tech-row{grid-template-columns:1fr 1fr}
+}
+@media(max-width:620px){
+  #view-ribera .rb-family-grid{grid-template-columns:1fr}
+  #view-ribera .rb-family-heading h3{font-size:28px}
+}
+</style>
+
 </head>
 <body>
 <div class="thread-float one"></div>
@@ -3102,9 +3159,7 @@ if ('serviceWorker' in navigator) {
             <select id="newMarca"><option value="CR">Confeccions Ribera</option><option value="BN">@bynuska</option></select>
             <input id="newNom" placeholder="Nom de la peça">
             <select id="newTecnica">
-              <option value="">— Tècnica —</option>
-              <option value="Feltre humit">Feltre humit</option>
-              <option value="Feltre d’agulla">Feltre d’agulla</option>
+              <option value="">— Tècnica / família —</option>
             </select>
             <select id="newCategoria"><option value="">— Categoria —</option></select>
             <select id="newSubcategoria"><option value="">— Subcategoria —</option></select>
@@ -3122,7 +3177,7 @@ if ('serviceWorker' in navigator) {
 
 
         <details class="ordits-tax-manager" id="orditsTaxManager">
-          <summary>⚙ Gestionar categories i subcategories</summary>
+          <summary>⚙ Gestionar tècniques, categories i subcategories</summary>
           <div class="ordits-tax-inner">
             <div class="ordits-tax-create">
               <select id="taxBrand">
@@ -3130,11 +3185,10 @@ if ('serviceWorker' in navigator) {
                 <option value="CR">Confeccions Ribera</option>
               </select>
               <select id="taxTech">
-                <option value="">— No aplica —</option>
-                <option value="Feltre humit">Feltre humit</option>
-                <option value="Feltre d’agulla">Feltre d’agulla</option>
+                <option value="">— Tècnica / família —</option>
               </select>
               <select id="taxType">
+                <option value="technique">Nova tècnica / família</option>
                 <option value="category">Nova categoria</option>
                 <option value="subcategory">Nova subcategoria</option>
               </select>
@@ -3152,7 +3206,7 @@ if ('serviceWorker' in navigator) {
                 <option value="CR">Confeccions Ribera</option>
               </select>
               <select id="taxFilterTech">
-                <option value="">Totes les tècniques</option>
+                <option value="">Totes les tècniques / famílies</option>
               </select>
               <select id="taxFilterCategory">
                 <option value="">Totes les categories</option>
@@ -3164,6 +3218,7 @@ if ('serviceWorker' in navigator) {
               <span id="taxFilterCount"></span>
             </div>
             <div class="ordits-tax-message" id="taxMessage"></div>
+            <div class="ordits-tech-list" id="techList"></div>
             <div class="ordits-tax-list" id="taxList"></div>
           </div>
         </details>
@@ -3177,7 +3232,7 @@ if ('serviceWorker' in navigator) {
           <input id="orditsAdminSearch" placeholder="Cerca per nom, categoria o subcategoria…">
           <select id="orditsAdminBrand"><option value="">Totes les marques</option><option value="CR">Confeccions Ribera</option><option value="BN">@bynuska</option></select>
           <select id="orditsAdminTechnique">
-            <option value="">Totes les tècniques</option>
+            <option value="">Totes les tècniques / famílies</option>
           </select>
           <select id="orditsAdminCategory"><option value="">Totes les categories</option></select>
           <select id="orditsAdminSubcategory"><option value="">Totes les subcategories</option></select>
@@ -3187,7 +3242,7 @@ if ('serviceWorker' in navigator) {
           <button class="ordits-admin-btn secondary" id="orditsAdminReload">Actualitzar</button>
         </div>
         <div class="ordits-admin-message" id="orditsAdminMessage"></div>
-        <div class="ordits-row-head"><span>Foto</span><span>Nom</span><span>Marca</span><span>Tècnica</span><span>Categoria</span><span>Subcategoria</span><span>Visible</span><span>Destacat</span><span>Principal</span><span>Ordre</span><span></span></div>
+        <div class="ordits-row-head"><span>Foto</span><span>Nom</span><span>Marca</span><span>Tècnica / família</span><span>Categoria</span><span>Subcategoria</span><span>Visible</span><span>Destacat</span><span>Principal</span><span>Ordre</span><span></span></div>
         <div class="ordits-admin-grid" id="orditsAdminGrid"></div>
         </section>
       </div>
@@ -3342,67 +3397,105 @@ orditsLoadSupabaseData();
   }
 
   function renderDynamicRiberaCategories(db,idx){
-    const grid=document.querySelector('#view-ribera .rb-grid');
-    if(!grid)return;
+    const root=document.querySelector('#view-ribera .rb-grid');
+    if(!root)return;
 
-    grid.querySelectorAll('[data-ordits-dynamic-category="1"]').forEach(el=>el.remove());
+    // Confeccions Ribera passa a ser 100% dades vives, igual que @bynuska.
+    root.innerHTML='';
 
     const products=withImages(
       visibleProducts(db).filter(p=>p.marca==='CR' && String(p.categoria||'').trim()),
       idx
     );
 
-    const groups=new Map();
+    const families=new Map();
+
     products.forEach(p=>{
+      const family=String(p.tecnica||'').trim() || '';
+      const familyKey=norm(family)||'__sense_familia__';
+
+      if(!families.has(familyKey)){
+        families.set(familyKey,{family,groups:new Map()});
+      }
+
+      const bucket=families.get(familyKey);
       const cat=String(p.categoria||'').trim();
-      if(STATIC_CR_CATEGORIES.has(norm(cat))) return;
-      const k=norm(cat);
-      if(!groups.has(k))groups.set(k,{category:cat,items:[]});
-      groups.get(k).items.push(p);
+      const catKey=norm(cat);
+
+      if(!bucket.groups.has(catKey)){
+        bucket.groups.set(catKey,{category:cat,items:[]});
+      }
+      bucket.groups.get(catKey).items.push(p);
     });
 
-    [...groups.values()]
-      .sort((a,b)=>
-        categoryOrder('CR','',a.category)-categoryOrder('CR','',b.category) ||
-        a.category.localeCompare(b.category,'ca')
-      )
-      .forEach(g=>{
-        const items=[...g.items].sort(sortItems);
-        if(!items.length)return;
+    const familyRows=[...families.values()].sort((a,b)=>{
+      if(!a.family && b.family)return 1;
+      if(a.family && !b.family)return -1;
+      return String(a.family||'').localeCompare(String(b.family||''),'ca');
+    });
 
-        const key=categoryKey('dyncr','',g.category);
-        const principal=items[0];
-        const images=items.map(p=>({
-          src:mainImage(p,idx),
-          caption:p.nom||''
-        }));
+    familyRows.forEach(f=>{
+      const section=document.createElement('section');
+      section.className='rb-family-group';
 
-        if(window.ORDITS_RB_REGISTER){
-          window.ORDITS_RB_REGISTER(key,{title:g.category,images});
-        }
+      if(f.family){
+        const heading=document.createElement('div');
+        heading.className='rb-family-heading';
+        heading.innerHTML=`<span>CONFECCIONS RIBERA</span><h3>${esc(f.family)}</h3>`;
+        section.appendChild(heading);
+      }
 
-        const btn=document.createElement('button');
-        btn.className='rb-cat';
-        btn.type='button';
-        btn.dataset.rbOpen=key;
-        btn.dataset.orditsDynamicCategory='1';
-        btn.setAttribute('aria-label','Obrir '+g.category);
-        btn.innerHTML=`
-          <div class="rb-cat-img">
-            <img src="${esc(mainImage(principal,idx))}" alt="${esc(principal.nom||g.category)}" loading="lazy" decoding="async">
-          </div>
-          <div class="rb-cat-copy">
-            <span>Descobreix</span>
-            <h3>${esc(g.category)}</h3>
-            <p>${esc(subcategorySummary(items))}</p>
-          </div>
-          <div class="rb-arrow">↗</div>`;
-        btn.addEventListener('click',()=>{
-          window.ORDITS_RB_OPEN?.(key);
+      const grid=document.createElement('div');
+      grid.className='rb-family-grid';
+
+      [...f.groups.values()]
+        .sort((a,b)=>
+          categoryOrder('CR',f.family,a.category)-categoryOrder('CR',f.family,b.category) ||
+          a.category.localeCompare(b.category,'ca')
+        )
+        .forEach(g=>{
+          const items=[...g.items].sort(sortItems);
+          if(!items.length)return;
+
+          const key=categoryKey('dyncr',f.family,g.category);
+          const principal=items[0];
+
+          const images=items.map(p=>({
+            src:mainImage(p,idx),
+            caption:p.nom||''
+          }));
+
+          window.ORDITS_RB_REGISTER?.(key,{title:g.category,images});
+
+          const btn=document.createElement('button');
+          btn.className='rb-cat';
+          btn.type='button';
+          btn.dataset.rbOpen=key;
+          btn.dataset.orditsDynamicCategory='1';
+          btn.setAttribute('aria-label','Obrir '+g.category);
+          btn.innerHTML=`
+            <div class="rb-cat-img">
+              <img src="${esc(mainImage(principal,idx))}" alt="${esc(principal.nom||g.category)}" loading="lazy" decoding="async">
+            </div>
+            <div class="rb-cat-copy">
+              <span>Descobreix</span>
+              <h3>${esc(g.category)}</h3>
+              <p>${esc(subcategorySummary(items))}</p>
+            </div>
+            <div class="rb-arrow">↗</div>`;
+          btn.addEventListener('click',()=>window.ORDITS_RB_OPEN?.(key));
+          grid.appendChild(btn);
         });
-        grid.appendChild(btn);
-      });
+
+      section.appendChild(grid);
+      root.appendChild(section);
+    });
+
+    if(!familyRows.length){
+      root.innerHTML='<p class="rb-empty-categories">Encara no hi ha productes visibles amb foto.</p>';
+    }
   }
+
 
   function renderDynamicBynuskaCategories(db,idx){
     /*
@@ -3659,7 +3752,7 @@ orditsLoadSupabaseData();
   const overlay=$('#orditsAdminOverlay'),loginView=$('#orditsLoginView'),adminView=$('#orditsAdminView');
   const loginMsg=$('#orditsLoginMessage'),adminMsg=$('#orditsAdminMessage');
   let adminCode=sessionStorage.getItem('orditsAdminCode')||'';
-  let adminProducts=[],adminImages=[],adminTaxonomy=[];
+  let adminProducts=[],adminImages=[],adminTaxonomy=[],adminTechniques=[];
 
   function msg(el,text,ok=false){
     el.textContent=text;el.classList.add('show');
@@ -3824,6 +3917,22 @@ orditsLoadSupabaseData();
     return [...new Set(values.filter(Boolean).map(v=>String(v).trim()).filter(Boolean))]
       .sort((a,b)=>a.localeCompare(b,'ca'));
   }
+  function techniquesFor(brand){
+    const fromMaster=adminTechniques
+      .filter(t=>!brand||t.marca===brand)
+      .sort((a,b)=>(Number(a.ordre)||0)-(Number(b.ordre)||0) || String(a.nom||'').localeCompare(String(b.nom||''),'ca'))
+      .map(t=>String(t.nom||'').trim())
+      .filter(Boolean);
+
+    // Fallback/compatibilitat: també recollim tècniques ja existents a productes/taxonomia.
+    const legacy=[
+      ...adminProducts.filter(p=>!brand||p.marca===brand).map(p=>p.tecnica),
+      ...adminTaxonomy.filter(t=>!brand||t.marca===brand).map(t=>t.tecnica)
+    ].map(canonicalTechnique).filter(Boolean);
+
+    return uniqueSorted([...fromMaster,...legacy]);
+  }
+
   function taxonomyFor(brand,category='',tech=''){
     if(adminTaxonomy.length){
       const base=adminTaxonomy.filter(t=>
@@ -3864,18 +3973,9 @@ orditsLoadSupabaseData();
     const techEl=$('#orditsAdminTechnique');
     const oldTech=techEl?.value||'';
 
-    const techs=uniqueSorted(
-      adminProducts
-        .filter(p=>!brand||p.marca===brand)
-        .map(p=>canonicalTechnique(p.tecnica))
-        .filter(Boolean)
-    );
-    setOptions(techEl,techs,techs.includes(oldTech)?oldTech:'','Totes les tècniques');
-
-    if(techEl){
-      techEl.disabled=brand==='CR';
-      if(brand==='CR') techEl.value='';
-    }
+    const techs=techniquesFor(brand);
+    setOptions(techEl,techs,techs.includes(oldTech)?oldTech:'','Totes les tècniques / famílies');
+    if(techEl) techEl.disabled=false;
 
     const tech=techEl?.value||'';
     const currentCat=$('#orditsAdminCategory').value;
@@ -3890,34 +3990,47 @@ orditsLoadSupabaseData();
 
   function refreshNewProductOptions(preserve=true){
     const brand=$('#newMarca').value;
+    const techEl=$('#newTecnica');
     const catEl=$('#newCategoria'),subEl=$('#newSubcategoria');
+
+    const oldTech=preserve?techEl.value:'';
+    const techs=techniquesFor(brand);
+    const tech=techs.includes(oldTech)?oldTech:'';
+    setOptions(techEl,techs,tech,'— Tècnica / família —');
+
     const oldCat=preserve?catEl.value:'',oldSub=preserve?subEl.value:'';
-    const cats=taxonomyFor(brand).categories;
+    const cats=taxonomyFor(brand,'',tech).categories;
     const cat=cats.includes(oldCat)?oldCat:'';
     setOptions(catEl,cats,cat,'— Categoria —');
-    const subs=taxonomyFor(brand,cat).subcategories;
+    const subs=taxonomyFor(brand,cat,tech).subcategories;
     setOptions(subEl,subs,subs.includes(oldSub)?oldSub:'','— Subcategoria —');
   }
-
 
   function taxMsg(text='',kind=''){
     const el=$('#taxMessage'); if(!el)return;
     el.textContent=text; el.className='ordits-tax-message'+(kind?' '+kind:'');
   }
   function taxTechniqueForUI(){
-    return $('#taxBrand')?.value==='CR' ? '' : ($('#taxTech')?.value||'');
+    return $('#taxTech')?.value||'';
   }
   function refreshTaxCreateUI(){
     const brand=$('#taxBrand')?.value||'BN';
+    const type=$('#taxType')?.value||'technique';
     const techEl=$('#taxTech');
-    if(techEl){
-      techEl.disabled=brand==='CR';
-      if(brand==='CR')techEl.value='';
-    }
-    const tech=taxTechniqueForUI();
+    const oldTech=techEl?.value||'';
+
+    const techs=techniquesFor(brand);
+    setOptions(techEl,techs,techs.includes(oldTech)?oldTech:'','— Tècnica / família —');
+
+    const isTechnique=type==='technique';
+    const isSub=type==='subcategory';
+
+    techEl.disabled=isTechnique;
+
+    const tech=isTechnique?'':(techEl.value||'');
     const cats=taxonomyFor(brand,'',tech).categories;
     setOptions($('#taxParentCategory'),cats,$('#taxParentCategory')?.value||'','— Categoria pare —');
-    const isSub=$('#taxType')?.value==='subcategory';
+
     $('#taxParentCategory').disabled=!isSub;
   }
 
@@ -3938,7 +4051,7 @@ orditsLoadSupabaseData();
 
     const byBrand=adminTaxonomy.filter(t=>!brand||t.marca===brand);
 
-    const techs=uniqueSorted(byBrand.map(t=>canonicalTechnique(t.tecnica)).filter(Boolean));
+    const techs=techniquesFor(brand);
     setOptions(
       $('#taxFilterTech'),
       techs,
@@ -3947,7 +4060,7 @@ orditsLoadSupabaseData();
     );
 
     const tech=$('#taxFilterTech').value;
-    const byTech=byBrand.filter(t=>!tech||t.tecnica===tech||(!t.tecnica&&brand==='CR'));
+    const byTech=byBrand.filter(t=>!tech||canonicalTechnique(t.tecnica)===canonicalTechnique(tech));
 
     const cats=uniqueSorted(byTech.map(t=>t.categoria));
     setOptions(
@@ -3969,15 +4082,39 @@ orditsLoadSupabaseData();
     );
 
     const techEl=$('#taxFilterTech');
-    if(techEl){
-      techEl.disabled=brand==='CR';
-      if(brand==='CR') techEl.value='';
-    }
+    if(techEl) techEl.disabled=false;
+  }
+
+  function renderTechniquesManager(){
+    const list=$('#techList');
+    if(!list)return;
+
+    const brand=$('#taxFilterBrand')?.value||'';
+    const rows=adminTechniques
+      .filter(t=>!brand||t.marca===brand)
+      .sort((a,b)=>String(a.marca).localeCompare(String(b.marca),'ca') ||
+                    (Number(a.ordre)||0)-(Number(b.ordre)||0) ||
+                    String(a.nom||'').localeCompare(String(b.nom||''),'ca'));
+
+    list.innerHTML=rows.length
+      ? `<div class="ordits-tech-heading">Tècniques / famílies</div>` + rows.map(t=>`
+        <div class="ordits-tech-row" data-tech-id="${esc(t.id)}">
+          <span class="tax-kind">TÈCNICA / FAMÍLIA</span>
+          <span>${esc(t.marca==='BN'?'@bynuska':'Confeccions Ribera')}</span>
+          <input class="tech-name" value="${esc(t.nom||'')}" aria-label="Nom tècnica o família">
+          <input class="tech-order" type="number" value="${t.ordre??0}" aria-label="Ordre">
+          <div class="ordits-tax-actions">
+            <button class="ordits-tech-save" type="button">Desar</button>
+            <button class="ordits-tech-delete" type="button">Eliminar</button>
+          </div>
+        </div>`).join('')
+      : '';
   }
 
   function renderTaxonomyManager(){
     if(!$('#taxList'))return;
     refreshTaxCreateUI();
+    renderTechniquesManager();
 
     if(!adminTaxonomy.length){
       $('#taxList').innerHTML='<p style="padding:10px 2px;color:#7a6960">El gestor avançat de categories encara no té taxonomia pròpia carregada. Els desplegables continuen funcionant amb les categories dels productes existents.</p>';
@@ -4024,7 +4161,10 @@ orditsLoadSupabaseData();
       <div class="ordits-tax-row" data-tax-id="${esc(t.id)}">
         <span class="tax-kind">${t.subcategoria?'Subcategoria':'Categoria'}</span>
         <span>${esc(t.marca==='BN'?'@bynuska':'Confeccions Ribera')}</span>
-        <span>${esc(canonicalTechnique(t.tecnica)||'—')}</span>
+        ${t.subcategoria
+          ? `<select class="tax-tech-edit" disabled>${selectHTML(techniquesFor(t.marca),canonicalTechnique(t.tecnica),'—')}</select>`
+          : `<select class="tax-tech-edit">${selectHTML(techniquesFor(t.marca),canonicalTechnique(t.tecnica),'— Tècnica / família —')}</select>`
+        }
         <input class="tax-category" value="${esc(t.categoria||'')}" aria-label="Categoria">
         <input class="tax-subcategory${t.subcategoria?'':' category-helper'}"
                value="${esc(t.subcategoria||'')}"
@@ -4070,22 +4210,69 @@ orditsLoadSupabaseData();
   $('#taxCreateBtn')?.addEventListener('click',async()=>{
     taxMsg();
     const brand=$('#taxBrand').value;
-    const tecnica=taxTechniqueForUI()||null;
     const type=$('#taxType').value;
     const name=$('#taxNewName').value.trim();
-    const categoria=type==='category'?name:$('#taxParentCategory').value;
-    const subcategoria=type==='subcategory'?name:null;
+
     if(!name){taxMsg('Escriu un nom.','err');return}
-    if(type==='subcategory'&&!categoria){taxMsg('Selecciona la categoria pare.','err');return}
+
     try{
+      if(type==='technique'){
+        await rpc('ordits_admin_tecnica_crear',{
+          p_code:adminCode,p_marca:brand,p_nom:name
+        });
+        $('#taxNewName').value='';
+        taxMsg('Tècnica / família creada.','ok');
+        await adminReload();
+        return;
+      }
+
+      const tecnica=taxTechniqueForUI()||null;
+      if(!tecnica){taxMsg('Selecciona una tècnica / família.','err');return}
+
+      const categoria=type==='category'?name:$('#taxParentCategory').value;
+      const subcategoria=type==='subcategory'?name:null;
+
+      if(type==='subcategory'&&!categoria){
+        taxMsg('Selecciona la categoria pare.','err');return
+      }
+
       await rpc('ordits_admin_taxonomia_crear',{
         p_code:adminCode,p_marca:brand,p_tecnica:tecnica,
         p_categoria:categoria,p_subcategoria:subcategoria
       });
+
       $('#taxNewName').value='';
       taxMsg(type==='category'?'Categoria creada.':'Subcategoria creada.','ok');
       await adminReload();
     }catch(e){taxMsg(e.message||String(e),'err')}
+  });
+
+  $('#techList')?.addEventListener('click',async e=>{
+    const row=e.target.closest('[data-tech-id]'); if(!row)return;
+    const item=adminTechniques.find(t=>String(t.id)===String(row.dataset.techId)); if(!item)return;
+
+    if(e.target.closest('.ordits-tech-save')){
+      const nom=row.querySelector('.tech-name').value.trim();
+      const ordre=Number(row.querySelector('.tech-order').value||0);
+      if(!nom){taxMsg('El nom no pot quedar buit.','err');return}
+      try{
+        await rpc('ordits_admin_tecnica_renombrar',{
+          p_code:adminCode,p_id:item.id,p_nom_nou:nom,p_ordre:ordre
+        });
+        taxMsg('Tècnica / família actualitzada. També s’han actualitzat categories i productes.','ok');
+        await adminReload();
+      }catch(err){taxMsg(err.message||String(err),'err')}
+      return;
+    }
+
+    if(e.target.closest('.ordits-tech-delete')){
+      if(!confirm(`Vols eliminar “${item.nom}”? Només es podrà eliminar si ja no té categories ni productes associats.`))return;
+      try{
+        await rpc('ordits_admin_tecnica_eliminar',{p_code:adminCode,p_id:item.id});
+        taxMsg('Tècnica / família eliminada.','ok');
+        await adminReload();
+      }catch(err){taxMsg(err.message||String(err),'err')}
+    }
   });
 
   $('#taxList')?.addEventListener('click',async e=>{
@@ -4094,6 +4281,7 @@ orditsLoadSupabaseData();
 
     if(e.target.closest('.ordits-tax-save')){
       const newCat=row.querySelector('.tax-category').value.trim();
+      const newTech=row.querySelector('.tax-tech-edit')?.value||item.tecnica||'';
       const subInput=row.querySelector('.tax-subcategory').value.trim();
       const newSub=item.subcategoria ? subInput : null;
       const ordreInput=row.querySelector('.tax-order');
@@ -4101,6 +4289,12 @@ orditsLoadSupabaseData();
       const newOrder=ordreRaw===''||ordreRaw==null?0:Number(ordreRaw);
       if(!newCat || (item.subcategoria&&!newSub)){taxMsg('El nom no pot quedar buit.','err');return}
       try{
+        if(!item.subcategoria && canonicalTechnique(newTech)!==canonicalTechnique(item.tecnica||'')){
+          if(!newTech){taxMsg('Selecciona una tècnica / família.','err');return}
+          await rpc('ordits_admin_taxonomia_moure_tecnica',{
+            p_code:adminCode,p_id:item.id,p_tecnica_nova:newTech
+          });
+        }
         await rpc('ordits_admin_taxonomia_renombrar',{
           p_code:adminCode,p_id:item.id,
           p_categoria_nova:newCat,p_subcategoria_nova:newSub
@@ -4154,17 +4348,22 @@ orditsLoadSupabaseData();
   async function adminReload(){
     clearMsg(adminMsg);
     try{
-      const [productsRes,imagesRes,taxRes]=await Promise.all([
+      const [productsRes,imagesRes,taxRes,techRes]=await Promise.all([
         rpc('ordits_admin_productes',{p_code:adminCode}),
         rpc('ordits_admin_imatges',{p_code:adminCode}),
         rpc('ordits_admin_taxonomia',{p_code:adminCode}).catch(err=>{
           console.warn('Taxonomia administrable no disponible; utilitzem les categories dels productes.',err);
+          return [];
+        }),
+        rpc('ordits_admin_tecniques',{p_code:adminCode}).catch(err=>{
+          console.warn('Gestor de tècniques no disponible.',err);
           return [];
         })
       ]);
       adminProducts=productsRes||[];
       adminImages=imagesRes||[];
       adminTaxonomy=taxRes||[];
+      adminTechniques=techRes||[];
 
       /*
         V15.31:
@@ -4176,6 +4375,7 @@ orditsLoadSupabaseData();
         productes:adminProducts,
         imatges:adminImages,
         taxonomia:adminTaxonomy,
+        tecniques:adminTechniques,
         connected:true,
         error:null
       };
@@ -4265,11 +4465,7 @@ orditsLoadSupabaseData();
         ${adminImage(p)?`<img src="${esc(adminImage(p))}" alt="">`:`<div style="width:54px;height:54px;border-radius:11px;background:#eee"></div>`}
         <input class="adm-name" type="text" value="${esc(p.nom)}">
         <select class="adm-brand"><option value="CR"${p.marca==='CR'?' selected':''}>CR</option><option value="BN"${p.marca==='BN'?' selected':''}>BN</option></select>
-        <select class="adm-tech">
-          <option value=""${!p.tecnica?' selected':''}>—</option>
-          <option value="Feltre humit"${canonicalTechnique(p.tecnica)==='Feltre humit'?' selected':''}>Feltre humit</option>
-          <option value="Feltre d’agulla"${canonicalTechnique(p.tecnica)==='Feltre d’agulla'?' selected':''}>Feltre d’agulla</option>
-        </select>
+        <select class="adm-tech">${selectHTML(techniquesFor(p.marca),canonicalTechnique(p.tecnica),'— Tècnica / família —')}</select>
         <select class="adm-cat">${selectHTML(tax.categories,p.categoria,'— Categoria —')}</select>
         <select class="adm-sub">${selectHTML(subs,p.subcategoria,'— Subcategoria —')}</select>
         <label class="ordits-mini-check">Visible<input class="adm-visible" type="checkbox"${bool(p.visible)?' checked':''}></label>
@@ -4332,20 +4528,12 @@ orditsLoadSupabaseData();
 
   $('#newMarca').addEventListener('change',()=>{
     refreshNewProductOptions(false);
-    const tech=$('#newTecnica');
-    if($('#newMarca').value==='CR'){
-      tech.value='';
-      tech.disabled=true;
-    }else{
-      tech.disabled=false;
-    }
+    $('#newTecnica').disabled=false;
   });
-  // Estat inicial
-  if($('#newMarca').value==='CR') $('#newTecnica').disabled=true;
   $('#newTecnica').addEventListener('change',()=>refreshNewProductOptions(false));
   $('#newCategoria').addEventListener('change',()=>{
-    const brand=$('#newMarca').value,cat=$('#newCategoria').value;
-    setOptions($('#newSubcategoria'),taxonomyFor(brand,cat).subcategories,'','— Subcategoria —');
+    const brand=$('#newMarca').value,tech=$('#newTecnica').value,cat=$('#newCategoria').value;
+    setOptions($('#newSubcategoria'),taxonomyFor(brand,cat,tech).subcategories,'','— Subcategoria —');
   });
 
   $('#orditsAdminGrid').addEventListener('change',e=>{
@@ -4354,14 +4542,11 @@ orditsLoadSupabaseData();
     if(e.target.classList.contains('adm-brand')){
       const brand=e.target.value;
       const techSelect=row.querySelector('.adm-tech');
-      const techValue=techSelect?.value||'';
-      const cats=taxonomyFor(brand,'',techValue).categories;
+      setOptions(techSelect,techniquesFor(brand),'','— Tècnica / família —');
+      const cats=taxonomyFor(brand,'','').categories;
       setOptions(row.querySelector('.adm-cat'),cats,'','— Categoria —');
       setOptions(row.querySelector('.adm-sub'),[],'','— Subcategoria —');
-      if(techSelect){
-        if(brand==='CR'){ techSelect.value=''; techSelect.disabled=true; }
-        else techSelect.disabled=false;
-      }
+      if(techSelect) techSelect.disabled=false;
     }
     if(e.target.classList.contains('adm-tech')){
       const brand=row.querySelector('.adm-brand').value;
