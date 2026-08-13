@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ca">
 <head>
-<!-- ORDITS I TRAMES · V15.47 TECNIQUES I FAMILIES REPARADA + ABELLA COSTAT TEXT · 2026-08-12 -->
+<!-- ORDITS I TRAMES · V15.48 FILTRE FAMILIES RIBERA REPARADA + ABELLA COSTAT TEXT · 2026-08-12 -->
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -2116,6 +2116,54 @@ html[data-supabase="error"] .ordits-db-badge{opacity:1;background:#f5dddd;color:
 }
 </style>
 
+
+<style id="ordits-v15-48-ribera-family-filter">
+#view-ribera .rb-family-filter-wrap{
+  margin:0 0 28px;
+}
+#view-ribera .rb-family-filter-wrap.is-empty{
+  display:none;
+}
+#view-ribera .rb-family-filter{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
+#view-ribera .rb-family-pill{
+  appearance:none;
+  border:1px solid #d9ccc3;
+  background:#f7f1ec;
+  color:#413733;
+  border-radius:999px;
+  padding:11px 18px;
+  font-size:13px;
+  font-weight:800;
+  cursor:pointer;
+  transition:background .22s ease,color .22s ease,border-color .22s ease,transform .22s ease;
+}
+#view-ribera .rb-family-pill:hover{
+  transform:translateY(-1px);
+}
+#view-ribera .rb-family-pill.active{
+  background:#2c2420;
+  color:#fff;
+  border-color:#2c2420;
+}
+#view-ribera .rb-family-group[hidden]{
+  display:none!important;
+}
+@media(max-width:620px){
+  #view-ribera .rb-family-filter{
+    gap:8px;
+  }
+  #view-ribera .rb-family-pill{
+    flex:1 1 auto;
+    text-align:center;
+    padding:10px 14px;
+  }
+}
+</style>
+
 </head>
 <body>
 <div class="thread-float one"></div>
@@ -2210,6 +2258,9 @@ html[data-supabase="error"] .ordits-db-badge{opacity:1;background:#f5dddd;color:
         des de les SUPERBOSSES fins als necessers i altres petites creacions.</p>
       </section>
 
+      <div class="rb-family-filter-wrap">
+        <div class="rb-family-filter" id="rbFamilyFilter" aria-label="Filtrar Confeccions Ribera per família"></div>
+      </div>
       <section class="rb-grid reveal">
         
       <button class="rb-cat" data-rb-open="superbosses" aria-label="Obrir Superbosses">
@@ -3396,11 +3447,58 @@ orditsLoadSupabaseData();
     return subs.slice(0,3).join(' · ') + (subs.length>3?' · …':'');
   }
 
+  let RB_ACTIVE_FAMILY = '';
+
+  function renderRiberaFamilyFilter(familyRows){
+    const filter=document.getElementById('rbFamilyFilter');
+    if(!filter)return;
+
+    const families=familyRows.map(f=>String(f.family||'').trim()).filter(Boolean);
+
+    if(!families.length){
+      filter.innerHTML='';
+      filter.closest('.rb-family-filter-wrap')?.classList.add('is-empty');
+      RB_ACTIVE_FAMILY='';
+      return;
+    }
+
+    filter.closest('.rb-family-filter-wrap')?.classList.remove('is-empty');
+
+    if(!RB_ACTIVE_FAMILY || !families.includes(RB_ACTIVE_FAMILY)){
+      RB_ACTIVE_FAMILY=families[0];
+    }
+
+    filter.innerHTML=families.map(name=>`
+      <button
+        type="button"
+        class="rb-family-pill${name===RB_ACTIVE_FAMILY?' active':''}"
+        data-rb-family-filter="${esc(name)}"
+        aria-pressed="${name===RB_ACTIVE_FAMILY?'true':'false'}">
+        ${esc(name)}
+      </button>
+    `).join('');
+
+    filter.querySelectorAll('[data-rb-family-filter]').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        RB_ACTIVE_FAMILY=btn.dataset.rbFamilyFilter||'';
+
+        filter.querySelectorAll('[data-rb-family-filter]').forEach(b=>{
+          const active=b.dataset.rbFamilyFilter===RB_ACTIVE_FAMILY;
+          b.classList.toggle('active',active);
+          b.setAttribute('aria-pressed',active?'true':'false');
+        });
+
+        document.querySelectorAll('#view-ribera .rb-family-group').forEach(section=>{
+          section.hidden=section.dataset.rbFamily!==RB_ACTIVE_FAMILY;
+        });
+      });
+    });
+  }
+
   function renderDynamicRiberaCategories(db,idx){
     const root=document.querySelector('#view-ribera .rb-grid');
     if(!root)return;
 
-    // Confeccions Ribera passa a ser 100% dades vives, igual que @bynuska.
     root.innerHTML='';
 
     const products=withImages(
@@ -3428,22 +3526,17 @@ orditsLoadSupabaseData();
       bucket.groups.get(catKey).items.push(p);
     });
 
-    const familyRows=[...families.values()].sort((a,b)=>{
-      if(!a.family && b.family)return 1;
-      if(a.family && !b.family)return -1;
-      return String(a.family||'').localeCompare(String(b.family||''),'ca');
-    });
+    const familyRows=[...families.values()].sort((a,b)=>
+      String(a.family||'').localeCompare(String(b.family||''),'ca')
+    );
+
+    renderRiberaFamilyFilter(familyRows);
 
     familyRows.forEach(f=>{
       const section=document.createElement('section');
       section.className='rb-family-group';
-
-      if(f.family){
-        const heading=document.createElement('div');
-        heading.className='rb-family-heading';
-        heading.innerHTML=`<span>CONFECCIONS RIBERA</span><h3>${esc(f.family)}</h3>`;
-        section.appendChild(heading);
-      }
+      section.dataset.rbFamily=f.family||'';
+      section.hidden=!!RB_ACTIVE_FAMILY && f.family!==RB_ACTIVE_FAMILY;
 
       const grid=document.createElement('div');
       grid.className='rb-family-grid';
