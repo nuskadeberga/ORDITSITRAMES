@@ -4,7 +4,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<!-- ORDITS I TRAMES · V15.49 RIBERA FILTRE I CACHE GITHUB REPARADA + ABELLA COSTAT TEXT · 2026-08-12 -->
+<!-- ORDITS I TRAMES · V15.50 ALTA PRODUCTE JERARQUIA ESTRICTA REPARADA + ABELLA COSTAT TEXT · 2026-08-12 -->
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -2205,6 +2205,15 @@ html[data-supabase="error"] .ordits-db-badge{opacity:1;background:#f5dddd;color:
 }
 </style>
 
+
+<style id="ordits-v15-50-hierarchy">
+#newCategoria:disabled,
+#newSubcategoria:disabled{
+  opacity:.58;
+  cursor:not-allowed;
+}
+</style>
+
 </head>
 <body>
 <div class="thread-float one"></div>
@@ -4088,35 +4097,58 @@ orditsLoadSupabaseData();
       .map(t=>String(t.nom||'').trim())
       .filter(Boolean);
 
-    // Fallback/compatibilitat: també recollim tècniques ja existents a productes/taxonomia.
+    // Si existeix el catàleg mestre, és l'única font vàlida.
+    // Només fem fallback a dades antigues si el gestor de tècniques no està disponible.
+    if(fromMaster.length) return uniqueSorted(fromMaster);
+
     const legacy=[
       ...adminProducts.filter(p=>!brand||p.marca===brand).map(p=>p.tecnica),
       ...adminTaxonomy.filter(t=>!brand||t.marca===brand).map(t=>t.tecnica)
     ].map(canonicalTechnique).filter(Boolean);
 
-    return uniqueSorted([...fromMaster,...legacy]);
+    return uniqueSorted(legacy);
   }
 
   function taxonomyFor(brand,category='',tech=''){
     if(adminTaxonomy.length){
       const base=adminTaxonomy.filter(t=>
         (!brand||t.marca===brand) &&
-        (!tech||!t.tecnica||canonicalTechnique(t.tecnica)===canonicalTechnique(tech))
+        (!tech||canonicalTechnique(t.tecnica)===canonicalTechnique(tech))
       );
-      const categories=uniqueSorted(base.map(t=>t.categoria));
-      const subcategories=uniqueSorted(
-        base.filter(t=>!category||t.categoria===category).map(t=>t.subcategoria)
+
+      // Una categoria només existeix si existeix la seva fila CATEGORIA.
+      // Les subcategories antigues/orfes no poden tornar-la a fer aparèixer.
+      const categories=uniqueSorted(
+        base
+          .filter(t=>!String(t.subcategoria||'').trim())
+          .map(t=>t.categoria)
       );
+
+      const subcategories=category
+        ? uniqueSorted(
+            base
+              .filter(t=>
+                String(t.subcategoria||'').trim() &&
+                norm(t.categoria)===norm(category)
+              )
+              .map(t=>t.subcategoria)
+          )
+        : [];
+
       return {categories,subcategories};
     }
+
+    // Fallback només si la taxonomia administrable no està disponible.
     const rows=adminProducts.filter(p=>
       (!brand||p.marca===brand)&&
       (!category||p.categoria===category)&&
-      (!tech||!p.tecnica||canonicalTechnique(p.tecnica)===canonicalTechnique(tech))
+      (!tech||canonicalTechnique(p.tecnica)===canonicalTechnique(tech))
     );
     return {
-      categories:uniqueSorted(adminProducts.filter(p=>!brand||p.marca===brand).map(p=>p.categoria)),
-      subcategories:uniqueSorted(rows.map(p=>p.subcategoria))
+      categories:tech
+        ? uniqueSorted(rows.map(p=>p.categoria))
+        : [],
+      subcategories:category ? uniqueSorted(rows.map(p=>p.subcategoria)) : []
     };
   }
   function selectHTML(values,current,emptyLabel){
@@ -4163,11 +4195,29 @@ orditsLoadSupabaseData();
     setOptions(techEl,techs,tech,'— Tècnica / família —');
 
     const oldCat=preserve?catEl.value:'',oldSub=preserve?subEl.value:'';
+
+    if(!tech){
+      setOptions(catEl,[],'','— Primer tria tècnica / família —');
+      setOptions(subEl,[],'','— Subcategoria —');
+      catEl.disabled=true;
+      subEl.disabled=true;
+      return;
+    }
+
+    catEl.disabled=false;
     const cats=taxonomyFor(brand,'',tech).categories;
     const cat=cats.includes(oldCat)?oldCat:'';
     setOptions(catEl,cats,cat,'— Categoria —');
+
+    if(!cat){
+      setOptions(subEl,[],'','— Subcategoria —');
+      subEl.disabled=true;
+      return;
+    }
+
     const subs=taxonomyFor(brand,cat,tech).subcategories;
     setOptions(subEl,subs,subs.includes(oldSub)?oldSub:'','— Subcategoria —');
+    subEl.disabled=subs.length===0;
   }
 
   function taxMsg(text='',kind=''){
@@ -4697,7 +4747,15 @@ orditsLoadSupabaseData();
   $('#newTecnica').addEventListener('change',()=>refreshNewProductOptions(false));
   $('#newCategoria').addEventListener('change',()=>{
     const brand=$('#newMarca').value,tech=$('#newTecnica').value,cat=$('#newCategoria').value;
-    setOptions($('#newSubcategoria'),taxonomyFor(brand,cat,tech).subcategories,'','— Subcategoria —');
+    const subEl=$('#newSubcategoria');
+    if(!cat){
+      setOptions(subEl,[],'','— Subcategoria —');
+      subEl.disabled=true;
+      return;
+    }
+    const subs=taxonomyFor(brand,cat,tech).subcategories;
+    setOptions(subEl,subs,'','— Subcategoria —');
+    subEl.disabled=subs.length===0;
   });
 
   $('#orditsAdminGrid').addEventListener('change',e=>{
@@ -4707,8 +4765,7 @@ orditsLoadSupabaseData();
       const brand=e.target.value;
       const techSelect=row.querySelector('.adm-tech');
       setOptions(techSelect,techniquesFor(brand),'','— Tècnica / família —');
-      const cats=taxonomyFor(brand,'','').categories;
-      setOptions(row.querySelector('.adm-cat'),cats,'','— Categoria —');
+      setOptions(row.querySelector('.adm-cat'),[],'','— Primer tria tècnica / família —');
       setOptions(row.querySelector('.adm-sub'),[],'','— Subcategoria —');
       if(techSelect) techSelect.disabled=false;
     }
@@ -4870,11 +4927,33 @@ orditsLoadSupabaseData();
   $('#orditsCreateProduct').addEventListener('click',async()=>{
     const nom=$('#newNom').value.trim();
     if(!nom){msg(adminMsg,'Cal indicar el nom del producte.');return}
+
+    const selectedTech=$('#newTecnica').value.trim();
+    const selectedCat=$('#newCategoria').value.trim();
+
+    if(!selectedTech){
+      msg(adminMsg,'Cal seleccionar una tècnica / família abans de crear el producte.');
+      $('#newTecnica').focus();
+      return;
+    }
+    if(!selectedCat){
+      msg(adminMsg,'Cal seleccionar una categoria abans de crear el producte.');
+      $('#newCategoria').focus();
+      return;
+    }
+
+    const validCats=taxonomyFor($('#newMarca').value,'',selectedTech).categories;
+    if(!validCats.includes(selectedCat)){
+      msg(adminMsg,'Aquesta categoria ja no existeix dins la família seleccionada. Actualitza les dades i torna-la a seleccionar.');
+      refreshNewProductOptions(false);
+      return;
+    }
+
     const draft={
       marca:$('#newMarca').value,
       nom,
-      tecnica:$('#newTecnica').value.trim()||null,
-      categoria:$('#newCategoria').value||null,
+      tecnica:selectedTech,
+      categoria:selectedCat,
       subcategoria:$('#newSubcategoria').value||null,
       visible:$('#newVisible').checked,
       destacat:$('#newDestacat').checked,
@@ -4927,7 +5006,7 @@ orditsLoadSupabaseData();
       }else{
         msg(adminMsg,'Producte creat.',true);
       }
-      ['newNom','newTecnica','newOrdre'].forEach(id=>$('#'+id).value='');
+      ['newNom','newTecnica','newCategoria','newSubcategoria','newOrdre'].forEach(id=>$('#'+id).value='');
       $('#newDestacat').checked=false;$('#newPrincipal').checked=false;$('#newVisible').checked=true;
       $('#newPhoto').value='';
       refreshNewProductOptions(false);
