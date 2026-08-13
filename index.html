@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ca">
 <head>
-<!-- ORDITS I TRAMES · V15.38 TECNIQUES UNIFORMES REPARADA + ABELLA COSTAT TEXT · 2026-08-12 -->
+<!-- ORDITS I TRAMES · V15.39 CATEGORIES PUBLIQUES DINAMIQUES REPARADA + ABELLA COSTAT TEXT · 2026-08-12 -->
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -1849,6 +1849,16 @@ html[data-supabase="error"] .ordits-db-badge{opacity:1;background:#f5dddd;color:
 }
 </style>
 
+
+<style id="ordits-v15-39-dynamic-categories">
+#view-bynuska .bn-cats{
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+}
+#view-ribera .rb-grid{
+  align-items:stretch;
+}
+</style>
+
 </head>
 <body>
 <div class="thread-float one"></div>
@@ -2716,6 +2726,11 @@ cinematicMotion();
     modal.setAttribute('aria-hidden','false');
     document.body.style.overflow='hidden';
   }
+
+  // API interna per registrar categories creades dinàmicament des de Supabase
+  window.ORDITS_RB_REGISTER = (k,set) => { if(k&&set) RB[k]=set; };
+  window.ORDITS_RB_OPEN = open;
+
   function close() {
     modal.classList.remove('open');
     modal.setAttribute('aria-hidden','true');
@@ -3079,8 +3094,164 @@ orditsLoadSupabaseData();
   }
   const rbTitles={superbosses:'SUPERBOSSES',bosses:'Bosses',totebags:'Totebags',motxilles:'Motxilles',bandoleres:'Bandoleres',necessers:'Necessers',altres:'Altres'};
 
+
+  const STATIC_BN_CATEGORIES = new Set([
+    'mocadors i bufandes','bols','altres','boles de nadal',
+    'ninots de neu','mobils','bestioles'
+  ]);
+  const STATIC_CR_CATEGORIES = new Set([
+    'bosses','altres','decoracio'
+  ]);
+
+  function categoryKey(prefix,tech,category){
+    const safe=norm([tech||'',category||''].join('|'))
+      .replace(/[^a-z0-9]+/g,'-')
+      .replace(/^-+|-+$/g,'');
+    return prefix+'-'+safe;
+  }
+
+  function subcategorySummary(items){
+    const subs=[...new Set(
+      items.map(p=>String(p.subcategoria||'').trim()).filter(Boolean)
+    )];
+    if(!subs.length) return 'Peces de la col·lecció.';
+    return subs.slice(0,3).join(' · ') + (subs.length>3?' · …':'');
+  }
+
+  function renderDynamicRiberaCategories(db,idx){
+    const grid=document.querySelector('#view-ribera .rb-grid');
+    if(!grid)return;
+
+    grid.querySelectorAll('[data-ordits-dynamic-category="1"]').forEach(el=>el.remove());
+
+    const products=withImages(
+      visibleProducts(db).filter(p=>p.marca==='CR' && String(p.categoria||'').trim()),
+      idx
+    );
+
+    const groups=new Map();
+    products.forEach(p=>{
+      const cat=String(p.categoria||'').trim();
+      if(STATIC_CR_CATEGORIES.has(norm(cat))) return;
+      const k=norm(cat);
+      if(!groups.has(k))groups.set(k,{category:cat,items:[]});
+      groups.get(k).items.push(p);
+    });
+
+    [...groups.values()]
+      .sort((a,b)=>a.category.localeCompare(b.category,'ca'))
+      .forEach(g=>{
+        const items=[...g.items].sort(sortItems);
+        if(!items.length)return;
+
+        const key=categoryKey('dyncr','',g.category);
+        const principal=items[0];
+        const images=items.map(p=>({
+          src:mainImage(p,idx),
+          caption:p.nom||''
+        }));
+
+        if(window.ORDITS_RB_REGISTER){
+          window.ORDITS_RB_REGISTER(key,{title:g.category,images});
+        }
+
+        const btn=document.createElement('button');
+        btn.className='rb-cat';
+        btn.type='button';
+        btn.dataset.rbOpen=key;
+        btn.dataset.orditsDynamicCategory='1';
+        btn.setAttribute('aria-label','Obrir '+g.category);
+        btn.innerHTML=`
+          <div class="rb-cat-img">
+            <img src="${esc(mainImage(principal,idx))}" alt="${esc(principal.nom||g.category)}" loading="lazy" decoding="async">
+          </div>
+          <div class="rb-cat-copy">
+            <span>Descobreix</span>
+            <h3>${esc(g.category)}</h3>
+            <p>${esc(subcategorySummary(items))}</p>
+          </div>
+          <div class="rb-arrow">↗</div>`;
+        btn.addEventListener('click',()=>{
+          window.ORDITS_RB_OPEN?.(key);
+        });
+        grid.appendChild(btn);
+      });
+  }
+
+  function renderDynamicBynuskaCategories(db,idx){
+    const products=withImages(
+      visibleProducts(db).filter(p=>
+        p.marca==='BN' &&
+        String(p.categoria||'').trim() &&
+        String(p.tecnica||'').trim()
+      ),
+      idx
+    );
+
+    document.querySelectorAll('#view-bynuska [data-ordits-dynamic-category="1"]')
+      .forEach(el=>el.remove());
+
+    const groups=new Map();
+    products.forEach(p=>{
+      const category=String(p.categoria||'').trim();
+      if(STATIC_BN_CATEGORIES.has(norm(category))) return;
+
+      const techNorm=norm(p.tecnica);
+      const panelKey=techNorm.includes('agulla')?'agulla':
+                     techNorm.includes('humit')?'humit':'';
+      if(!panelKey)return;
+
+      const groupKey=panelKey+'|'+norm(category);
+      if(!groups.has(groupKey)){
+        groups.set(groupKey,{
+          panelKey,
+          technique:String(p.tecnica||'').trim(),
+          category,
+          items:[]
+        });
+      }
+      groups.get(groupKey).items.push(p);
+    });
+
+    [...groups.values()]
+      .sort((a,b)=>
+        a.panelKey.localeCompare(b.panelKey) ||
+        a.category.localeCompare(b.category,'ca')
+      )
+      .forEach(g=>{
+        const panel=document.querySelector(
+          `#view-bynuska .bn-tech-panel[data-bn-panel="${g.panelKey}"]`
+        );
+        const cats=panel?.querySelector('.bn-cats');
+        if(!cats)return;
+
+        const items=[...g.items].sort(sortItems);
+        if(!items.length)return;
+        const principal=items[0];
+
+        const btn=document.createElement('button');
+        btn.className='bn-cat';
+        btn.type='button';
+        btn.dataset.bnOpen=categoryKey('dynbn',g.technique,g.category);
+        btn.dataset.bnCategory=g.category;
+        btn.dataset.bnTechnique=g.technique;
+        btn.dataset.orditsDynamicCategory='1';
+        btn.innerHTML=`
+          <div class="bn-cat-img">
+            <img src="${esc(mainImage(principal,idx))}" alt="${esc(principal.nom||g.category)}" loading="lazy" decoding="async">
+          </div>
+          <div class="bn-cat-copy">
+            <span>Descobreix</span>
+            <h3>${esc(g.category)}</h3>
+            <p>${esc(subcategorySummary(items))}</p>
+          </div>
+          <div class="bn-arrow">↗</div>`;
+        cats.appendChild(btn);
+      });
+  }
+
   function refreshRibera(db,idx){
-    if(typeof RB==='undefined')return;
+    if(typeof RB!=='undefined'){
     Object.keys(rbTitles).forEach(key=>{
       const items=withImages(rbGroup(key,visibleProducts(db)),idx);
       if(!items.length)return;
@@ -3088,6 +3259,8 @@ orditsLoadSupabaseData();
       const cover=document.querySelector(`[data-rb-open="${key}"] img`);
       if(cover){cover.src=mainImage(items[0],idx);cover.alt=items[0].nom||rbTitles[key]}
     });
+    }
+    renderDynamicRiberaCategories(db,idx);
   }
 
   function bnGroup(key, products){
@@ -3205,6 +3378,7 @@ orditsLoadSupabaseData();
       try{if(typeof renderShop==='function')renderShop()}catch(e){}
       try{if(typeof render3D==='function')render3D()}catch(e){}
     }
+    renderDynamicBynuskaCategories(db,idx);
   }
   function refreshPublic(db){
     if(!db||!db.connected)return;
@@ -4276,7 +4450,17 @@ orditsLoadSupabaseData();
         if(db?.connected){
           const idx=api.imageIndex(db);
           const products=api.visibleProducts(db);
-          const grouped=api.bnGroup(key,products)||[];
+          const dynamicCategory=btn.dataset.bnCategory||'';
+          const dynamicTechnique=btn.dataset.bnTechnique||'';
+
+          const grouped=dynamicCategory
+            ? products.filter(p=>
+                p.marca==='BN' &&
+                String(p.categoria||'').trim()===dynamicCategory &&
+                (!dynamicTechnique ||
+                  String(p.tecnica||'').trim()===dynamicTechnique)
+              )
+            : (api.bnGroup(key,products)||[]);
 
           items=grouped
             .map(p=>({
