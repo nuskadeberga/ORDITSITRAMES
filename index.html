@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ca">
 <head>
-<!-- ORDITS I TRAMES · V15.43 RIBERA GRAELLA UNIFORME REPARADA + ABELLA COSTAT TEXT · 2026-08-12 -->
+<!-- ORDITS I TRAMES · V15.45 RIBERA CAPTION ELIMINAT REPARADA + ABELLA COSTAT TEXT · 2026-08-12 -->
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -2057,6 +2057,8 @@ html[data-supabase="error"] .ordits-db-badge{opacity:1;background:#f5dddd;color:
 }
 </style>
 
+
+
 </head>
 <body>
 <div class="thread-float one"></div>
@@ -2239,7 +2241,6 @@ html[data-supabase="error"] .ordits-db-badge{opacity:1;background:#f5dddd;color:
         <div class="rb-track" id="rbTrack"></div>
         <button class="rb-nav rb-next" id="rbNext" aria-label="Següent">›</button>
       </div>
-      <div class="rb-caption" id="rbCaption"></div>
       <div class="rb-dots" id="rbDots"></div>
       </div>
     </div>
@@ -2881,7 +2882,6 @@ cinematicMotion();
   if(!modal) return;
   const title = document.getElementById('rbModalTitle');
   const track = document.getElementById('rbTrack');
-  const cap = document.getElementById('rbCaption');
   const dots = document.getElementById('rbDots');
   const prev = document.getElementById('rbPrev');
   const next = document.getElementById('rbNext');
@@ -2898,7 +2898,6 @@ cinematicMotion();
       return `<figure class="rb-slide ${cls}" data-rb-index="${i}"><img src="${item.src}" alt="${item.caption || set.title}" loading="lazy" decoding="async"><figcaption>${item.caption || ''}</figcaption></figure>`;
     }).join('');
     const item=set.images[index];
-    cap.textContent = item.caption || '';
     dots.innerHTML = '';
     set.images.forEach((_, i) => {
       const b = document.createElement('button');
