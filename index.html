@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ca">
 <head>
-<!-- ORDITS I TRAMES · V15.40 BYNUSKA 100% SUPABASE REPARADA + ABELLA COSTAT TEXT · 2026-08-12 -->
+<!-- ORDITS I TRAMES · V15.41 ORDRE CATEGORIES REPARADA + ABELLA COSTAT TEXT · 2026-08-12 -->
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -1725,7 +1725,7 @@ html[data-supabase="error"] .ordits-db-badge{opacity:1;background:#f5dddd;color:
 .ordits-tax-list{display:grid;gap:7px}
 .ordits-tax-row{
   display:grid;
-  grid-template-columns:105px 135px 150px minmax(170px,1fr) minmax(170px,1fr) auto;
+  grid-template-columns:105px 135px 150px minmax(170px,1fr) minmax(170px,1fr) 80px auto;
   gap:8px;align-items:center;
   padding:8px 10px;border:1px solid #eadfd7;border-radius:12px;background:#fff;
 }
@@ -3114,6 +3114,24 @@ orditsLoadSupabaseData();
     'bosses','altres','decoracio'
   ]);
 
+  function categoryOrder(brand,tech,category){
+    const tax=(window.ORDITS_TAXONOMY || window.ORDITS_ADMIN_DB?.taxonomia || []);
+    const targetTech=typeof canonicalTechnique==='function' ? canonicalTechnique(tech) : String(tech||'').trim();
+    const row=tax.find(t=>
+      t.marca===brand &&
+      !t.subcategoria &&
+      norm(t.categoria)===norm(category) &&
+      (
+        brand==='CR' ||
+        (typeof canonicalTechnique==='function'
+          ? canonicalTechnique(t.tecnica)===targetTech
+          : String(t.tecnica||'').trim()===targetTech)
+      )
+    );
+    const n=Number(row?.ordre);
+    return Number.isFinite(n)?n:999999;
+  }
+
   function categoryKey(prefix,tech,category){
     const safe=norm([tech||'',category||''].join('|'))
       .replace(/[^a-z0-9]+/g,'-')
@@ -3150,7 +3168,10 @@ orditsLoadSupabaseData();
     });
 
     [...groups.values()]
-      .sort((a,b)=>a.category.localeCompare(b.category,'ca'))
+      .sort((a,b)=>
+        categoryOrder('CR','',a.category)-categoryOrder('CR','',b.category) ||
+        a.category.localeCompare(b.category,'ca')
+      )
       .forEach(g=>{
         const items=[...g.items].sort(sortItems);
         if(!items.length)return;
@@ -3239,6 +3260,7 @@ orditsLoadSupabaseData();
     [...groups.values()]
       .sort((a,b)=>
         a.panelKey.localeCompare(b.panelKey) ||
+        categoryOrder('BN',a.technique,a.category)-categoryOrder('BN',b.technique,b.category) ||
         a.category.localeCompare(b.category,'ca')
       )
       .forEach(g=>{
@@ -3814,6 +3836,7 @@ orditsLoadSupabaseData();
                value="${esc(t.subcategoria||'')}"
                placeholder="${t.subcategoria?'Subcategoria':'＋ Afegir subcategoria'}"
                aria-label="Subcategoria">
+        <input class="tax-order" type="number" value="${t.ordre??''}" placeholder="Ordre" aria-label="Ordre">
         <div class="ordits-tax-actions">
           <button class="ordits-tax-save" type="button">Desar</button>
           <button class="ordits-tax-delete" type="button">Eliminar</button>
@@ -3876,11 +3899,16 @@ orditsLoadSupabaseData();
       const newCat=row.querySelector('.tax-category').value.trim();
       const subInput=row.querySelector('.tax-subcategory').value.trim();
       const newSub=item.subcategoria ? subInput : null;
+      const ordreRaw=row.querySelector('.tax-order')?.value;
+      const newOrder=ordreRaw===''?0:Number(ordreRaw);
       if(!newCat || (item.subcategoria&&!newSub)){taxMsg('El nom no pot quedar buit.','err');return}
       try{
         await rpc('ordits_admin_taxonomia_renombrar',{
           p_code:adminCode,p_id:item.id,
           p_categoria_nova:newCat,p_subcategoria_nova:newSub
+        });
+        await rpc('ordits_admin_taxonomia_ordre',{
+          p_code:adminCode,p_id:item.id,p_ordre:newOrder
         });
 
         // En una fila de categoria, escriure al segon camp crea una subcategoria
@@ -3947,9 +3975,11 @@ orditsLoadSupabaseData();
       window.ORDITS_ADMIN_DB={
         productes:adminProducts,
         imatges:adminImages,
+        taxonomia:adminTaxonomy,
         connected:true,
         error:null
       };
+      window.ORDITS_TAXONOMY=adminTaxonomy;
       window.ORDITS_DB=window.ORDITS_ADMIN_DB;
       document.documentElement.dataset.orditsSource='admin';
       if(typeof refreshPublic==='function') refreshPublic(window.ORDITS_DB);
