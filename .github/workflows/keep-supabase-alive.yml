@@ -1,0 +1,38 @@
+name: Mantenir Supabase Ordits i Trames actiu
+
+on:
+  push:
+    paths:
+      - ".github/workflows/keep-supabase-alive.yml"
+  schedule:
+    - cron: "29 7 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lectura-segura:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Fer lectures reals a l'API d'Ordits i Trames
+        shell: bash
+        env:
+          SUPABASE_URL: https://yatwggswydjinwqqpbnp.supabase.co
+          SUPABASE_PUBLISHABLE_KEY: sb_publishable_otY48qOaNGGkpc-15oh6Aw_g5F35Y83
+        run: |
+          set -euo pipefail
+
+          for endpoint in \
+            "rest/v1/productes?select=id&limit=1" \
+            "rest/v1/producte_imatges?select=id&limit=1"
+          do
+            curl --silent --show-error --fail-with-body \
+              --retry 2 \
+              --retry-delay 5 \
+              --header "apikey: ${SUPABASE_PUBLISHABLE_KEY}" \
+              --header "Authorization: Bearer ${SUPABASE_PUBLISHABLE_KEY}" \
+              --header "Accept: application/json" \
+              "${SUPABASE_URL}/${endpoint}" >/dev/null
+          done
