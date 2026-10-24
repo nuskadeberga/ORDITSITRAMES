@@ -1,11 +1,1992 @@
 <!DOCTYPE html>
 <html lang="ca">
 <head>
-  <meta charset="UTF-8">
-  <title>Dashboard - Ordits i Trames</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ORDITS I TRAMES · Dashboard</title>
+<link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/128/5395/5395996.png">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js">
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bn:#C0654A;--bnl:#F5E6E1;--bnd:#8B3E27;
+  --cr:#2C4A7C;--crl:#E1E8F5;--crd:#1A2F52;
+  --ca:#3A6B4A;--cal:#E1F0E6;--cad:#1F3D29;
+  --bg:#F7F4EF;--sf:#FFF;--sf2:#F0EDE8;
+  --tx:#1A1410;--tx2:#6B5E52;--bd:#DDD5C8;
+  --er:#D64242;--sh:0 2px 16px rgba(0,0,0,.07);--r:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh}
+
+.hd{background:var(--tx);color:#fff;padding:14px 26px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;gap:12px;flex-wrap:wrap}
+.hd-t{font-family:'DM Serif Display',serif;font-size:1.3rem;white-space:nowrap}
+.hd-t span{color:var(--bn)}
+.upz{display:flex;align-items:center;gap:10px}
+.upbtn{background:var(--bn);color:#fff;border:none;padding:8px 18px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:600;display:flex;align-items:center;gap:6px;transition:background .2s}
+.upbtn:hover{background:var(--bnd)}
+.upbtn svg{width:14px;height:14px}
+#fi{display:none}
+.fst{font-size:.76rem;color:#888}
+.fst.ok{color:#6fba8a}
+
+.main{padding:22px 26px;max-width:1600px;margin:0 auto}
+
+/* WELCOME */
+#wc{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:62vh;text-align:center;gap:18px}
+.wci{font-size:3.2rem}
+.wct{font-family:'DM Serif Display',serif;font-size:2rem}
+.wcs{color:var(--tx2);max-width:400px;line-height:1.6;font-size:.93rem}
+.wcb{background:var(--bn);color:#fff;border:none;padding:12px 28px;border-radius:10px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.93rem;font-weight:600;transition:all .2s}
+.wcb:hover{background:var(--bnd);transform:translateY(-1px)}
+
+#dash{display:none}
+
+/* FILTERS */
+.fb{background:var(--sf);border-radius:var(--r);padding:13px 16px;margin-bottom:20px;box-shadow:var(--sh)}
+.fbt{font-size:.68rem;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:9px}
+.fg{display:flex;flex-wrap:wrap;gap:7px;align-items:flex-end}
+.fgi{display:flex;flex-direction:column;gap:3px}
+.fgl{font-size:.67rem;color:var(--tx2);font-weight:500}
+select.fgs,input.fgs{border:1px solid var(--bd);border-radius:7px;padding:5px 8px;font-family:'DM Sans',sans-serif;font-size:.79rem;color:var(--tx);background:var(--bg);min-width:115px}
+select.fgs:focus,input.fgs:focus{outline:none;border-color:var(--bn)}
+.rb{background:var(--sf2);border:1px solid var(--bd);color:var(--tx2);border-radius:7px;padding:6px 12px;cursor:pointer;font-size:.79rem;font-weight:500;transition:all .2s}
+.rb:hover{background:var(--bd);color:var(--tx)}
+
+/* KPIs */
+.kg{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:13px;margin-bottom:22px}
+.kc{background:var(--sf);border-radius:var(--r);padding:17px;box-shadow:var(--sh);border-left:4px solid var(--bd);transition:transform .15s}
+.kc:hover{transform:translateY(-2px)}
+.kc.ac{border-left-color:var(--bn)}
+.kc.bl{border-left-color:var(--cr)}
+.kc.gr{border-left-color:var(--ca)}
+.kc.er{border-left-color:var(--er)}
+.kl{font-size:.67rem;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.kv{font-family:'DM Serif Display',serif;font-size:1.7rem;color:var(--tx);line-height:1}
+.kv.sm{font-size:.97rem}
+.ks{font-size:.7rem;color:var(--tx2);margin-top:3px}
+
+/* TABS */
+.tabs{display:flex;gap:7px;margin-bottom:20px;overflow-x:auto;flex-wrap:nowrap;padding:3px 0 9px;scrollbar-width:thin}.tabs .tab{white-space:nowrap;flex-shrink:0}
+.tab{padding:7px 14px;border-radius:7px;border:1px solid var(--bd);background:var(--sf);cursor:pointer;font-size:.79rem;font-weight:500;color:var(--tx2);transition:all .15s}
+.tab:hover{background:var(--sf2)}
+.tab.on{background:var(--tx);color:#fff;border-color:var(--tx)}
+.tc{display:none!important}.tc.on{display:block!important} .tc[hidden]{display:none!important}
+
+/* SECTIONS */
+.sec{margin-bottom:26px}
+.sec-t{font-family:'DM Serif Display',serif;font-size:1.15rem;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid var(--bd)}
+.cg{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,430px),1fr));gap:16px}
+.stock-wide-grid{grid-template-columns:repeat(2,minmax(0,1fr));width:100%}
+.stock-wide-grid .cc{min-width:0}
+.stock-wide-grid table{width:100%}
+#tStNoMove th:nth-child(1),#tStNoMove td:nth-child(1){width:28%}
+#tStNoMove th:nth-child(2),#tStNoMove td:nth-child(2){width:24%}
+#tStNoMove th:nth-child(3),#tStNoMove td:nth-child(3){width:12%;white-space:nowrap}
+#tStNoMove th:nth-child(4),#tStNoMove td:nth-child(4){width:36%;min-width:190px}
+#tStBest th,#tStBest td,#tStNoMove th,#tStNoMove td{vertical-align:top}
+.cc{background:var(--sf);border-radius:var(--r);padding:16px;box-shadow:var(--sh)}
+.ct{font-size:.7rem;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:11px}
+.cw{position:relative;height:220px}
+.cw.t{height:280px}
+.cw.xt{height:340px}
+
+/* TABLES */
+.tw{background:var(--sf);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;margin-bottom:16px}
+.th{padding:13px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.tht{font-weight:600;font-size:.82rem}
+.ts{border:1px solid var(--bd);border-radius:7px;padding:6px 10px;font-family:'DM Sans',sans-serif;font-size:.79rem;color:var(--tx);background:var(--bg);min-width:170px}
+.ts:focus{outline:none;border-color:var(--bn)}
+.tsc{overflow-x:auto}
+@media(min-width:900px){.tsc.no-scroll{overflow-x:visible}.tsc.no-scroll table{table-layout:fixed}.tsc.no-scroll th,.tsc.no-scroll td{white-space:normal}}
+.stock-wide{display:grid;grid-template-columns:1fr!important}
+.stock-wide .cc,.stock-wide .tw{width:100%}
+.stock-plan{overflow-x:auto!important}
+.stock-plan table{width:100%;min-width:1120px;table-layout:fixed!important}
+.stock-plan th,.stock-plan td{white-space:normal;vertical-align:middle;overflow-wrap:normal}
+/* Prioritat: etiqueta completa en una sola línia */
+.stock-plan th:nth-child(1),.stock-plan td:nth-child(1){width:138px;white-space:nowrap}
+.stock-plan td:nth-child(1) .badge,.stock-plan td:nth-child(1) span{white-space:nowrap}
+/* Família compacta; mida/tipus més llegible */
+.stock-plan th:nth-child(2),.stock-plan td:nth-child(2){width:160px}
+.stock-plan th:nth-child(3),.stock-plan td:nth-child(3){width:96px}
+.stock-plan th:nth-child(4),.stock-plan td:nth-child(4){width:66px}
+.stock-plan th:nth-child(5),.stock-plan td:nth-child(5){width:184px}
+.stock-plan th:nth-child(6),.stock-plan td:nth-child(6){width:88px}
+.stock-plan th:nth-child(7),.stock-plan td:nth-child(7){width:84px}
+.stock-plan th:nth-child(8),.stock-plan td:nth-child(8){width:88px}
+.stock-plan th:nth-child(9),.stock-plan td:nth-child(9){width:auto;min-width:170px}
+@media(max-width:1199px){.stock-plan table{width:1200px}}
+
+table{width:100%;border-collapse:collapse}
+th{background:var(--sf2);padding:8px 12px;text-align:left;font-size:.68rem;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.04em;cursor:pointer;user-select:none;white-space:nowrap}
+th:hover{background:var(--bd)}
+td{padding:8px 12px;font-size:.79rem;border-bottom:1px solid var(--bd)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--bg)}
+.bx{display:inline-block;padding:2px 7px;border-radius:20px;font-size:.67rem;font-weight:600}
+.b-bn{background:var(--bnl);color:var(--bnd)}
+.b-cr{background:var(--crl);color:var(--crd)}
+.b-ca{background:var(--cal);color:var(--cad)}
+.b-er{background:#FDEAEA;color:var(--er)}
+tr.re td{background:#FFF5F5}
+tr.re td:first-child{border-left:3px solid var(--er)}
+
+/* BIZ CARDS */
+.bcg{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}
+.bcc{border-radius:var(--r);padding:20px;color:#fff}
+.bcc.bn{background:linear-gradient(135deg,var(--bn),var(--bnd))}
+.bcc.cr{background:linear-gradient(135deg,var(--cr),var(--crd))}
+.bcc.ca{background:linear-gradient(135deg,var(--ca),var(--cad))}
+.bcn{font-family:'DM Serif Display',serif;font-size:1.15rem;margin-bottom:12px}
+.bs{margin-bottom:8px}
+.bsl{font-size:.67rem;opacity:.75;text-transform:uppercase;letter-spacing:.05em}
+.bsv{font-size:1.2rem;font-weight:600}
+.bsh{font-size:.76rem;opacity:.8;margin-top:9px}
+.btg{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0 18px}
+.btc{background:var(--sf);border-radius:var(--r);padding:16px;box-shadow:var(--sh);border-top:4px solid var(--bd)}
+.btc.bn{border-top-color:var(--bn)}.btc.cr{border-top-color:var(--cr)}.btc.ca{border-top-color:var(--ca)}
+.btt{font-family:'DM Serif Display',serif;font-size:1.05rem;margin-bottom:10px}
+.bts{font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;color:var(--tx2);font-weight:600;margin:12px 0 6px}
+.btl{display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid var(--bd);padding:6px 0;font-size:.78rem}
+.btl:last-child{border-bottom:none}
+.btl span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.btl strong{white-space:nowrap}
+
+/* FAIR HL */
+.fhg{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:11px;margin-bottom:16px}
+.fhc{background:var(--sf);border-radius:var(--r);padding:14px 17px;box-shadow:var(--sh)}
+.fhl{font-size:.67rem;font-weight:600;text-transform:uppercase;color:var(--tx2);margin-bottom:4px}
+.fhv{font-family:'DM Serif Display',serif;font-size:1rem}
+.fhs{font-size:.7rem;color:var(--tx2)}
+
+/* PAGINATION */
+.pag{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-top:1px solid var(--bd);font-size:.77rem;color:var(--tx2)}
+.pbs{display:flex;gap:4px;flex-wrap:wrap}
+.pb{border:1px solid var(--bd);background:var(--sf);color:var(--tx);border-radius:6px;padding:3px 9px;cursor:pointer;font-size:.77rem}
+.pb:hover{background:var(--sf2)}
+.pb.on{background:var(--tx);color:#fff;border-color:var(--tx)}
+
+th .sa{opacity:.35;font-size:.68rem}
+th.asc .sa::after{content:' ↑';opacity:1}
+th.desc .sa::after{content:' ↓';opacity:1}
+
+/* VALIDATION WARNING */
+.vwarn{display:none;align-items:center;gap:10px;background:#FFF5E0;border:1px solid #E5B84B;color:#6B4A00;border-radius:12px;padding:10px 14px;margin:-8px 0 20px 0;box-shadow:var(--sh)}
+.vwarn.show{display:flex}
+.vwarn button{border:none;background:#E5A900;color:#1A1410;border-radius:8px;padding:6px 11px;cursor:pointer;font-weight:700;font-family:'DM Sans',sans-serif}
+.vwarn button:hover{filter:brightness(.95)}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;align-items:flex-start;justify-content:center;padding:70px 18px 24px}
+.modal.show{display:flex}
+.modal-card{background:var(--sf);border-radius:16px;box-shadow:0 20px 70px rgba(0,0,0,.25);width:min(1100px,100%);max-height:82vh;overflow:hidden;display:flex;flex-direction:column}
+.modal-h{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:15px 18px;border-bottom:1px solid var(--bd)}
+.modal-title{font-family:'DM Serif Display',serif;font-size:1.2rem}
+.backbtn{border:1px solid var(--bd);background:var(--sf2);border-radius:8px;padding:7px 13px;cursor:pointer;font-weight:600;font-family:'DM Sans',sans-serif}
+.modal-body{padding:0;overflow:auto}
+.note{font-size:.78rem;color:var(--tx2);padding:12px 18px;border-bottom:1px solid var(--bd);line-height:1.45}
+
+
+.stock-note{background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;padding:12px 14px;margin-bottom:12px;color:#7c2d12;font-size:.86rem;line-height:1.45}
+.stock-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;align-items:center;justify-content:center;z-index:999;padding:18px}
+.modal-backdrop.show{display:flex}
+.modal{background:var(--sf);border-radius:16px;box-shadow:0 18px 60px rgba(0,0,0,.25);width:min(1050px,96vw);max-height:86vh;overflow:auto}
+.modal-h{position:sticky;top:0;background:var(--sf);border-bottom:1px solid var(--bd);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;z-index:2}
+.modal-t{font-family:'DM Serif Display',serif;font-size:1.15rem}
+.modal-b{padding:16px}
+
+/* FIX: els modals d'estoc havien heretat display:none del modal de validació */
+.modal-backdrop .modal{display:block;position:relative;inset:auto}
+.closebtn{border:1px solid var(--bd);background:var(--sf2);border-radius:8px;padding:6px 10px;cursor:pointer;font-family:'DM Sans',sans-serif}
+.pill{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:3px 8px;font-size:.72rem;font-weight:700}
+.pill.red{background:#FDEAEA;color:#B91C1C}.pill.orange{background:#FFF7ED;color:#C2410C}.pill.green{background:#ECFDF5;color:#047857}.pill.blue{background:#EFF6FF;color:#1D4ED8}.pill.test{background:#F5F3FF;color:#6D28D9}
+
+@media(max-width:768px){
+  .main{padding:12px}
+  .cg{grid-template-columns:1fr}
+  .stock-wide-grid{grid-template-columns:1fr}
+  .bcg{grid-template-columns:1fr}
+  .btg{grid-template-columns:1fr}
+  .kg{grid-template-columns:repeat(2,1fr)}
+}
+
+/* Portada artesanal */
+#homeScreen{max-width:1040px;margin:26px auto 48px;padding:12px 12px 34px;text-align:center}
+.home-kicker{font-size:.77rem;letter-spacing:.22em;text-transform:uppercase;color:#987769;font-weight:800}
+.home-title{font-family:Georgia,serif;color:#553d37;font-size:clamp(2rem,5vw,3.3rem);margin:12px 0 6px}
+.home-sub{color:#836d64;margin:0 0 28px;font-size:1rem}
+.home-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.home-card{border:1px solid #e7d7cc;min-height:0;border-radius:22px;padding:23px 25px;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:14px;transition:transform .2s,box-shadow .2s;box-shadow:0 7px 22px #523b2a10;font-family:inherit}
+.home-card:hover,.home-card:focus-visible{transform:translateY(-3px);box-shadow:0 12px 28px #523b2a22;outline:2px solid #b57b6a;outline-offset:2px}
+.home-card-top{display:flex;align-items:center;gap:14px}
+.home-card .hico{font-size:2rem;width:52px;height:52px;display:flex;align-items:center;justify-content:center;background:#ffffff70;border-radius:15px;flex:none}
+.home-card strong{font-family:Georgia,serif;font-size:1.35rem;color:#493b37;display:block;margin:0}
+.home-card small{font-size:.87rem;color:#695d56;line-height:1.4;display:block;margin-top:4px}
+.home-card-bottom{display:flex;justify-content:space-between;align-items:center;gap:12px;border-top:1px solid #6b554526;padding-top:12px}
+.home-card-stat{font-size:.82rem;font-weight:700;color:#5b4941}
+.home-card-arrow{font-size:1.2rem;color:#755e50;background:#ffffff75;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.home-card.c1{background:#f6ddd5}.home-card.c2{background:#e4eddb}.home-card.c3{background:#e4e9f4}.home-card.c4{background:#f8e8cc}
+.home-foot{margin-top:25px;color:#7b6e65;font-size:.83rem}
+#dash.in-home{display:none!important}
+#dash .tabs#mt{display:none!important}
+/* Les targetes del resum han de conservar el seu format de graella. */
+#dash #kg{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:13px;margin-bottom:22px}
+#dash #globalFilters{display:block}
+#dash #globalExecutive{display:block}
+#dash #vWarn{display:none}
+@media(max-width:600px){#dash #kg{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:380px){#dash #kg{grid-template-columns:1fr}}
+#sectionNav{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:4px 0 22px;flex-wrap:wrap}
+#sectionNav h2{font-family:Georgia,serif;font-size:1.65rem;margin:0;color:#533e38}
+.section-home{border:1px solid #d7c5b6;background:#fffaf5;border-radius:13px;padding:10px 16px;cursor:pointer;font-weight:700;color:#634b40}
+.group-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px}
+.group-tabs button{background:#fff;border:1px solid #dfcfc3;border-radius:12px;padding:10px 14px;cursor:pointer;font:inherit;color:#55433a}
+.group-tabs button.active{background:#4e3c36;color:#fff}
+#homeHeaderBtn{border:1px solid #856c60;background:transparent;color:#fff;border-radius:11px;padding:8px 12px;cursor:pointer}
+@media(max-width:650px){.home-grid{grid-template-columns:1fr}.home-card{min-height:0}#homeScreen{margin:14px auto}.home-title{font-size:2.15rem}}
+
+.hico img{width:68px;height:68px;object-fit:contain;filter:drop-shadow(0 4px 4px #70554022)}
+.tc[hidden],.tc:not(.on){display:none!important}
+#tab-tbl .tabs{flex-wrap:wrap}
+#tab-tbl .tab{cursor:pointer}
+#tab-tbl .tsc{max-width:100%}
+#tab-tbl .tw{width:100%}
+#sectionNav{align-items:center}
+#sectionTitle{overflow-wrap:anywhere}
+@media(min-width:1100px){.home-grid{gap:18px}}
+
+.bcc .bcn:before,.btc .btt:before{content:"";display:inline-block;width:32px;height:32px;background-size:contain;background-position:center;background-repeat:no-repeat;vertical-align:middle;margin-right:8px}
+.bcc.bn .bcn:before,.btc.bn .btt:before{background-image:url('https://cdn-icons-png.flaticon.com/128/2600/2600600.png')}
+.bcc.cr .bcn:before,.btc.cr .btt:before{background-image:url('https://cdn-icons-png.flaticon.com/128/5352/5352831.png')}
+.bcc.ca .bcn:before,.btc.ca .btt:before{background-image:url('https://cdn-icons-png.flaticon.com/128/3345/3345581.png')}
+.table-tools{display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:10px 12px;background:#fffaf7;border:1px solid #efe6df;border-radius:12px;margin:10px 0}
+.table-tools input,.column-filters input{border:1px solid #ded5ce;border-radius:9px;padding:8px 10px;min-width:180px;max-width:100%;font:inherit;background:white}
+.table-tools button{border:1px solid #ded5ce;border-radius:9px;padding:8px 12px;background:#fff;cursor:pointer;font:inherit}
+.column-filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:9px;padding:10px 12px;margin-bottom:12px;background:#fffaf7;border-radius:12px}
+.column-filters[hidden]{display:none}.column-filters label{font-size:12px;display:flex;flex-direction:column;gap:4px}
+#tab-tbl th[role=button]:hover{background:#f6ece4}#tab-tbl tbody tr[hidden]{display:none}
+
+.stock-brand-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:16px 0 20px}
+.stock-brand-card{cursor:pointer;text-align:left;border:2px solid #e9dfe3;background:#fffaf8;border-radius:17px;padding:20px;display:flex;flex-direction:column;gap:8px;min-height:104px;color:inherit;font:inherit;transition:border-color .15s,background .15s}
+.stock-brand-card:hover{border-color:#c998aa}.stock-brand-card.selected{border-color:#a86680;background:#fff0f3;box-shadow:0 0 0 2px #f7e0e9 inset}
+.stock-brand-name{font-weight:800;font-size:1.13rem}.stock-brand-meta{font-size:.88rem;opacity:.7}
+.stock-brand-empty{padding:28px;border:1px dashed #d8b9c5;border-radius:14px;background:#fffaf8;margin:14px 0 22px}
+[hidden]{display:none!important}
+@media(max-width:680px){.stock-brand-grid{grid-template-columns:1fr}}
+
+/* Racó de les webs */
+.webs-toggle{border:1px solid #d9b7a7;background:#fff1e9;color:#603d39;border-radius:12px;padding:9px 14px;cursor:pointer;font:inherit;font-weight:700;white-space:nowrap}
+.webs-toggle:hover,.webs-toggle[aria-expanded="true"]{background:#f5dcd3}
+.webs-panel{position:fixed;z-index:9999;right:18px;top:78px;width:min(440px,calc(100vw - 36px));max-height:calc(100dvh - 95px);overflow:auto;background:#fffdf9;border:1px solid #ead4cc;border-radius:22px;padding:20px;box-shadow:0 18px 60px #4a302b35;color:#4f3b38}
+.webs-panel[hidden]{display:none!important}
+.webs-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:8px}.webs-head strong{font:700 1.35rem Georgia,serif}.webs-close{border:0;background:#f8e7e2;border-radius:50%;height:32px;width:32px;cursor:pointer;font-size:20px}
+.webs-sub{font-size:.84rem;color:#89716c;margin:0 0 15px}.webs-group{margin-top:15px}.webs-group h3{font-size:.75rem;letter-spacing:.09em;color:#98776d;text-transform:uppercase;margin:0 0 8px}
+.webs-link{display:flex;align-items:center;gap:10px;padding:12px;border:1px solid #eee1dc;border-radius:13px;margin:7px 0;background:#fff;text-decoration:none;color:#513b37;transition:background .15s,transform .15s}.webs-link:hover{background:#fff0eb;transform:translateX(2px)}.webs-emoji{width:42px;height:42px;flex:0 0 42px;display:grid;place-items:center;background:#fff6f0;border:1px solid #f3e6de;border-radius:12px}.webs-emoji img{width:30px;height:30px;object-fit:contain;display:block}.webs-link span:nth-child(2){flex:1;min-width:0}.webs-link b{display:block;font-size:.95rem}.webs-link small{display:block;color:#947e78;font-size:.77rem;margin-top:3px}.webs-arrow{color:#9c7167;font-size:1.15rem}
+@media(max-width:650px){.webs-panel{top:70px}.webs-toggle{padding:8px 10px}.hd .upz{flex-wrap:wrap}}
+
+/* Amplades de les columnes de fires: estat llegible i població compacta */
+#tab-agenda table th:nth-child(2),#tab-agenda table td:nth-child(2),
+#tab-history table th:nth-child(2),#tab-history table td:nth-child(2){width:115px;min-width:105px;max-width:135px;white-space:normal;overflow-wrap:break-word}
+#tab-agenda table th:nth-child(7),#tab-agenda table td:nth-child(7),
+#tab-history table th:nth-child(5),#tab-history table td:nth-child(5){width:170px;min-width:170px;white-space:nowrap}
+
+/* Accions compactes a l'Agenda i l'Històric */
+.fair-row-actions{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.fair-icon-btn{width:36px;height:34px;min-width:36px;display:inline-flex;align-items:center;justify-content:center;padding:0!important;font-size:17px;line-height:1;cursor:pointer}
+.fair-icon-btn:focus-visible{outline:2px solid #755e50;outline-offset:2px}
+
+/* Fires: taules compactes, amb desplaçament horitzontal només quan cal. */
+#tab-agenda .tsc,#tab-history .tsc{overflow-x:auto!important;max-width:100%;-webkit-overflow-scrolling:touch}
+#tab-agenda .tsc table,#tab-history .tsc table{display:table;width:max-content;min-width:100%;border-collapse:collapse}
+#tab-agenda .tsc thead,#tab-history .tsc thead{display:table-header-group}
+#tab-agenda .tsc tbody,#tab-history .tsc tbody{display:table-row-group}
+#tab-agenda .tsc tr,#tab-history .tsc tr{display:table-row}
+#tab-agenda .tsc th,#tab-agenda .tsc td,#tab-history .tsc th,#tab-history .tsc td{display:table-cell;vertical-align:middle;white-space:nowrap;padding:9px 10px}
+#tab-agenda .tsc td::before,#tab-history .tsc td::before{content:none!important}
+#tab-agenda .tsc td:nth-child(10),#tab-history .tsc td:nth-child(8){white-space:normal;min-width:150px;max-width:230px;overflow-wrap:anywhere}
+#tab-agenda .tsc td:last-child,#tab-history .tsc td:last-child{white-space:nowrap}
+#tab-agenda .tsc td:last-child .fair-row-actions,#tab-history .tsc td:last-child .fair-row-actions{display:inline-flex;gap:5px}
+.fair-mobile-sort{display:none!important}
+
+/* Ajust de taules per a portàtil: columnes flexibles i enllaços apilats */
+#tab-agenda .tsc table,#tab-history .tsc table{width:100%;min-width:0!important;table-layout:auto;font-size:12px}
+#tab-agenda .tsc th,#tab-agenda .tsc td,#tab-history .tsc th,#tab-history .tsc td{padding:7px 5px;line-height:1.3}
+#tab-agenda .tsc th:nth-child(1),#tab-agenda .tsc td:nth-child(1),#tab-history .tsc th:nth-child(1),#tab-history .tsc td:nth-child(1){width:130px;min-width:90px;max-width:145px;white-space:normal;overflow-wrap:anywhere}
+#tab-agenda .tsc th:nth-child(2),#tab-agenda .tsc td:nth-child(2),#tab-history .tsc th:nth-child(2),#tab-history .tsc td:nth-child(2){width:92px;min-width:72px;max-width:105px;white-space:normal}
+#tab-agenda .tsc th:nth-child(5),#tab-agenda .tsc td:nth-child(5){width:85px;min-width:75px;max-width:95px;white-space:normal}
+#tab-agenda .tsc th:nth-child(10),#tab-agenda .tsc td:nth-child(10),#tab-history .tsc th:nth-child(8),#tab-history .tsc td:nth-child(8){width:125px;min-width:85px;max-width:145px;white-space:normal;overflow-wrap:anywhere}
+#tab-agenda .tsc th:nth-child(11),#tab-agenda .tsc td:nth-child(11),#tab-history .tsc th:nth-child(9),#tab-history .tsc td:nth-child(9){width:72px;min-width:66px;max-width:80px;white-space:normal}
+#tab-agenda .tsc th:nth-child(7),#tab-agenda .tsc td:nth-child(7),#tab-history .tsc th:nth-child(5),#tab-history .tsc td:nth-child(5){width:122px;min-width:112px;max-width:140px;white-space:nowrap}
+#tab-agenda .tsc td:last-child,#tab-history .tsc td:last-child{min-width:76px}
+.fair-icon-btn{width:30px;height:30px;min-width:30px;font-size:15px}
+.fair-row-actions{gap:3px}
+
+/* Preu sense decimals: guanyem espai per a observacions */
+#tab-agenda .tsc th:nth-child(9),#tab-agenda .tsc td:nth-child(9),
+#tab-history .tsc th:nth-child(7),#tab-history .tsc td:nth-child(7){width:44px!important;min-width:40px!important;max-width:52px!important;white-space:nowrap!important;text-align:center;padding-left:3px!important;padding-right:3px!important}
+#tab-agenda .tsc th:nth-child(10),#tab-agenda .tsc td:nth-child(10),
+#tab-history .tsc th:nth-child(8),#tab-history .tsc td:nth-child(8){width:190px!important;min-width:145px!important;max-width:260px!important;white-space:normal!important;overflow-wrap:anywhere}
+
+/* Selector compacte d'un únic camp per a un interval de dates */
+.fair-range-wrap{position:relative}.fair-range-trigger{min-width:205px;text-align:left;cursor:pointer;background:var(--card,#fff)}
+.fair-range-pop{position:absolute;top:100%;left:0;z-index:120;background:#fff;color:#23312b;border:1px solid #c9d3ce;box-shadow:0 12px 32px #0002;border-radius:12px;padding:12px;width:300px;max-width:calc(100vw - 32px)}
+.fair-range-pop[hidden]{display:none!important}.fair-range-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
+.fair-range-head button{border:0;background:#e9f0ec;border-radius:7px;padding:6px 10px;cursor:pointer}.fair-range-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;text-align:center}
+.fair-range-grid .fair-weekday{font-size:11px;font-weight:700;padding:6px 0;color:#64756c}.fair-range-grid button{border:0;background:transparent;color:inherit;cursor:pointer;min-height:33px;border-radius:7px;font-size:12px}
+.fair-range-grid button:hover{background:#dbe9e0}.fair-range-grid button.in-range{background:#e0eee5;border-radius:0}.fair-range-grid button.range-end{background:#2d6b4b;color:white;border-radius:7px}
+.fair-range-help{font-size:11px;color:#52665b;margin-top:9px;line-height:1.4}
+</style>
+<style>
+.fair-cal-toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin:15px 0}
+.fair-cal-switch,.fair-cal-nav{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.fair-cal-switch .rb[aria-pressed="true"]{background:#755c4d;color:white;border-color:#755c4d}
+.fair-cal-nav strong{min-width:155px;text-align:center;text-transform:capitalize}
+.fair-cal-legend{display:flex;flex-wrap:wrap;gap:14px;margin:8px 0 14px;font-size:12px}
+.fair-cal-legend span{display:inline-flex;align-items:center;gap:5px}
+.fair-cal-dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.fair-calendar{width:100%;overflow-x:auto}
+.fair-cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;min-width:610px}
+.fair-cal-weekday{text-align:center;font-weight:700;padding:8px 2px;font-size:12px;color:#786b62}
+.fair-cal-day{min-height:108px;border:1px solid #e8dfd7;border-radius:10px;background:#fff;padding:6px;min-width:0}
+.fair-cal-day.outside{background:#f7f5f3;opacity:.45}
+.fair-cal-day.today{border:2px solid #80614d}
+.fair-cal-day-number{font-size:12px;font-weight:700;margin-bottom:5px;color:#655247}
+.fair-cal-event{display:block;width:100%;text-align:left;border:0;border-radius:6px;margin:3px 0;padding:5px 6px;font-size:11px;line-height:1.3;cursor:pointer;overflow-wrap:anywhere;color:#342f2a}
+.fair-cal-event.state-0{background:#e5edf9;border-left:3px solid #5a83bd}
+.fair-cal-event.state-1{background:#fff0c7;border-left:3px solid #c49429}
+.fair-cal-event.state-2{background:#efe3f7;border-left:3px solid #9b69b4}
+.fair-cal-event.state-3{background:#d5ebd9;border-left:3px solid #418257}
+.fair-cal-event.state-4{background:#d7f0ee;border-left:3px solid #338e88}
+.fair-cal-event.state-excluded{background:#ece9e8;border-left:3px solid #958b86}
+.fair-cal-event:hover{filter:brightness(.96);text-decoration:underline}
+.fair-cal-empty{padding:16px;color:#766a63}
+@media(max-width:760px){.fair-cal-day{min-height:90px}.fair-cal-grid{min-width:610px}}
+</style>
 </head>
 <body>
-  <h1>Dashboard d'Ordits i Trames</h1>
-  <p>La carpeta dashboard funciona correctament!</p>
+
+<div class="hd">
+  <div class="hd-t">ORDITS I TRAMES <span>·</span> Dashboard</div>
+  <div class="upz"><button id="homeHeaderBtn" onclick="goHome()">⌂ Inici</button>
+    <button class="webs-toggle" id="websToggle" type="button" aria-expanded="false" aria-controls="websPanel" onclick="toggleWebs()">🌷 Les nostres webs ▾</button>
+    <button class="upbtn" onclick="document.getElementById('fi').click()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+      Carregar Excel
+    </button>
+    <input type="file" id="fi" accept=".xlsx,.xls,.csv">
+  </div>
+</div>
+
+
+<div id="websPanel" class="webs-panel" hidden role="dialog" aria-label="Les nostres webs">
+  <div class="webs-head"><strong>🌸 Les nostres webs</strong><button type="button" class="webs-close" aria-label="Tancar" onclick="toggleWebs(false)">×</button></div>
+  <p class="webs-sub">Un raconet amb tots els nostres enllaços ✨</p>
+  <div class="webs-group"><h3>🏡 Web principal</h3>
+    <a class="webs-link" href="https://nuskadeberga.github.io/ORDITSITRAMES/" target="_blank" rel="noopener noreferrer"><span class="webs-emoji"><img src="https://cdn-icons-png.flaticon.com/128/4902/4902756.png" alt="" loading="lazy"></span><span><b>Ordits i Trames</b><small>La web actual</small></span><span class="webs-arrow">↗</span></a>
+  </div>
+  <div class="webs-group"><h3>🪡 Marques · accessos d'edició</h3>
+    <a class="webs-link" href="https://sites.google.com/d/1SjpAHbxAqORTFbT97M2P8e8NN-xweAod/edit?authuser=0" target="_blank" rel="noopener noreferrer"><span class="webs-emoji"><img src="https://cdn-icons-png.flaticon.com/128/3345/3345857.png" alt="" loading="lazy"></span><span><b>ByNuska</b><small>Google Sites · editar</small></span><span class="webs-arrow">↗</span></a>
+    <a class="webs-link" href="https://sites.google.com/d/1lIls1HJgDDipp5evEgQOvu92BNHadFit/p/1dv8wnRcbvpWZlxLAGxlC8_UQSBzDSCcd/edit" target="_blank" rel="noopener noreferrer"><span class="webs-emoji"><img src="https://cdn-icons-png.flaticon.com/128/5353/5353266.png" alt="" loading="lazy"></span><span><b>Confeccions Ribera</b><small>Google Sites · editar</small></span><span class="webs-arrow">↗</span></a>
+  </div>
+  <div class="webs-group"><h3>📦 Webs anteriors</h3>
+    <a class="webs-link" href="https://ordits-i-trames.glide.page/dl/0113d6" target="_blank" rel="noopener noreferrer"><span class="webs-emoji"><img src="https://cdn-icons-png.flaticon.com/128/5956/5956354.png" alt="" loading="lazy"></span><span><b>Glide</b><small>Versió antiga</small></span><span class="webs-arrow">↗</span></a>
+    <a class="webs-link" href="https://ordits-i-trames-builder-nubhxqrb7xncetvr.hostingersite.com/" target="_blank" rel="noopener noreferrer"><span class="webs-emoji"><img src="https://cdn-icons-png.flaticon.com/128/2220/2220380.png" alt="" loading="lazy"></span><span><b>Hostinger</b><small>Botiga anterior</small></span><span class="webs-arrow">↗</span></a>
+  </div>
+</div>
+<script>
+function toggleWebs(force){
+ const panel=document.getElementById('websPanel'),btn=document.getElementById('websToggle');
+ const open=typeof force==='boolean'?force:panel.hidden;
+ panel.hidden=!open;btn.setAttribute('aria-expanded',String(open));
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')toggleWebs(false)});
+document.addEventListener('click',e=>{const p=document.getElementById('websPanel'),b=document.getElementById('websToggle');if(!p.hidden&&!p.contains(e.target)&&!b.contains(e.target))toggleWebs(false)});
+</script>
+
+<div class="main"><div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px;font-size:.75rem;color:#6B5E52"><span id="persistStatus">Les dades carregades es desaran automàticament en aquest navegador.</span><button class="rb" onclick="exportSavedExcel().catch(e=>alert(e.message))">Descarregar còpia de l’Excel</button></div>
+
+  <div id="homeScreen">
+    <div class="home-kicker">✦ Fet a mà, pensat amb cura ✦</div>
+    <h1 class="home-title">ORDITS I TRAMES</h1>
+    <p class="home-sub">El nostre univers de creacions, vendes i fires</p>
+    <div class="home-grid">
+      <button class="home-card c1" onclick="openGroup('resum')"><span class="home-card-top"><span class="hico">📊</span><span><strong>Resum i taules</strong><small>Resultats, evolució i dades de vendes</small></span></span><span class="home-card-bottom"><span class="home-card-stat" id="homeStatSales">Consultant dades…</span><span class="home-card-arrow" aria-hidden="true">→</span></span></button>
+      <button class="home-card c2" onclick="openGroup('productes')"><span class="home-card-top"><span class="hico">🧶</span><span><strong>Productes i estoc</strong><small>Què es ven, què tenim i què convé fabricar</small></span></span><span class="home-card-bottom"><span class="home-card-stat" id="homeStatProducts">Consultant dades…</span><span class="home-card-arrow" aria-hidden="true">→</span></span></button>
+      <button class="home-card c3" onclick="openGroup('botigues')"><span class="home-card-top"><span class="hico">🏷️</span><span><strong>Les nostres marques</strong><small>ByNuska, Carlitus i Confeccions Ribera</small></span></span><span class="home-card-bottom"><span class="home-card-stat" id="homeStatBrands">Consultant dades…</span><span class="home-card-arrow" aria-hidden="true">→</span></span></button>
+      <button class="home-card c4" onclick="openGroup('fires')"><span class="home-card-top"><span class="hico">🎪</span><span><strong>Fires</strong><small>Rendiment, historial i oportunitats futures</small></span></span><span class="home-card-bottom"><span class="home-card-stat" id="homeStatFairs">Consultant dades…</span><span class="home-card-arrow" aria-hidden="true">→</span></span></button>
+    </div><p class="home-foot" id="homeDataStatus">Pots consultar les fires; per a les vendes, carrega l'Excel des de la cantonada superior dreta.</p>
+  </div>
+  <div id="dash" class="in-home"><div id="sectionNav"><button class="section-home" onclick="goHome()">← Tornar a inici</button><h2 id="sectionTitle"></h2></div><div class="group-tabs" id="groupTabs"></div>
+
+    <!-- MAIN TABS -->
+    <div class="tabs" id="mt">
+      <div class="tab on"  onclick="showT('ov','mt')">Resum</div>
+      <div class="tab"     onclick="showT('pr','mt')">Productes</div>
+      <div class="tab"     onclick="showT('fi','mt')">Fires</div>
+      <div class="tab"     onclick="showT('cmp','mt')">Botigues</div>
+      <div class="tab" onclick="showT('agenda','mt')">🗓️ Agenda de fires</div>
+      <div class="tab"     onclick="showT('stk','mt')">📦 Stock i producció</div>
+      <div class="tab" onclick="showT('preus','mt')">💶 Preus i rendibilitat</div>
+      <div class="tab"     onclick="showT('tbl','mt')">Taules</div>
+    </div>
+
+    <!-- ── RESUM ── -->
+    <div id="tab-ov" class="tc on">
+    <!-- FILTERS -->
+    <!-- KPIs -->
+    <div class="kg" id="kg"></div><p style="font-size:.76rem;color:var(--tx2);margin:-12px 0 20px">Les fires es comparen per facturació per jornada equivalent (1 o 0,5), segons la pestanya FIRES. Una sola jornada és una mostra limitada, encara que lideri el rànquing.</p>
+    <div id="coherenceBanner" class="vwarn" style="display:none"><strong>🔎 Revisió de dades</strong> <span id="coherenceText"></span> <button onclick="document.getElementById('coherenceModal').classList.add('show')">Veure incidències</button></div>
+    <div id="vWarn" class="vwarn"><strong>⚠️ Hi ha dades inconsistents</strong><span id="vWarnTxt"></span><button onclick="openValidation()">Veure dades</button></div>
+
+    <div class="fb" id="globalFilters">
+      <div class="fbt">Filtres</div>
+      <div class="fg">
+        <div class="fgi"><span class="fgl">Botiga</span><select class="fgs" id="fBot" onchange="applyF()"><option value="">Totes</option></select></div>
+        <div class="fgi"><span class="fgl">Any</span><select class="fgs" id="fAny" onchange="applyF()"><option value="">Tots</option></select></div>
+        <div class="fgi"><span class="fgl">Des de</span><input type="date" class="fgs" id="fFrom" onchange="applyF()"></div>
+        <div class="fgi"><span class="fgl">Fins a</span><input type="date" class="fgs" id="fTo" onchange="applyF()"></div>
+        <div class="fgi"><span class="fgl">Categoria</span><select class="fgs" id="fCat" onchange="applyF()"><option value="">Totes</option></select></div>
+        <div class="fgi"><span class="fgl">Producte</span><select class="fgs" id="fPro" onchange="applyF()"><option value="">Tots</option></select></div>
+        <div class="fgi"><span class="fgl">Fira</span><select class="fgs" id="fFir" onchange="applyF()"><option value="">Totes</option></select></div>
+        <div class="fgi"><span class="fgl">Població</span><select class="fgs" id="fPob" onchange="applyF()"><option value="">Totes</option></select></div>
+        <div class="fgi"><span class="fgl">Pagament</span><select class="fgs" id="fPag" onchange="applyF()"><option value="">Tots</option></select></div>
+        <button class="rb" onclick="resetF()">↺ Reiniciar</button>
+      </div>
+    </div>
+
+      <div class="sec">
+        <div class="sec-t">Evolució temporal</div>
+        <div class="cg">
+          <div class="cc"><div class="ct">Comparació anual per botiga</div><div class="cw t"><canvas id="cAnn"></canvas></div></div>
+        </div>
+        <div class="cc" style="margin-top:16px"><div class="ct">Vendes per jornada de fira · evolució cronològica (€)</div><div class="cw xt"><canvas id="cFairTimeline"></canvas></div><div id="fairTimelineNote" class="fhs" style="margin-top:8px"></div></div>
+      </div>
+      <div class="sec">
+        <div class="sec-t">Per botiga</div>
+        <div class="cg">
+          <div class="cc"><div class="ct">Ingressos (€) per botiga</div><div class="cw"><canvas id="cBRev"></canvas></div></div>
+          <div class="cc"><div class="ct">Unitats per botiga</div><div class="cw"><canvas id="cBUni"></canvas></div></div>
+          <div class="cc"><div class="ct">Tiquet mitjà per botiga</div><div class="cw"><canvas id="cBTk"></canvas></div></div>
+        </div>
+      </div>
+      <div class="sec">
+        <div class="sec-t">Categories</div>
+        <div class="cg">
+          <div class="cc"><div class="ct">Vendes per categoria (€)</div><div class="cw"><canvas id="cCat"></canvas></div></div>
+          <div class="cc"><div class="ct">Unitats per categoria</div><div class="cw"><canvas id="cCatUni"></canvas></div></div>
+        </div>
+      </div>
+      <div class="sec">
+        <div class="sec-t">Territori</div>
+        <div class="cg">
+          <div class="cc"><div class="ct">Vendes per població (€)</div><div class="cw t"><canvas id="cTow"></canvas></div></div>
+          <div class="cc"><div class="ct">Unitats per població</div><div class="cw t"><canvas id="cTowUni"></canvas></div></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── PRODUCTES ── -->
+    <div id="tab-pr" class="tc" hidden>
+      <div class="sec">
+        <div class="sec-t">Anàlisi de productes</div>
+        <div class="cg">
+          <div class="cc"><div class="ct">Top 10 per ingressos (€)</div><div class="cw t"><canvas id="cP10R"></canvas></div></div>
+          <div class="cc"><div class="ct">Top 10 per unitats</div><div class="cw t"><canvas id="cP10U"></canvas></div></div>
+        </div>
+      </div>
+      <div class="sec">
+        <div class="cg stock-wide-grid">
+          <div class="cc"><div class="ct">Productes més venuts</div><div class="tsc no-scroll"><table id="tStBest"><thead><tr><th>Producte</th><th>Venut</th><th>Fires</th><th>Venut/fira</th></tr></thead><tbody></tbody></table></div></div>
+          <div class="cc"><div class="ct">Productes sense moviment</div><div class="tsc no-scroll"><table id="tStNoMove"><thead><tr><th>Producte</th><th>Categoria</th><th>Stock</th><th>Lectura</th></tr></thead><tbody></tbody></table></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── FIRES ── -->
+    <div id="tab-fi" class="tc" hidden>
+      <div class="sec">
+        <div class="sec-t">Rendiment de fires</div>
+        <div class="fhg" id="fhl"></div>
+        <div class="cg">
+          <div class="cc"><div class="ct">Ingressos per fira (€)</div><div class="cw t"><canvas id="cFR"></canvas></div></div>
+          <div class="cc"><div class="ct">Top 10 fires per jornada equivalent (€/jornada)</div><div class="cw t"><canvas id="cF10"></canvas></div></div>
+          <div class="cc"><div class="ct">Unitats per fira</div><div class="cw t"><canvas id="cFU"></canvas></div></div>
+          <div class="cc"><div class="ct">Jornades equivalents per fira</div><div class="cw t"><canvas id="cFT"></canvas></div></div>
+        </div>
+        <div class="tw">
+          <div class="th"><span class="tht">Rànquing de fires</span></div>
+          <div class="tsc"><table id="tFRk"><thead><tr>
+            <th>#</th><th>Fira</th>
+            <th onclick="srt('tFRk',2,this)">Ingressos €<span class="sa"></span></th>
+            <th onclick="srt('tFRk',3,this)">Unitats<span class="sa"></span></th>
+            <th onclick="srt('tFRk',4,this)">Jornades<span class="sa"></span></th>
+            <th onclick="srt('tFRk',5,this)">€/jornada<span class="sa"></span></th><th onclick="srt('tFRk',6,this)">Unitats/jornada<span class="sa"></span></th>
+          </tr></thead><tbody></tbody></table></div>
+        </div>
+        <div class="tw"><div class="th"><span class="tht">Historial de jornades · durada i observacions</span></div><div class="tsc"><table id="tFairDays"><thead><tr><th>Data</th><th>Fira</th><th>Lloc</th><th>Jornades</th><th>Vendes</th><th>Observacions</th></tr></thead><tbody></tbody></table></div></div>
+      </div>
+    </div>
+
+    <!-- ── BOTIGUES ── -->
+    <div id="tab-cmp" class="tc" hidden>
+      <div class="sec">
+        <div class="sec-t">Comparació de botigues</div>
+        <div class="bcg" id="bcg"></div>
+        <div class="sec-t" style="margin-top:18px">Què es ven més per botiga</div>
+        <div class="btg" id="bizTopGrid"></div>
+        <div class="cg">
+          <div class="cc"><div class="ct">Vendes mensuals per botiga (€)</div><div class="cw t"><canvas id="cBM"></canvas></div></div>
+          <div class="cc"><div class="ct">Vendes anuals per botiga (€)</div><div class="cw t"><canvas id="cBY"></canvas></div></div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ── PREUS I RENDIBILITAT ── -->
+    <div id="tab-preus" class="tc" hidden>
+      <div class="sec">
+        <div class="sec-t">Preus i rendibilitat</div>
+        <p style="color:var(--tx2);font-size:.87rem;margin:4px 0 16px">Els marges descompten només els costos directes dels materials i altres consumibles. El temps d'elaboració és informatiu: no es valora com a cost. No són beneficis nets.</p>
+        <div class="kg" id="priceKpis"></div>
+        <div class="fb" style="margin:12px 0"><div class="fbt">Consulta de preus</div><div class="fg">
+          <div class="fgi"><span class="fgl">Marca</span><select class="fgs" id="priceBrand" onchange="renderPrices()"><option value="">Totes</option></select></div>
+          <div class="fgi"><span class="fgl">Temporada</span><select class="fgs" id="priceSeason" onchange="renderPrices()"><option value="">Totes</option></select></div>
+          <div class="fgi"><span class="fgl">Cerca per producte, família o mida</span><input class="fgs" id="priceSearch" type="search" placeholder="Cerca..." oninput="renderPrices()"></div>
+          <button class="rb" onclick="document.getElementById('priceBrand').value='';document.getElementById('priceSeason').value='';document.getElementById('priceSearch').value='';renderPrices()">↺ Reiniciar</button>
+        </div></div>
+        <div class="tw"><div class="th"><span class="tht">Tarifa i marges directes · PREUS2026</span></div>
+          <div class="tsc"><table id="priceTable" style="min-width:1140px"><thead><tr><th>Marca</th><th>Producte</th><th>Subcategoria</th><th>Mida / Tipus</th><th>Temporada</th><th>Temps</th><th>Cost directe</th><th>Preu mín.</th><th>Preu màx.</th><th>Marge mín.</th><th>Marge màx.</th><th>Estat</th></tr></thead><tbody></tbody></table></div>
+        </div>
+        <p id="priceNote" class="stock-note" style="margin-top:12px"></p>
+      </div>
+    </div>
+
+    <!-- ── STOCK ── -->
+    <div id="tab-stk" class="tc" hidden>
+      <div class="sec">
+        <div class="sec-t">Stock i producció</div>
+        <div class="stock-brand-grid" id="stockBrandGrid" aria-label="Selecciona la marca de l’estoc"></div>
+        <div id="stockBrandEmpty" class="stock-brand-empty" hidden></div>
+        <div class="stock-note" id="stockBrandContent">
+          Càlcul intern: unitats venudes del producte ÷ fires on aquell producte s’ha venut, per a la marca seleccionada. La <b>producció</b> s’agrupa per <b>subcategoria</b> i temporada, sumant l’estoc de tots els models. La <b>mida/tipus</b> mostra l’estoc de cada variant, sense repartir vendes antigues sense mida. El color només serveix per consultar existències. L’antiguitat es considera per família (primer any registrat), no per cada model o color.
+          <div class="stock-actions">
+            <button class="rb" onclick="openStockModal('stockModal')">👁 Veure stock actual</button>
+            <button class="rb" onclick="openStockModal('overModal')">📦 Veure sobrestock</button>
+          </div>
+        </div>
+        <div class="kg" id="skg"></div>
+      </div>
+
+      <div class="sec" id="stockPlanningSection">
+        <div class="tw">
+          <div class="th"><span class="tht">Què he de fabricar ara?</span><input class="ts" placeholder="Cercar…" oninput="srchT('tStP',this.value)"></div>
+          <div class="stock-filter-row" style="display:flex;gap:12px;flex-wrap:wrap;padding:12px 16px;align-items:center">
+            <label>Temporada <select id="stockSeasonFilter" onchange="renderStock()"><option value="">Totes</option><option>Nadal</option><option>Hivern</option><option>Estiu</option><option>Atemporal</option><option value="Sense definir">Sense definir</option></select></label>
+            <label>Estat <select id="stockStatusFilter" onchange="renderStock()"><option value="">Tots</option><option>Fabricar ara</option><option>Planificar</option><option>Estoc suficient</option></select></label>
+            <span class="ks">La prioritat es calcula per subcategoria. L’antiguitat correspon a l’any més antic de la família; els models nous no la reinicien. Les vendes sense mida no s’assignen a cap variant.</span>
+          </div>
+          <div class="tsc no-scroll stock-plan"><table id="tStP"><thead><tr>
+            <th>Prioritat</th>
+            <th>Família</th>
+            <th>Temporada</th>
+            <th onclick="srt('tStP',3,this)">Stock<span class="sa"></span></th>
+            <th>Mida / tipus disponible</th>
+            <th onclick="srt('tStP',5,this)">Cobertura<span class="sa"></span></th>
+            <th onclick="srt('tStP',6,this)">Venut / fira<span class="sa"></span></th>
+            <th onclick="srt('tStP',7,this)">A produir<span class="sa"></span></th>
+            <th>Observacions</th>
+          </tr></thead><tbody><tr><td colspan="9">Carrega un Excel amb pestanya d’stock.</td></tr></tbody></table></div>
+        </div>
+      </div>
+
+
+    </div>
+
+    <div class="modal-backdrop" id="stockModal" onclick="closeStockModal(event,'stockModal')">
+      <div class="modal" onclick="event.stopPropagation()">
+        <div class="modal-h"><div class="modal-t">Stock actual</div><button class="closebtn" onclick="hideStockModal('stockModal')">Tancar</button></div>
+        <div class="modal-b">
+          <div class="th"><span class="tht">Consulta per família, model, categoria, color, mida i observacions</span><input class="ts" placeholder="Cercar…" oninput="srchT('tSt',this.value)"></div>
+          <div class="tsc"><table id="tSt"><thead><tr><th>Marca</th><th>Família</th><th>Categoria</th><th>Subcategoria / model</th><th>Temporada</th><th>Mida / tipus</th><th>Color</th><th onclick="srt('tSt',7,this)">Stock<span class="sa"></span></th><th>Observacions</th></tr></thead><tbody></tbody></table></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-backdrop" id="overModal" onclick="closeStockModal(event,'overModal')">
+      <div class="modal" onclick="event.stopPropagation()">
+        <div class="modal-h"><div class="modal-t">Sobrestock i productes que no cal fabricar</div><button class="closebtn" onclick="hideStockModal('overModal')">Tancar</button></div>
+        <div class="modal-b">
+          <div class="tsc"><table id="tStOver"><thead><tr><th>Producte</th><th>Categoria</th><th>Stock</th><th>Cobertura</th><th>Lectura</th></tr></thead><tbody></tbody></table></div>
+        </div>
+      </div>
+    </div>
+
+<div id="tab-agenda" class="tc" hidden><div class="sec"><div class="sec-t">🗓️ Agenda de fires</div>
+<p style="color:var(--tx2)">Edita les dates, els terminis, l'estat i les observacions. Les dades es desen en aquest navegador; fes una còpia de seguretat per conservar-les en altres dispositius.</p>
+<div class="fg" style="gap:10px;margin:12px 0;flex-wrap:wrap">
+<div class="fgi"><span class="fgl">Vista</span><select class="fgs" id="agendaVista" onchange="renderAgenda()"><option value="active">Sense descartades</option><option value="all">Totes les fires</option><option value="discarded">Només descartades</option></select></div>
+<div class="fgi"><span class="fgl">Estat de la fira</span><select class="fgs" id="agendaEstat" onchange="renderAgenda()"><option value="">Tots els estats</option><option value="Per Consultar">0. Per Consultar</option><option value="Sol·licitada">1. Sol·licitada</option><option value="Ens hi volen">2. Ens hi volen</option><option value="Confirmada">3. Confirmada</option><option value="Celebrada">4. Celebrada</option><option value="Autònoms!">5. Autònoms!</option><option value="Descartada">6. Descartada</option><option value="Passem">7. Passem</option></select></div>
+<div class="fgi"><span class="fgl">Població</span><select class="fgs" id="agendaPoble" onchange="renderAgenda()"><option value="">Totes</option></select></div>
+<div class="fgi"><span class="fgl">Cerca</span><input class="fgs" id="agendaCerca" oninput="renderAgenda()" placeholder="Nom, poble, notes…"></div>
+<div class="fgi fair-range-wrap"><span class="fgl">Dates</span><button class="fgs fair-range-trigger" type="button" id="agendaRangeTrigger" onclick="fairRangeToggle('agenda')" aria-label="Seleccionar inici i fi del període" aria-expanded="false">📅 Qualsevol data ▾</button><input type="hidden" id="agendaDateFrom"><input type="hidden" id="agendaDateTo"><div class="fair-range-pop" id="agendaRangePop" hidden></div></div><button class="rb" type="button" onclick="clearFairDateFilters('agenda')">Neteja dates</button><button class="rb" onclick="agendaNew()">+ Afegir fira</button><button class="rb" onclick="exportAgenda()">Exportar còpia JSON</button><button class="rb" onclick="document.getElementById('agendaImport').click()">Importar còpia JSON</button><input id="agendaImport" type="file" accept=".json,application/json" hidden onchange="importAgenda(this)"></div><div id="agendaBackupWarning" role="status" style="display:none;margin:12px 0;padding:12px;border:1px solid #e8b96c;border-radius:10px;background:#fff7e8;color:#754d16">⚠️ Has fet canvis a les fires que encara no has exportat. <button class="rb" onclick="exportAgenda()">Descarregar còpia JSON</button></div>
+<div class="fair-cal-toolbar"><div class="fair-cal-switch"><button type="button" class="rb" id="fairTableBtn" onclick="setFairView('table')">☷ Taula</button><button type="button" class="rb" id="fairCalendarBtn" onclick="setFairView('calendar')">▦ Calendari</button></div><div id="fairCalendarNav" class="fair-cal-nav" hidden><button class="rb" onclick="moveFairMonth(-1)" aria-label="Mes anterior">‹</button><strong id="fairMonthTitle"></strong><button class="rb" onclick="moveFairMonth(1)" aria-label="Mes següent">›</button><button class="rb" onclick="goFairCurrentMonth()">Avui</button></div></div>
+<div id="fairCalendar" class="fair-calendar" hidden></div>
+<div id="agendaTableView"><div class="kg" id="agendaKpis"></div><div class="fair-mobile-sort"><label for="agendaCompactSort">Ordena les fires per</label><select id="agendaCompactSort" onchange="agendaSortBy(this.value)"><option value="inici">Data inici</option><option value="nom">Nom de la fira</option><option value="poble">Població</option><option value="fi">Data fi</option><option value="termini">Termini d'inscripció</option><option value="estat">Estat</option><option value="marca">Marca</option><option value="preu">Preu</option><option value="notes">Observacions</option><option value="contacte">Contacte</option></select></div><div class="tw"><div class="tsc" style="overflow-x:auto"><table style="min-width:0"><thead><tr><th onclick="agendaSortBy('nom')" style="cursor:pointer" title="Ordenar">Fira ↕</th><th onclick="agendaSortBy('poble')" style="cursor:pointer" title="Ordenar">Població ↕</th><th onclick="agendaSortBy('inici')" style="cursor:pointer" title="Ordenar">Data inici ↕</th><th onclick="agendaSortBy('fi')" style="cursor:pointer" title="Ordenar">Data fi ↕</th><th onclick="agendaSortBy('termini')" style="cursor:pointer" title="Ordenar">Termini inscripció ↕</th><th>Avís</th><th onclick="agendaSortBy('estat')" style="cursor:pointer" title="Ordenar">Estat de la fira ↕</th><th onclick="agendaSortBy('marca')" style="cursor:pointer" title="Ordenar">Marca ↕</th><th onclick="agendaSortBy('preu')" style="cursor:pointer" title="Ordenar">€ ↕</th><th onclick="agendaSortBy('notes')" style="cursor:pointer">Observacions ↕</th><th onclick="agendaSortBy('contacte')" style="cursor:pointer">Contacte ↕</th><th>Enllaços</th><th>Detalls</th></tr></thead><tbody id="agendaRows"></tbody></table></div></div></div><div id="agendaDetail" class="cc" style="display:none;margin-top:14px"></div></div></div>
+<div id="tab-history" class="tc" hidden><div class="sec"><div class="sec-t">📚 Històric de fires</div>
+<div class="fg" style="gap:10px;margin:12px 0;flex-wrap:wrap"><div class="fgi"><span class="fgl">Cerca</span><input class="fgs" id="historySearch" oninput="renderFairHistory()" placeholder="Fira, població, observacions…"></div><div class="fgi"><span class="fgl">Any</span><select class="fgs" id="historyYear" onchange="renderFairHistory()"><option value="">Tots els anys</option></select></div><div class="fgi"><span class="fgl">Mostrar</span><select class="fgs" id="historyView" onchange="renderFairHistory()"><option value="active">Sense descartades</option><option value="all">Totes les fires</option><option value="discarded">Només descartades</option></select></div><div class="fgi"><span class="fgl">Estat de la fira</span><select class="fgs" id="historyState" onchange="renderFairHistory()"><option value="">Tots els estats</option></select></div></div>
+<div class="fg" style="gap:10px;margin:8px 0 14px;flex-wrap:wrap"><div class="fgi fair-range-wrap"><span class="fgl">Dates</span><button class="fgs fair-range-trigger" type="button" id="historyRangeTrigger" onclick="fairRangeToggle('history')" aria-label="Seleccionar inici i fi del període" aria-expanded="false">📅 Qualsevol data ▾</button><input type="hidden" id="historyDateFrom"><input type="hidden" id="historyDateTo"><div class="fair-range-pop" id="historyRangePop" hidden></div></div><button class="rb" type="button" onclick="clearFairDateFilters('history')">Neteja dates</button></div><div id="historyCount" style="margin:8px 0;color:var(--tx2)"></div><div class="fair-mobile-sort"><label for="historyCompactSort">Ordena les fires per</label><select id="historyCompactSort" onchange="historySortBy(this.value)"><option value="inici">Data inici</option><option value="nom">Nom de la fira</option><option value="poble">Població</option><option value="fi">Data fi</option><option value="estat">Estat</option><option value="marca">Marca</option><option value="preu">Preu</option><option value="notes">Observacions</option><option value="contacte">Contacte</option></select></div>
+<div class="tw"><div class="tsc" style="overflow-x:auto"><table style="min-width:0"><thead><tr><th onclick="historySortBy('nom')" style="cursor:pointer">Fira ↕</th><th onclick="historySortBy('poble')" style="cursor:pointer">Població ↕</th><th onclick="historySortBy('inici')" style="cursor:pointer">Data inici ↕</th><th onclick="historySortBy('fi')" style="cursor:pointer">Data fi ↕</th><th onclick="historySortBy('estat')" style="cursor:pointer">Estat ↕</th><th onclick="historySortBy('marca')" style="cursor:pointer">Marca ↕</th><th onclick="historySortBy('preu')" style="cursor:pointer">€ ↕</th><th onclick="historySortBy('notes')" style="cursor:pointer">Observacions ↕</th><th onclick="historySortBy('contacte')" style="cursor:pointer">Contacte ↕</th><th>Enllaços</th><th>Accions</th></tr></thead><tbody id="historyRows"></tbody></table></div></div><div id="historyBackupWarning" role="status" style="display:none;margin:12px 0;padding:12px;border:1px solid #e8b96c;border-radius:10px;background:#fff7e8;color:#754d16">⚠️ Hi ha canvis desats pendents d’exportar. <button class="rb" onclick="exportAgenda()">Descarregar còpia JSON</button></div><div id="historyDetail" class="sec" style="display:none;margin-top:15px"></div></div></div>
+<div id="tab-tbl" class="tc" hidden>
+      <div class="tabs" id="st">
+        <div class="tab on" onclick="showT('ts-sa','st')">Registres</div>
+        <div class="tab"    onclick="showT('ts-bz','st')">Botigues</div>
+        <div class="tab"    onclick="showT('ts-pr','st')">Productes</div>
+        <div class="tab"    onclick="showT('ts-ct','st')">Categories</div>
+        <div class="tab"    onclick="showT('ts-fi','st')">Fires</div>
+        <div class="tab"    onclick="showT('ts-to','st')">Poblacions</div>
+        <div class="tab"    onclick="showT('ts-py','st')">Pagament</div>
+        <div class="tab" style="display:none" onclick="showT('ts-er','st')">Errors (<span id="erCnt">0</span>)</div>
+      </div>
+
+      <div id="tab-ts-sa" class="tc on">
+        <div class="tw">
+          <div class="th"><span class="tht">Registres de vendes</span><input class="ts" placeholder="Cercar…" oninput="srchT('tSa',this.value)"></div>
+          <div class="tsc"><table id="tSa"><thead><tr>
+            <th onclick="srt('tSa',0,this)">Data<span class="sa"></span></th>
+            <th>Botiga</th><th>Producte</th><th>Categoria</th>
+            <th onclick="srt('tSa',4,this)">Qttat<span class="sa"></span></th>
+            <th onclick="srt('tSa',5,this)">P.Unit<span class="sa"></span></th>
+            <th onclick="srt('tSa',6,this)">Total<span class="sa"></span></th>
+            <th>Fira</th><th>Població</th><th>Pagament</th>
+          </tr></thead><tbody></tbody></table></div>
+          <div class="pag"><span id="pgI"></span><div class="pbs" id="pgB"></div></div>
+        </div>
+      </div>
+
+      <div id="tab-ts-bz" class="tc" hidden>
+        <div class="tw"><div class="th"><span class="tht">Resum per botiga</span></div>
+        <div class="tsc"><table id="tBz"><thead><tr>
+          <th>Botiga</th>
+          <th onclick="srt('tBz',1,this)">Ingressos €<span class="sa"></span></th>
+          <th onclick="srt('tBz',2,this)">Unitats<span class="sa"></span></th>
+          
+          
+          <th>Quota %</th>
+        </tr></thead><tbody></tbody></table></div></div>
+      </div>
+
+      <div id="tab-ts-pr" class="tc" hidden>
+        <div class="tw"><div class="th"><span class="tht">Resum per producte</span><input class="ts" placeholder="Cercar…" oninput="srchT('tPr',this.value)"></div>
+        <div class="tsc"><table id="tPr"><thead><tr>
+          <th>Producte</th><th>Botiga</th>
+          <th onclick="srt('tPr',2,this)">Ingressos €<span class="sa"></span></th>
+          <th onclick="srt('tPr',3,this)">Unitats<span class="sa"></span></th>
+          
+          <th onclick="srt('tPr',5,this)">Preu unit.<span class="sa"></span></th>
+        </tr></thead><tbody></tbody></table></div></div>
+      </div>
+
+      <div id="tab-ts-ct" class="tc" hidden>
+        <div class="tw"><div class="th"><span class="tht">Resum per categoria</span></div>
+        <div class="tsc"><table id="tCt"><thead><tr>
+          <th>Categoria</th>
+          <th onclick="srt('tCt',1,this)">Ingressos €<span class="sa"></span></th>
+          <th onclick="srt('tCt',2,this)">Unitats<span class="sa"></span></th>
+          
+        </tr></thead><tbody></tbody></table></div></div>
+      </div>
+
+      <div id="tab-ts-fi" class="tc" hidden>
+        <div class="tw"><div class="th"><span class="tht">Resum per fira</span></div>
+        <div class="tsc"><table id="tFi"><thead><tr>
+          <th>Fira</th>
+          <th onclick="srt('tFi',1,this)">Ingressos €<span class="sa"></span></th>
+          <th onclick="srt('tFi',2,this)">Unitats<span class="sa"></span></th>
+          
+          <th>Jornades</th><th>€/jornada</th><th>Unitats/jornada</th>
+        </tr></thead><tbody></tbody></table></div></div>
+      </div>
+
+      <div id="tab-ts-to" class="tc" hidden>
+        <div class="tw"><div class="th"><span class="tht">Resum per població</span></div>
+        <div class="tsc"><table id="tTo"><thead><tr>
+          <th>Població</th>
+          <th onclick="srt('tTo',1,this)">Ingressos €<span class="sa"></span></th>
+          <th onclick="srt('tTo',2,this)">Unitats<span class="sa"></span></th>
+          
+        </tr></thead><tbody></tbody></table></div></div>
+      </div>
+
+      <div id="tab-ts-py" class="tc" hidden>
+        <div class="tw"><div class="th"><span class="tht">Resum per mètode de pagament</span></div>
+        <div class="tsc"><table id="tPy"><thead><tr>
+          <th>Mètode</th>
+          <th onclick="srt('tPy',1,this)">Ingressos €<span class="sa"></span></th>
+          
+          <th>Quota %</th>
+        </tr></thead><tbody></tbody></table></div></div>
+      </div>
+
+      <div id="tab-ts-er" class="tc" hidden>
+        <div class="tw"><div class="th"><span class="tht">Errors de validació (Preu final ≠ Qttat × P.Unit)</span></div>
+        <div class="tsc"><table id="tEr"><thead><tr>
+          <th>Data</th><th>Botiga</th><th>Producte</th>
+          <th>Qttat</th><th>P.Unit</th><th>Esperat</th><th>Preu final</th><th>Diferència</th>
+        </tr></thead><tbody></tbody></table></div></div>
+      </div>
+
+    </div><!-- /tab-tbl -->
+  </div><!-- /dash -->
+</div><!-- /main -->
+
+
+<div id="coherenceModal" class="modal" onclick="if(event.target.id==='coherenceModal')document.getElementById('coherenceModal').classList.remove('show')">
+  <div class="modal-card" style="max-width:950px"><div class="modal-h"><div class="modal-title">🔎 Control de coherència de l’Excel</div><button class="backbtn" onclick="document.getElementById('coherenceModal').classList.remove('show')">← Retorn</button></div>
+  <div class="note">Avisos orientatius. No es modifica cap dada de l'Excel. Les files indicades corresponen a la pestanya original.</div>
+  <div class="modal-body"><div id="coherenceSummary" style="margin-bottom:12px"></div><div class="tsc"><table><thead><tr><th>Nivell</th><th>Ubicació</th><th>Incidència</th><th>Què revisar</th></tr></thead><tbody id="coherenceRows"></tbody></table></div></div></div>
+</div>
+<div id="validationModal" class="modal" onclick="if(event.target.id==='validationModal') closeValidation()">
+  <div class="modal-card">
+    <div class="modal-h">
+      <div class="modal-title">⚠️ Dades inconsistents</div>
+      <button class="backbtn" onclick="closeValidation()">← Retorn</button>
+    </div>
+    <div class="note">Aquest avís surt quan el càlcul <strong>Quantitat × Preu unitari</strong> no coincideix amb el <strong>Preu final</strong>. El dashboard continua fent servir el Preu final com a import oficial.</div>
+    <div class="modal-body">
+      <div class="tsc"><table id="tErModal"><thead><tr>
+        <th>Data</th><th>Botiga</th><th>Producte</th>
+        <th>Qttat</th><th>P.Unit</th><th>Esperat</th><th>Preu final</th><th>Diferència</th>
+      </tr></thead><tbody></tbody></table></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════
+let ALL=[], FD=[], STOCK=[], FIRES_DATA=[], PREUS=[], CH={}, pg=1;
+let DATA_ISSUES=[];
+const PP=30;
+const BC={'ByNuska':'#C0654A','Confeccions Ribera':'#2C4A7C','Carlitus':'#3A6B4A'};
+const BL={'ByNuska':'rgba(192,101,74,.15)','Confeccions Ribera':'rgba(44,74,124,.15)','Carlitus':'rgba(58,107,74,.15)'};
+const PAL=['#C0654A','#2C4A7C','#3A6B4A','#C8934A','#7C2C6B','#4A7C7C','#6B4A7C','#7C6B2C','#2C7C4A','#7C2C2C','#4A6B7C','#8B7C4A'];
+function normBusinessName(v){
+  const s=text(v).trim();
+  const compact=s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,'');
+  if(compact==='bynuska') return 'ByNuska';
+  if(compact==='confeccionsribera') return 'Confeccions Ribera';
+  if(compact==='carlitus'||compact==='carlitos') return 'Carlitus';
+  return s;
+}
+
+// ═══════════════════════════════════════════════════════
+//  FILE LOAD
+// ═══════════════════════════════════════════════════════
+document.getElementById('fi').addEventListener('change', e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    try{
+      const wb=XLSX.read(ev.target.result,{type:'binary',cellDates:true});
+      const ws=wb.Sheets[wb.SheetNames.find(n=>n.trim().toUpperCase()==='VENDES')||wb.SheetNames[0]];
+      const raw=XLSX.utils.sheet_to_json(ws,{defval:''});
+      loadFires(wb);
+      ALL=raw.map((r,i)=>{const v=clean(r);if(v)v.excelRow=i+2;return v;}).filter(Boolean);
+
+      const stockSheetName = wb.SheetNames.find(n=>/stock|estoc/i.test(n)&&/octubre\s*26|octubre\s*2026/i.test(n)) || wb.SheetNames.find(n=>/stock|estoc/i.test(n));
+      STOCK = [];
+      if(stockSheetName){
+        const sws = wb.Sheets[stockSheetName];
+        const sraw = XLSX.utils.sheet_to_json(sws,{defval:''});
+        STOCK = sraw.map((r,i)=>{const v=cleanStock(r);if(v)v.excelRow=i+2;return v;}).filter(Boolean);
+      }
+
+      loadPrices(wb);
+      persistWorkbook(f.name, ev.target.result);
+            document.getElementById('homeDataStatus').textContent='✓ Excel carregat · Les dades estan a punt per consultar.';
+      document.getElementById('dash').style.display='block';
+      popFilters();
+      validateWorkbook();
+      applyF();
+    }catch(err){alert('Error: '+err.message);}
+  };
+  r.readAsBinaryString(f);
+  e.target.value='';
+});
+
+// Persistència local del llibre original. Per a HTML oberts com file://, el navegador
+// pot aïllar fitxers diferents. Els botons de còpia permeten migrar entre versions.
+const STORE_NAME='ordits-trames-dashboard', STORE_KEY='workbook';
+function openStore(){return new Promise((resolve,reject)=>{
+  const req=indexedDB.open(STORE_NAME,1);
+  req.onupgradeneeded=()=>req.result.createObjectStore('files');
+  req.onsuccess=()=>resolve(req.result);
+  req.onerror=()=>reject(req.error);
+});}
+async function persistWorkbook(name,binary){
+ const uploadedAt=new Date().toISOString();
+ try{const db=await openStore();await new Promise((resolve,reject)=>{
+   const tx=db.transaction('files','readwrite');
+   tx.objectStore('files').put({name,binary,updated:uploadedAt},STORE_KEY);
+   tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);
+ });db.close();document.getElementById('persistStatus').textContent='Fitxer pujat · '+new Date(uploadedAt).toLocaleString('ca-ES');}
+ catch(e){document.getElementById('persistStatus').textContent='No s’han pogut desar les dades: '+e.message;}
+}
+async function restoreWorkbook(){
+ try{const db=await openStore();const saved=await new Promise((resolve,reject)=>{
+   const req=db.transaction('files','readonly').objectStore('files').get(STORE_KEY);
+   req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);
+ });db.close();if(!saved)return;
+ const wb=XLSX.read(saved.binary,{type:'binary',cellDates:true});
+ loadFires(wb);
+ ALL=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames.find(n=>n.trim().toUpperCase()==='VENDES')||wb.SheetNames[0]],{defval:''}).map((r,i)=>{const v=clean(r);if(v)v.excelRow=i+2;return v;}).filter(Boolean);
+ const stockName=wb.SheetNames.find(n=>/stock|estoc/i.test(n)&&/octubre\s*26|octubre\s*2026/i.test(n)) || wb.SheetNames.find(n=>/stock|estoc/i.test(n));
+ STOCK=stockName?XLSX.utils.sheet_to_json(wb.Sheets[stockName],{defval:''}).map((r,i)=>{const v=cleanStock(r);if(v)v.excelRow=i+2;return v;}).filter(Boolean):[];
+  loadPrices(wb);
+  document.getElementById('homeDataStatus').textContent='✓ Excel carregat · Les dades estan a punt per consultar.';document.getElementById('dash').style.display='block';
+ document.getElementById('persistStatus').textContent='Fitxer pujat · '+new Date(saved.updated).toLocaleString('ca-ES');
+ popFilters();validateWorkbook();applyF();
+ }catch(e){document.getElementById('persistStatus').textContent='Recuperació no disponible: '+e.message;}
+}
+async function exportSavedExcel(){
+ const db=await openStore();const saved=await new Promise((resolve,reject)=>{
+ const req=db.transaction('files','readonly').objectStore('files').get(STORE_KEY);
+ req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);});db.close();
+ if(!saved){alert('Carrega primer un Excel.');return;}
+ const bytes=Uint8Array.from(saved.binary,c=>c.charCodeAt(0)&255);
+ const blob=new Blob([bytes],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=saved.name;
+ a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+window.addEventListener('DOMContentLoaded',restoreWorkbook);
+
+// ═══════════════════════════════════════════════════════
+//  CLEAN ROW
+// ═══════════════════════════════════════════════════════
+function normPay(v){
+  const s=text(v).trim();
+  if(/^sumup$/i.test(s)) return 'SumUp';
+  if(/^efectiu/i.test(s)) return 'Efectiu';
+  if(/^bizum$/i.test(s)) return 'Bizum';
+  return s||'Desconegut';
+}
+function text(v){ return (v===undefined || v===null) ? '' : String(v); }
+function parseNum(v){
+  if(typeof v === 'number') return isFinite(v) ? v : 0;
+  let s=text(v).trim();
+  if(!s) return 0;
+  s=s.replace(/€/g,'').replace(/\s/g,'');
+  if(s.includes(',')){ s=s.replace(/\./g,'').replace(',', '.'); }
+  const n=parseFloat(s);
+  return isNaN(n) ? 0 : n;
+}
+function parseDate(v){
+  if(v instanceof Date && !isNaN(v)) return v;
+  if(typeof v==='number' && v>0){
+    const utc=Math.round((v-25569)*86400*1000);
+    const d=new Date(utc);
+    return isNaN(d) ? null : new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+  }
+  const s=text(v).trim();
+  if(!s) return null;
+  const m=s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
+  if(m){
+    let y=+m[3]; if(y<100) y+=2000;
+    const d=new Date(y,+m[2]-1,+m[1]);
+    return isNaN(d) ? null : d;
+  }
+  const d=new Date(s);
+  return isNaN(d) ? null : d;
+}
+function firaKey(v){ return text(v).trim().toLowerCase().replace(/\s+/g,' '); }
+function firaLabel(v){
+  const s=text(v).trim().replace(/\s+/g,' ');
+  return s ? s.charAt(0).toUpperCase()+s.slice(1) : 'Sense fira';
+}
+function dateISO(v){const d=parseDate(v);return d&&!isNaN(d)?`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`:'';}
+function loadFires(wb){
+ const name=wb.SheetNames.find(n=>n.trim().toUpperCase()==='FIRES');
+ FIRES_DATA=name?XLSX.utils.sheet_to_json(wb.Sheets[name],{defval:''}).map(r=>({
+   data:dateISO(colRaw(r,'Data')), fKey:firaKey(colRaw(r,'Fira')),
+   lab:firaLabel(colRaw(r,'Fira')), lloc:colText(r,'Lloc').trim(),
+   dies:parseNum(colRaw(r,'Dies')), obs:colText(r,'Observacions').trim()
+ })).filter(x=>x.data&&x.fKey):[];
+}
+// Tarifes: la pestanya PREUS2026 és la font de veritat; no es calculen costos laborals.
+function loadPrices(wb){
+  const name=wb.SheetNames.find(n=>/^PREUS2026$/i.test(n.trim())) || wb.SheetNames.find(n=>/^PREUS/i.test(n.trim()));
+  PREUS=name?XLSX.utils.sheet_to_json(wb.Sheets[name],{defval:''}).map((r,i)=>{
+    const nom=colText(r,'Nom estoc').trim()||colText(r,'Nom').trim();
+    const brand=normBusinessName(colRaw(r,'Marca')||'ByNuska');
+    const material=priceOptional(r,'Cost roba/material €'), feltre=priceOptional(r,'Cost feltre €'), altres=priceOptional(r,'Altres costos €');
+    const minim=priceOptional(r,'Preu mínim 2026 €'), maxim=priceOptional(r,'Preu màxim 2026 €');
+    return {nom,brand,subcat:colText(r,'Subcategoria').trim(),mida:colText(r,'Mida / Tipus').trim(),temporada:colText(r,'Temporada').trim(),temps:colText(r,'Temps elaboració').trim(),material,feltre,altres,minim,maxim,estat:colText(r,'Estat / Revisió').trim(),row:i+2};
+  }).filter(r=>r.nom):[];
+}
+function priceOptional(row,key){const raw=colRaw(row,key);return raw===null||raw===undefined||String(raw).trim()===''?null:parseNum(raw);}
+function priceEuro(v){return v===null?'—':fmt(v);}
+function priceEsc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function renderPrices(){
+ const tbody=document.querySelector('#priceTable tbody');if(!tbody)return;
+ const brands=[...new Set(PREUS.map(p=>p.brand))].sort();const seasons=[...new Set(PREUS.map(p=>p.temporada).filter(Boolean))].sort();
+ for(const [id,values] of [['priceBrand',brands],['priceSeason',seasons]]){const sel=document.getElementById(id);const old=sel.value;sel.replaceChildren(new Option('Totes',''));values.forEach(v=>sel.add(new Option(v,v)));sel.value=values.includes(old)?old:'';}
+ const brand=document.getElementById('priceBrand').value,season=document.getElementById('priceSeason').value,search=document.getElementById('priceSearch').value.trim().toLocaleLowerCase('ca');
+ const list=PREUS.filter(p=>(!brand||p.brand===brand)&&(!season||p.temporada===season)&&(!search||[p.nom,p.subcat,p.mida,p.temporada].join(' ').toLocaleLowerCase('ca').includes(search)));
+ let complete=0,alerts=0;
+ tbody.innerHTML=list.map(p=>{
+  const cost=p.material===null||p.feltre===null?null:p.material+p.feltre+(p.altres??0);
+  const low=cost!==null&&p.minim!==null?p.minim-cost:null;
+  const high=cost!==null&&p.maxim!==null?p.maxim-cost:null;
+  const missing=cost===null||p.minim===null||p.maxim===null;
+  const bad=(low!==null&&low<0)||(high!==null&&high<0);
+  if(!missing)complete++;if(bad)alerts++;
+  const state=bad?'⚠ Preu inferior al cost':missing?'⚠ Dades pendents':p.estat||'✓ Complet';
+  return '<tr>'+[p.brand,p.nom,p.subcat||'—',p.mida||'—',p.temporada||'—',p.temps||'—',priceEuro(cost),priceEuro(p.minim),priceEuro(p.maxim),priceEuro(low),priceEuro(high),state].map((v,i)=>'<td'+(i>=6&&i<=10?' style="white-space:nowrap"':'')+'>'+priceEsc(v)+'</td>').join('')+'</tr>';
+ }).join('')||'<tr><td colspan="12">No hi ha fitxes de preus per als filtres seleccionats. Carrega un Excel amb la pestanya PREUS2026.</td></tr>';
+ const kp=document.getElementById('priceKpis');if(kp)kp.innerHTML=[['Fitxes visibles',list.length],['Tarifes completes',complete],['Preus sota cost',alerts]].map(([l,n])=>'<div class="kpi"><div class="kl">'+l+'</div><div class="kv">'+n+'</div></div>').join('');
+ const note=document.getElementById('priceNote');if(note)note.textContent='Tarifes carregades: '+PREUS.length+' fitxes. Els preus i costos es llegeixen de PREUS2026; les existències es gestionen a Stock i producció. Les tarifes de les altres marques s’incorporaran quan tinguin fitxes pròpies.';
+}
+function lookupFair(date,key){return FIRES_DATA.find(x=>x.data===date&&x.fKey===key);}
+function fairDays(f){return [...f.days].reduce((n,date)=>{const entry=lookupFair(date,f.key);return n+(entry&&entry.dies>0?entry.dies:0);},0);}
+function fairMissing(f){return [...f.days].filter(date=>!lookupFair(date,f.key)||lookupFair(date,f.key).dies<=0);}
+function dayFmt(n){return n.toLocaleString('ca-ES',{maximumFractionDigits:2});}
+function clean(r){
+  const nom=colText(r,'Nom').trim();
+  const botiga=normBusinessName(colRaw(r,'Botiga'));
+  if(!nom && !botiga) return null;
+
+  const qty   = parseNum(colRaw(r,'Quantitat'));
+  const preuU = parseNum(colRaw(r,'Preu unitari'));
+  const preuF = parseNum(colRaw(r,'Preu final'));
+  const esp   = Math.round(qty*preuU*100)/100;
+  const hasErr= qty>0 && preuU>0 && Math.abs(esp-preuF)>0.01;
+
+  const dateObj=parseDate(colRaw(r,'Data'));
+  let dateStr='';
+  if(dateObj && !isNaN(dateObj)){
+    const y=dateObj.getFullYear();
+    const mo=String(dateObj.getMonth()+1).padStart(2,'0');
+    const d=String(dateObj.getDate()).padStart(2,'0');
+    dateStr=`${y}-${mo}-${d}`;
+  }
+  let any=parseInt(parseNum(colRaw(r,'Any')))||null;
+  if(!any && dateObj && !isNaN(dateObj)) any=dateObj.getFullYear();
+  const mes=dateObj&&!isNaN(dateObj)?`${dateObj.getFullYear()}-${String(dateObj.getMonth()+1).padStart(2,'0')}`:'Sense data';
+
+  const fRaw=colRaw(r,'Fira');
+  const fKey=firaKey(fRaw)||'sense fira';
+  const fLab=firaLabel(fRaw);
+  return{
+    nom, botiga,
+    subcat:colText(r,'Subcategoria').trim(),
+    mida:colText(r,'Tamany/Tipus').trim()||colText(r,'Tamany').trim()||colText(r,'Mida').trim(),
+    cat: colText(r,'Categoria').trim() || 'Sense categoria',
+    qty, preuU, preuF,
+    any, data:dateStr, dateObj, mes,
+    fKey, fLab,
+    pob: lookupFair(dateStr,fKey)?.lloc || colText(r,'Població').trim()||colText(r,'Poblacio').trim()||'Sense població',
+    com: normPay(colRaw(r,'Com')),
+    hasErr, esp
+  };
+}
+
+function cleanStock(r){
+  const familia=colText(r,'Nom').trim();
+  const model=colText(r,'Subcategoria').trim();
+  if(!familia && !model) return null;
+  return{
+    botiga:normBusinessName(colRaw(r,'Marca')||colRaw(r,'Botiga'))||'ByNuska',
+    nom:familia||model, familia:familia||model, model,
+    cat:colText(r,'Categoria').trim()||'Sense categoria',
+    color:colText(r,'Color').trim()||colText(r,'colors').trim()||'Sense color',
+    temporada:colText(r,'Temporada').trim()||'Sense definir',
+    mida:colText(r,'Tamany/Tipus').trim()||colText(r,'Tamany').trim()||colText(r,'Mida').trim(),
+    obs:colText(r,'obs').trim()||colText(r,'Observacions').trim(),
+    antiguitat:(()=>{const y=parseInt(colRaw(r,'Antiguitat'),10);return y>=2023&&y<=2100?y:null;})(),
+    stock:parseNum(colRaw(r,'Stock'))
+  };
+}
+function stockModelKey(r){return [r.familia,r.model].join(' ⟡ ');}
+function escStock(v){return text(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+let selectedStockBrand='ByNuska';
+const STOCK_BRANDS=['ByNuska','Carlitus','Confeccions Ribera'];
+function selectStockBrand(name){ selectedStockBrand=name; renderStock(); }
+function stockFiltered(){
+  const f=gF();
+  return STOCK.filter(s=>{
+    if(s.botiga!==selectedStockBrand) return false;
+    if(f.cat && s.cat!==f.cat) return false;
+    if(f.pro && s.nom!==f.pro && s.model!==f.pro) return false;
+    return true;
+  });
+}
+function colRaw(r,name){
+  const candidates=[name,name+' ',name.toUpperCase(),name.toLowerCase()];
+  const norm=s=>String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase();
+  for(const k of candidates){ if(Object.prototype.hasOwnProperty.call(r,k)) return r[k]; }
+  const wanted=norm(name);
+  const found=Object.keys(r).find(k=>norm(k)===wanted);
+  return found ? r[found] : '';
+}
+function colText(r,name){ return text(colRaw(r,name)); }
+
+// ═══════════════════════════════════════════════════════
+//  FILTERS
+// ═══════════════════════════════════════════════════════
+function popFilters(){
+  const u=k=>[...new Set(ALL.map(d=>d[k]).filter(Boolean))].sort();
+
+  // Fires: dedup by fKey, pick one label per key
+  const fm={};
+  ALL.forEach(d=>{ if(!fm[d.fKey]) fm[d.fKey]=d.fLab; });
+  const fires=Object.entries(fm).sort((a,b)=>a[1].localeCompare(b[1],'ca'));
+
+  fillSel('fBot', u('botiga').map(v=>({k:v,l:v})));
+  fillSel('fAny', [...new Set(ALL.map(d=>d.any).filter(Boolean))].sort().map(v=>({k:v,l:v})));
+  fillSel('fCat', u('cat').map(v=>({k:v,l:v})));
+  fillSel('fPro', u('nom').map(v=>({k:v,l:v})));
+  fillSel('fFir', fires.map(([k,l])=>({k,l})));
+  fillSel('fPob', [...new Set([...u('pob'),...FIRES_DATA.map(f=>f.lloc)])].filter(Boolean).sort().map(v=>({k:v,l:v})));
+  fillSel('fPag', u('com').map(v=>({k:v,l:v})));
+}
+function fillSel(id,items){
+  const el=document.getElementById(id);
+  const cur=el.value;
+  while(el.options.length>1) el.remove(1);
+  items.forEach(({k,l})=>el.appendChild(new Option(l,k)));
+  if(cur) el.value=cur;
+}
+
+function gF(){
+  return{
+    bot: document.getElementById('fBot').value,
+    any: document.getElementById('fAny').value,
+    from:document.getElementById('fFrom').value,
+    to:  document.getElementById('fTo').value,
+    cat: document.getElementById('fCat').value,
+    pro: document.getElementById('fPro').value,
+    fir: document.getElementById('fFir').value,
+    pob: document.getElementById('fPob').value,
+    pag: document.getElementById('fPag').value,
+  };
+}
+function applyF(){
+  const f=gF();
+  FD=ALL.filter(d=>{
+    if(f.bot && d.botiga!==f.bot) return false;
+    if(f.any && d.any!=f.any)     return false;
+    if(f.from&& (!d.data || d.data<f.from))    return false;
+    if(f.to  && (!d.data || d.data>f.to))      return false;
+    if(f.cat && d.cat!==f.cat)    return false;
+    if(f.pro && d.nom!==f.pro)    return false;
+    if(f.fir && d.fKey!==f.fir)   return false;
+    if(f.pob && d.pob!==f.pob)    return false;
+    if(f.pag && d.com!==f.pag)    return false;
+    return true;
+  });
+  pg=1;
+  renderAll();
+}
+function resetF(){
+  ['fBot','fAny','fCat','fPro','fFir','fPob','fPag'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('fFrom').value='';
+  document.getElementById('fTo').value='';
+  applyF();
+}
+
+// ═══════════════════════════════════════════════════════
+//  RENDER
+// ═══════════════════════════════════════════════════════
+function renderAll(){ renderKPIs(); renderCharts(); renderTables(); renderFairHL(); renderBizCards(); renderTopByBusiness(); renderStock(); renderPrices(); refreshHomeStats(); }
+
+// ── KPIs ──────────────────────────────────────────────
+function renderKPIs(){
+  const d=FD;
+  const rev=sm(d,'preuF'), units=sm(d,'qty'), tx=d.length;
+  const avg=tx?rev/tx:0, errs=d.filter(r=>r.hasErr).length;
+  document.getElementById('erCnt').textContent=errs;
+
+  const bpRev=grRev(d,'nom'), bpUnits=grSum(d,'nom','qty'), fairMetrics=buildFM(d);
+  const bestFairKey=Object.keys(fairMetrics).filter(k=>!fairMissing(fairMetrics[k]).length).sort((a,b)=>fairRate(fairMetrics[b])-fairRate(fairMetrics[a]))[0];
+  const bbRev=grRev(d,'botiga'), bpbRev=grRev(d,'pob');
+  const bp=topEntry(bpUnits), bf=bestFairKey?[fairMetrics[bestFairKey].lab,fairRate(fairMetrics[bestFairKey])]:null, bb=topEntry(bbRev);
+  const townStats=buildTownDaily(d), bestTown=Object.keys(townStats).sort((a,b)=>townRate(townStats[b])-townRate(townStats[a]))[0];
+  const bpb=bestTown?[bestTown,townRate(townStats[bestTown])]:null;
+
+  document.getElementById('kg').innerHTML=`
+    <div class="kc ac"><div class="kl">Vendes totals</div><div class="kv">${fmt(rev)}</div></div>
+    <div class="kc bl"><div class="kl">Unitats venudes</div><div class="kv">${units}</div></div>
+    <div class="kc ac"><div class="kl">Millor producte</div><div class="kv sm">${bp?bp[0]:'—'}</div><div class="ks">${bp?bp[1]+' unitats · '+fmt(bpRev[bp[0]]):''}</div></div>
+    <div class="kc bl"><div class="kl">Millor fira · €/jornada</div><div class="kv sm">${bf?bf[0]:'—'}</div><div class="ks">${bf?fmt(bf[1])+'/jornada':''}</div></div>
+    <div class="kc gr"><div class="kl">Top botiga</div><div class="kv sm">${bb?bb[0]:'—'}</div><div class="ks">${bb?fmt(bb[1]):''}</div></div>`;
+  renderValidationWarning(errs);
+  const topPay=topEntry(grRev(d,'com'));
+  const share=bb && rev ? ((bb[1]/rev)*100).toFixed(1) : '0.0';
+  const es=document.getElementById('execSum');
+  if(es) es.innerHTML = d.length ?
+    `La facturació filtrada és de <b>${fmt(rev)}</b>, amb <b>${units}</b> unitats venudes. `+
+    `La botiga amb millor rendiment és <b>${bb?bb[0]:'—'}</b> (${share}% del total). `+
+    `El producte principal és <b>${bp?bp[0]:'—'}</b>, la fira amb més facturació diària és <b>${bf?bf[0]:'—'}</b> i la població amb més facturació diària és <b>${bpb?bpb[0]:'—'}</b>. `+
+    `El mètode de pagament predominant és <b>${topPay?topPay[0]:'—'}</b>.`
+    : 'No hi ha dades amb els filtres actuals.';
+}
+
+// ── CHARTS ────────────────────────────────────────────
+function mkCh(id,type,data,opts={}){
+  if(CH[id]) CH[id].destroy();
+  const el=document.getElementById(id); if(!el) return;
+  CH[id]=new Chart(el,{type,data,options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{labels:{font:{family:'DM Sans',size:11},boxWidth:12}}},
+    ...opts
+  }});
+}
+function cols(ks){ return ks.map((k,i)=>BC[k]||PAL[i%PAL.length]); }
+
+function renderCharts(){
+  const d=FD;
+  const BIZS=['ByNuska','Confeccions Ribera','Carlitus'];
+
+  // By botiga
+  const bRev=grRev(d,'botiga'), bUni=grSum(d,'botiga','qty'), bTx=grCnt(d,'botiga');
+  const bk=Object.keys(bRev);
+  mkCh('cBRev','bar',{labels:bk,datasets:[{data:bk.map(k=>bRev[k]),backgroundColor:cols(bk),borderRadius:6}]},
+    {plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>v+'€'}}}});
+  mkCh('cBUni','bar',{labels:Object.keys(bUni),datasets:[{data:Object.values(bUni),backgroundColor:cols(Object.keys(bUni)),borderRadius:6}]},
+    {plugins:{legend:{display:false}}});
+  const bAvg={};
+  bk.forEach(k=>{ bAvg[k]=bTx[k]?bRev[k]/bTx[k]:0; });
+  mkCh('cBTk','bar',{labels:Object.keys(bAvg),datasets:[{data:Object.values(bAvg),backgroundColor:cols(Object.keys(bAvg)),borderRadius:6}]},
+    {plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>v.toFixed(2)+'€'}}}});
+
+  // Monthly by business + total
+  const bmData={};
+  BIZS.forEach(b=>{ bmData[b]=grRev(d.filter(r=>r.botiga===b),'mes'); });
+  // Show only months with actual fair activity, never idle calendar months.
+  // A fair in the FIRES worksheet counts even when it generated no sales.
+  // Sales recorded at a fair also count as evidence of attendance if the
+  // corresponding FIRES row is missing from the workbook.
+  const filters=gF();
+  const eligibleFairs=FIRES_DATA.filter(f=>{
+    if(filters.any && f.data.slice(0,4)!==String(filters.any)) return false;
+    if(filters.from && f.data<filters.from) return false;
+    if(filters.to && f.data>filters.to) return false;
+    if(filters.fir && f.fKey!==filters.fir) return false;
+    if(filters.pob && f.lloc!==filters.pob) return false;
+    return true;
+  });
+  const fairSales=ALL.filter(r=>{
+    if(!r.data || !/^\d{4}-\d{2}$/.test(r.mes) || r.fKey==='sense fira') return false;
+    if(filters.any && String(r.any)!==String(filters.any)) return false;
+    if(filters.from && r.data<filters.from) return false;
+    if(filters.to && r.data>filters.to) return false;
+    if(filters.fir && r.fKey!==filters.fir) return false;
+    if(filters.pob && r.pob!==filters.pob) return false;
+    return true;
+  });
+  const mons=[...new Set([
+    ...eligibleFairs.map(f=>f.data.slice(0,7)),
+    ...fairSales.map(r=>r.mes)
+  ])].sort();
+  // Biz by month
+  mkCh('cBM','line',{labels:mons,datasets:BIZS.map(b=>({
+    label:b,data:mons.map(m=>bmData[b][m]||0),
+    borderColor:BC[b],backgroundColor:BL[b],fill:false,tension:.4,pointRadius:4
+  }))});
+
+  // Annual stacked
+  const years=[...new Set(d.map(r=>r.any).filter(Boolean))].sort();
+  mkCh('cAnn','bar',{labels:years,datasets:BIZS.map(b=>({
+    label:b,data:years.map(y=>d.filter(r=>r.botiga===b&&r.any==y).reduce((s,r)=>s+r.preuF,0)),
+    backgroundColor:BC[b],borderRadius:4
+  }))},{scales:{x:{stacked:true},y:{stacked:true}}});
+  mkCh('cBY','bar',{labels:years,datasets:BIZS.map(b=>({
+    label:b,data:years.map(y=>d.filter(r=>r.botiga===b&&r.any==y).reduce((s,r)=>s+r.preuF,0)),
+    backgroundColor:BC[b],borderRadius:4
+  }))});
+
+  // Categories
+  const cRev=grRev(d,'cat'), cUni=grSum(d,'cat','qty');
+  const ck=Object.keys(cRev).sort((a,b)=>cRev[b]-cRev[a]);
+  mkCh('cCat','bar',{labels:ck,datasets:[{data:ck.map(k=>cRev[k]),backgroundColor:PAL,borderRadius:6}]},
+    {plugins:{legend:{display:false}},indexAxis:'y'});
+  const cuk=Object.keys(cUni).sort((a,b)=>cUni[b]-cUni[a]);
+  mkCh('cCatUni','bar',{labels:cuk,datasets:[{data:cuk.map(k=>cUni[k]),backgroundColor:PAL[1],borderRadius:6}]},
+    {plugins:{legend:{display:false}},indexAxis:'y'});
+
+  // Towns / territory
+  const tRev=grRev(d,'pob');
+  const tk=Object.keys(tRev).sort((a,b)=>tRev[b]-tRev[a]);
+  mkCh('cTow','bar',{labels:tk,datasets:[{data:tk.map(k=>tRev[k]),backgroundColor:PAL[2],borderRadius:6}]},
+    {plugins:{legend:{display:false}},indexAxis:'y'});
+
+  const tUni=grSum(d,'pob','qty');
+  const tuk=Object.keys(tUni).sort((a,b)=>tUni[b]-tUni[a]);
+  mkCh('cTowUni','bar',{labels:tuk,datasets:[{data:tuk.map(k=>tUni[k]),backgroundColor:PAL[5],borderRadius:6}]},
+    {plugins:{legend:{display:false}},indexAxis:'y'});
+  // Products
+  const prdRev=grRev(d,'nom'), prdUni=grSum(d,'nom','qty');
+  const prk=Object.keys(prdRev).sort((a,b)=>prdRev[b]-prdRev[a]);
+  const top10r=prk.slice(0,10);
+  mkCh('cP10R','bar',{labels:top10r,datasets:[{data:top10r.map(k=>prdRev[k]),backgroundColor:PAL[0],borderRadius:6}]},
+    {plugins:{legend:{display:false}},indexAxis:'y'});
+  const pruk=Object.keys(prdUni).sort((a,b)=>prdUni[b]-prdUni[a]);
+  const top10u=pruk.slice(0,10);
+  mkCh('cP10U','bar',{labels:top10u,datasets:[{data:top10u.map(k=>prdUni[k]),backgroundColor:PAL[1],borderRadius:6}]},
+    {plugins:{legend:{display:false}},indexAxis:'y'});
+
+  // Evolució cronològica: una barra apilada per data i fira, sense fusionar edicions.
+  const groups=new Map();
+  d.forEach(r=>{const key=r.data+'|'+r.fKey;if(!groups.has(key))groups.set(key,{date:r.data,key:r.fKey,lab:r.fLab,rev:{}});const item=groups.get(key);item.rev[r.botiga]=(item.rev[r.botiga]||0)+r.preuF;});
+  const timeline=[...groups.values()].sort((a,b)=>a.date.localeCompare(b.date)||a.lab.localeCompare(b.lab,'ca'));
+  mkCh('cFairTimeline','bar',{labels:timeline.map(x=>x.date.slice(8,10)+'/'+x.date.slice(5,7)+'/'+x.date.slice(2,4)+' · '+x.lab),datasets:BIZS.map(b=>({label:b,data:timeline.map(x=>x.rev[b]||0),backgroundColor:BC[b],stack:'vendes'}))},{scales:{x:{stacked:true,ticks:{maxRotation:65,minRotation:30}},y:{stacked:true,ticks:{callback:v=>v+' €'}}},plugins:{tooltip:{callbacks:{afterBody:items=>{const t=timeline[items[0]?.dataIndex];if(!t)return '';const f=lookupFair(t.date,t.key);return f?['Lloc: '+f.lloc,'Durada: '+dayFmt(f.dies)+' jornada(es)',...(f.obs?['Observacions: '+f.obs]:[])]:['⚠ Jornada pendent a FIRES'];}}}}});
+  const missing=timeline.filter(x=>!lookupFair(x.date,x.key));
+  const note=document.getElementById('fairTimelineNote');if(note)note.textContent=missing.length?'⚠ '+missing.length+' jornada(es) amb vendes sense fitxa a FIRES: '+missing.map(x=>x.date+' · '+x.lab).join('; '):'Totes les jornades amb vendes estan vinculades a FIRES.';
+  // Fairs
+  const fm=buildFM(d);
+  const fk=Object.keys(fm).sort((a,b)=>fairRate(fm[b])-fairRate(fm[a]));
+  const fLabs=fk.map(k=>fm[k].lab);
+  mkCh('cFR','bar',{labels:fLabs,datasets:[{data:fk.map(k=>fm[k].rev),backgroundColor:PAL[3],borderRadius:6}]},
+    {plugins:{legend:{display:false}},indexAxis:'y'});
+  const f10=fk.slice(0,10);
+  mkCh('cF10','bar',{labels:f10.map(k=>fm[k].lab),datasets:[{data:f10.map(k=>fairRate(fm[k])),backgroundColor:PAL[3],borderRadius:6}]},
+    {plugins:{legend:{display:false}},indexAxis:'y'});
+  mkCh('cFU','bar',{labels:fLabs,datasets:[{data:fk.map(k=>fm[k].uni),backgroundColor:PAL[4],borderRadius:6}]},
+    {plugins:{legend:{display:false}},indexAxis:'y'});
+  mkCh('cFT','bar',{labels:fLabs,datasets:[{data:fk.map(k=>fairDays(fm[k])),backgroundColor:PAL[5],borderRadius:6}]},
+    {plugins:{legend:{display:false}},indexAxis:'y'});
+
+  const daySales=new Map();d.forEach(r=>{const k=r.data+'|'+r.fKey;daySales.set(k,(daySales.get(k)||0)+r.preuF);});
+  const fairRows=[...FIRES_DATA].filter(f=>!gF().any||f.data.startsWith(gF().any)).filter(f=>!gF().fir||f.fKey===gF().fir).filter(f=>!gF().pob||f.lloc===gF().pob).map(f=>({...f,rev:daySales.get(f.data+'|'+f.fKey)||0}));
+  for(const t of timeline){if(!lookupFair(t.date,t.key))fairRows.push({data:t.date,lab:t.lab,lloc:'Pendent',dies:0,obs:'⚠ Falta a FIRES',rev:Object.values(t.rev).reduce((a,b)=>a+b,0)});}
+  const daysTable=document.querySelector('#tFairDays tbody');if(daysTable)daysTable.innerHTML=fairRows.sort((a,b)=>a.data.localeCompare(b.data)).map(f=>`<tr><td>${f.data}</td><td>${f.lab}</td><td>${f.lloc}</td><td>${f.dies?dayFmt(f.dies):'—'}</td><td>${fmt(f.rev)}</td><td>${f.obs||'—'}</td></tr>`).join('');
+  // Fair ranking table
+  const tb=document.querySelector('#tFRk tbody');
+  if(tb) tb.innerHTML=fk.map((k,i)=>`<tr>
+    <td>${i+1}</td><td>${fm[k].lab}</td><td>${fmt(fm[k].rev)}</td>
+    <td>${fm[k].uni}</td><td>${dayFmt(fairDays(fm[k]))}</td><td>${fairMissing(fm[k]).length?'Pendent':fmt(fairRate(fm[k]))}</td><td>${fairMissing(fm[k]).length?'—':(fairDays(fm[k])?fm[k].uni/fairDays(fm[k]):0).toFixed(1)}</td>
+  </tr>`).join('');
+}
+
+// ── TABLES ────────────────────────────────────────────
+function renderTables(){
+  const d=FD;
+  renderSalesT();
+
+  // Botiga
+  const bRev=grRev(d,'botiga'),bUni=grSum(d,'botiga','qty'),bTx=grCnt(d,'botiga');
+  const tot=Object.values(bRev).reduce((s,v)=>s+v,0);
+  const bk=Object.keys(bRev).sort((a,b)=>bRev[b]-bRev[a]);
+  setTb('tBz',bk.map(k=>`<td><span class="bx ${bxc(k)}">${k}</span></td>
+    <td>${fmt(bRev[k])}</td><td>${bUni[k]||0}</td><td>${tot?((bRev[k]/tot)*100).toFixed(1):0}%</td>`));
+
+  // Productes
+  const pRev=grRev(d,'nom'),pUni=grSum(d,'nom','qty'),pTx=grCnt(d,'nom');
+  const pBiz={},pPr={};
+  d.forEach(r=>{ if(!pBiz[r.nom]) pBiz[r.nom]=r.botiga; if(!pPr[r.nom]) pPr[r.nom]=r.preuU; });
+  const pk=Object.keys(pRev).sort((a,b)=>pRev[b]-pRev[a]);
+  setTb('tPr',pk.map(k=>`<td>${k}</td><td><span class="bx ${bxc(pBiz[k])}">${pBiz[k]||'—'}</span></td>
+    <td>${fmt(pRev[k])}</td><td>${pUni[k]||0}</td><td>${fmt(pPr[k]||0)}</td>`));
+
+  // Categories
+  const cRev=grRev(d,'cat'),cUni=grSum(d,'cat','qty'),cTx=grCnt(d,'cat');
+  const ck=Object.keys(cRev).sort((a,b)=>cRev[b]-cRev[a]);
+  setTb('tCt',ck.map(k=>`<td>${k}</td><td>${fmt(cRev[k])}</td><td>${cUni[k]||0}</td>`));
+
+  // Fires
+  const fm=buildFM(d);
+  const fk=Object.keys(fm).sort((a,b)=>fairRate(fm[b])-fairRate(fm[a]));
+  setTb('tFi',fk.map(k=>`<td>${fm[k].lab}</td><td>${fmt(fm[k].rev)}</td>
+    <td>${fm[k].uni}</td><td>${dayFmt(fairDays(fm[k]))}</td><td>${fairMissing(fm[k]).length?'Pendent':fmt(fairRate(fm[k]))}</td><td>${fairMissing(fm[k]).length?'—':(fairDays(fm[k])?fm[k].uni/fairDays(fm[k]):0).toFixed(1)}</td>`));
+
+  // Poblacions
+  const tRev=grRev(d,'pob'),tUni=grSum(d,'pob','qty'),tTx=grCnt(d,'pob');
+  const tk=Object.keys(tRev).sort((a,b)=>tRev[b]-tRev[a]);
+  setTb('tTo',tk.map(k=>`<td>${k}</td><td>${fmt(tRev[k])}</td><td>${tUni[k]||0}</td>`));
+
+  // Pagament
+  const pyRev=grRev(d,'com'),pyTx=grCnt(d,'com');
+  const pyTot=Object.values(pyRev).reduce((s,v)=>s+v,0);
+  const pyk=Object.keys(pyRev).sort((a,b)=>pyRev[b]-pyRev[a]);
+  setTb('tPy',pyk.map(k=>`<td>${k}</td><td>${fmt(pyRev[k])}</td>
+    <td>${pyTot?((pyRev[k]/pyTot)*100).toFixed(1):0}%</td>`));
+
+  // Errors
+  const errs=d.filter(r=>r.hasErr);
+  document.getElementById('erCnt').textContent=errs.length;
+  const errRows=errs.map(r=>`<td>${r.data}</td><td><span class="bx ${bxc(r.botiga)}">${r.botiga}</span></td>
+    <td>${r.nom}</td><td>${r.qty}</td><td>${fmt(r.preuU)}</td>
+    <td>${fmt(r.esp)}</td><td>${fmt(r.preuF)}</td><td class="b-er">${fmt(r.preuF-r.esp)}</td>`);
+  setTb('tEr',errRows,true);
+  setTb('tErModal',errRows,true);
+  Object.keys(tableViews).filter(id=>id!=='tSa').forEach(applyTableView);
+}
+
+function renderSalesT(){
+  let d=FD;
+  const view=tableViews.tSa;
+  if(view){d=d.filter(r=>{const vals=[r.data,r.botiga,r.nom,r.cat,r.qty,fmt(r.preuU),fmt(r.preuF),r.fLab,r.pob,r.com].map(normalizeCell);return vals.join(' ').includes(normalizeCell(view.q))&&view.filters.every((f,i)=>!f||vals[i].includes(normalizeCell(f)))});
+   if(view.col>=0)d=[...d].sort((a,b)=>{const get=r=>[r.data,r.botiga,r.nom,r.cat,r.qty,r.preuU,r.preuF,r.fLab,r.pob,r.com][view.col];return view.dir*compareCells(get(a),get(b))});}
+  const maxPages=Math.max(1,Math.ceil(d.length/PP));pg=Math.min(pg,maxPages);
+  const start=(pg-1)*PP;
+  const sl=d.slice(start,start+PP);
+  const tb=document.querySelector('#tSa tbody'); if(!tb) return;
+  tb.innerHTML=sl.map(r=>`<tr class="${r.hasErr?'re':''}">
+    <td>${r.data}</td>
+    <td><span class="bx ${bxc(r.botiga)}">${r.botiga}</span></td>
+    <td>${r.nom}</td><td>${r.cat}</td><td>${r.qty}</td>
+    <td>${fmt(r.preuU)}</td>
+    <td>${fmt(r.preuF)}${r.hasErr?' <span class="bx b-er">!</span>':''}</td>
+    <td>${r.fLab}</td><td>${r.pob}</td><td>${r.com}</td>
+  </tr>`).join('');
+
+  const tot=Math.ceil(d.length/PP);
+  document.getElementById('pgI').textContent=`${d.length?start+1:0}–${Math.min(start+PP,d.length)} de ${d.length}`;
+  const btns=document.getElementById('pgB');
+  btns.innerHTML='';
+  let s=Math.max(1,pg-3), e=Math.min(tot,s+6);
+  s=Math.max(1,e-6);
+  if(s>1){ addPB(btns,1); if(s>2) btns.insertAdjacentHTML('beforeend','<span style="padding:0 4px;color:#999">…</span>'); }
+  for(let i=s;i<=e;i++) addPB(btns,i);
+  if(e<tot){ btns.insertAdjacentHTML('beforeend','<span style="padding:0 4px;color:#999">…</span>'); addPB(btns,tot); }
+}
+function addPB(c,n){
+  const b=document.createElement('button');
+  b.className='pb'+(n===pg?' on':''); b.textContent=n;
+  b.onclick=()=>{ pg=n; renderSalesT(); }; c.appendChild(b);
+}
+function setTb(id,rows,isErr=false){
+  const tb=document.querySelector(`#${id} tbody`);
+  if(tb) tb.innerHTML=rows.map(r=>`<tr${isErr?' class="re"':''}>${r}</tr>`).join('');
+}
+
+// ── FAIR HIGHLIGHTS ───────────────────────────────────
+function renderFairHL(){
+  const fm=buildFM(FD);
+  const fk=Object.keys(fm).sort((a,b)=>fairRate(fm[b])-fairRate(fm[a]));
+  if(!fk.length){ document.getElementById('fhl').innerHTML=''; return; }
+  const valid=fk.filter(k=>!fairMissing(fm[k]).length);if(!valid.length)return;const best=valid[0], worst=valid[valid.length-1];
+  document.getElementById('fhl').innerHTML=`
+    <div class="fhc"><div class="fhl">🏆 Millor fira</div><div class="fhv">${fm[best].lab}</div><div class="fhs">${fmt(fairRate(fm[best]))}/dia · ${dayFmt(fairDays(fm[best]))} jornades · ${fm[best].days.size===1?'⚠️ Només una jornada':'diverses jornades'}</div></div>
+    <div class="fhc"><div class="fhl">📉 Pitjor fira</div><div class="fhv">${fm[worst].lab}</div><div class="fhs">${fmt(fairRate(fm[worst]))}/dia · ${dayFmt(fairDays(fm[worst]))} jornades</div></div>
+    <div class="fhc"><div class="fhl">📅 Dies de parada registrats</div><div class="fhv">${new Set(FD.filter(x=>x.data).map(x=>`${x.fKey}|${x.data}`)).size}</div></div>
+    <div class="fhc"><div class="fhl">📊 Fires analitzades</div><div class="fhv">${fk.length}</div></div>`;
+}
+
+// ── BIZ CARDS ─────────────────────────────────────────
+function renderBizCards(){
+  const d=FD;
+  const cls={'ByNuska':'bn','Confeccions Ribera':'cr','Carlitus':'ca'};
+  document.getElementById('bcg').innerHTML=['ByNuska','Confeccions Ribera','Carlitus'].map(b=>{
+    const bd=d.filter(r=>r.botiga===b);
+    const rev=sm(bd,'preuF'),uni=sm(bd,'qty');
+    const pUni=grSum(bd,'nom','qty');
+    const star=topEntry(pUni);
+    return `<div class="bcc ${cls[b]}">
+      <div class="bcn">${b}</div>
+      <div class="bs"><div class="bsl">Ingressos</div><div class="bsv">${fmt(rev)}</div></div>
+      <div class="bs"><div class="bsl">Unitats</div><div class="bsv">${uni}</div></div>
+      <div class="bsh">⭐ Més venut: ${star?`${star[0]} · ${star[1]} u.`:'—'}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderTopByBusiness(){
+  const grid=document.getElementById('bizTopGrid');
+  if(!grid) return;
+  const cls={'ByNuska':'bn','Confeccions Ribera':'cr','Carlitus':'ca'};
+  const bizs=['ByNuska','Confeccions Ribera','Carlitus'];
+  grid.innerHTML=bizs.map(b=>{
+    const bd=FD.filter(r=>r.botiga===b);
+    const byUnits=Object.entries(grSum(bd,'nom','qty')).sort((a,b)=>b[1]-a[1]).slice(0,5);
+    const byRevenue=Object.entries(grRev(bd,'nom')).sort((a,b)=>b[1]-a[1]).slice(0,5);
+    const rowsU=byUnits.length ? byUnits.map(([n,v])=>`<div class="btl"><span>${n}</span><strong>${v} u.</strong></div>`).join('') : '<div class="btl"><span>Sense dades</span><strong>—</strong></div>';
+    const rowsR=byRevenue.length ? byRevenue.map(([n,v])=>`<div class="btl"><span>${n}</span><strong>${fmt(v)}</strong></div>`).join('') : '<div class="btl"><span>Sense dades</span><strong>—</strong></div>';
+    return `<div class="btc ${cls[b]}">
+      <div class="btt">${b}</div>
+      <div class="bts">Més venuts per unitats</div>${rowsU}
+      <div class="bts">Més facturació</div>${rowsR}
+    </div>`;
+  }).join('');
+}
+
+
+// ── STOCK ─────────────────────────────────────────────
+function renderStock(){
+  const grid=document.getElementById('stockBrandGrid');
+  if(grid) grid.innerHTML=STOCK_BRANDS.map(name=>{
+    const count=STOCK.filter(x=>x.botiga===name).length;
+    return `<button type="button" class="stock-brand-card ${selectedStockBrand===name?'selected':''}" aria-pressed="${selectedStockBrand===name}" onclick="selectStockBrand('${name}')"><span class="stock-brand-name">${name}</span><span class="stock-brand-meta">${count ? count+' línies d’estoc' : 'Sense dades d’estoc'}</span></button>`;
+  }).join('');
+  const brandHasData=STOCK.some(x=>x.botiga===selectedStockBrand);
+  const empty=document.getElementById('stockBrandEmpty');
+  if(empty){empty.hidden=brandHasData;empty.textContent=brandHasData?'':`Encara no hi ha dades d’estoc de ${selectedStockBrand}.`;}
+  for(const id of ['stockBrandContent','stockPlanningSection','skg']){
+    const el=document.getElementById(id);if(el)el.hidden=!brandHasData;
+  }
+  const st=stockFiltered(),kg=document.getElementById('skg');
+  const tb=document.querySelector('#tSt tbody'),tbp=document.querySelector('#tStP tbody');
+  const tbBest=document.querySelector('#tStBest tbody'),tbNoMove=document.querySelector('#tStNoMove tbody');
+  const tbOver=document.querySelector('#tStOver tbody'),tq=document.querySelector('#tStQuick tbody');
+  if(!kg||!tb||!tbp)return;
+  if(!brandHasData){kg.innerHTML='';tb.innerHTML='';tbp.innerHTML='<tr><td colspan="8">Carrega el full d’estoc de l’Excel.</td></tr>';return;}
+
+  // Les subcategories defineixen les famílies de producció; els noms són models.
+  // La mida/tipus és una variant rellevant, però les vendes sense mida NO es
+  // reparteixen artificialment entre les diferents variants.
+  const norm=v=>String(v||'').trim().toLocaleLowerCase('ca');
+  const groups=new Map(), nameToFamilies=new Map();
+  const stockBrand=STOCK.filter(r=>r.botiga===selectedStockBrand);
+  stockBrand.forEach(r=>{
+    const family=r.model||r.familia;
+    const key=norm(family);
+    if(!groups.has(key))groups.set(key,{nom:family,cat:r.cat,stock:0,temporades:new Set(),mides:new Set(),models:new Set(),sizeStock:new Map(),introYears:new Set()});
+    const g=groups.get(key);g.stock+=Math.max(0,r.stock||0);
+    if(r.antiguitat)g.introYears.add(r.antiguitat);
+    g.temporades.add(r.temporada||'Sense definir');
+    const size=r.mida||'Sense especificar';
+    g.sizeStock.set(size,(g.sizeStock.get(size)||0)+Math.max(0,r.stock||0));
+    if(r.mida)g.mides.add(r.mida);
+    if(r.familia)g.models.add(r.familia);
+    const nk=norm(r.familia);
+    if(!nameToFamilies.has(nk))nameToFamilies.set(nk,new Set());
+    nameToFamilies.get(nk).add(key);
+  });
+  const sales=new Map(), unmatched=[];
+  ALL.filter(r=>r.botiga===selectedStockBrand).forEach(r=>{
+    const explicit=norm(r.subcat);
+    const candidates=nameToFamilies.get(norm(r.nom));
+    // Una subcategoria de VENDES és explícita; sinó només fem servir una
+    // correspondència inequívoca amb el nom del producte a l'estoc.
+    const key=explicit||((candidates&&candidates.size===1)?[...candidates][0]:null);
+    if(!key){unmatched.push(r);return;}
+    if(!sales.has(key))sales.set(key,{qty:0,fires:new Set(),bySize:new Map(),unsized:0});
+    const v=sales.get(key);v.qty+=r.qty||0;
+    if(r.mida)v.bySize.set(norm(r.mida),(v.bySize.get(norm(r.mida))||0)+(r.qty||0));
+    else v.unsized+=r.qty||0;
+    if(r.fKey&&r.fKey!=='sense fira')v.fires.add(r.data+'|'+r.fKey);
+  });
+  const month=new Date().getMonth()+1;
+  // Calendari orientatiu de preparació, sense assumir fires futures confirmades.
+  function seasonStage(t){
+    if(t==='Atemporal')return 'actual';
+    if(t==='Sense definir')return 'desconeguda';
+    if(t==='Nadal')return [9,10,11,12].includes(month)?'actual':[7,8].includes(month)?'proxima':'fora';
+    if(t==='Hivern')return [10,11,12,1,2].includes(month)?'actual':[8,9].includes(month)?'proxima':'fora';
+    if(t==='Estiu')return [4,5,6,7,8].includes(month)?'actual':[2,3].includes(month)?'proxima':'fora';
+    return 'desconeguda';
+  }
+  const recs=[...groups.entries()].map(([key,g])=>{
+    const sale=sales.get(key)||{qty:0,fires:new Set()};
+    const fairCount=sale.fires.size;
+    // Any de la família: el més antic, sense reiniciar l'antiguitat per colors o models nous.
+    const introYear=g.introYears.size?Math.min(...g.introYears):null;
+    const yearsActive=introYear?Math.max(1,new Date().getFullYear()-introYear+1):null;
+    const newFamily=introYear!==null&&yearsActive<=1;
+    const recentFamily=introYear!==null&&yearsActive===2;
+    const rate=fairCount?sale.qty/fairCount:0;
+    const target=fairCount>=3?Math.ceil(rate*4.8):fairCount>0?Math.ceil(rate*2):0;
+    const missing=Math.max(0,target-g.stock);
+    const seasons=[...g.temporades];
+    const stages=seasons.map(seasonStage);
+    const season=seasons.join(', ');
+    const active=stages.includes('actual'),soon=stages.includes('proxima');
+    const coverage=rate>0?g.stock/rate:null;
+    let status='Estoc suficient',reason='Estoc disponible o sense demanda demostrada',suggest=0;
+    if(!fairCount){
+      reason=newFamily?'Novetat '+introYear+': en prova, encara sense vendes identificades':recentFamily?'Producte recent ('+introYear+'): historial limitat; revisar manualment':'Sense vendes històriques identificables; revisar manualment';
+    }
+    else if(missing>0 && active){status='Fabricar ara';suggest=missing;reason=newFamily?'Novetat '+introYear+' amb vendes: proposta de prova':fairCount<3?'Proposta de prova: historial limitat':'Demanda històrica i estoc per sota de l’objectiu';}
+    else if(missing>0 && (soon||stages.includes('desconeguda'))){status='Planificar';reason='Revisar abans de produir: temporada pròxima o sense definir';}
+    else if(missing>0){status='Planificar';reason='Fora de temporada: preparar quan s’acosti';}
+    else if(coverage!==null){reason='Estoc per cobrir aproximadament '+coverage.toFixed(1)+' fires amb vendes';}
+    return {...g,season,status,reason,suggest,rate,fairCount,qty:sale.qty,coverage,missing,introYear,yearsActive,unsized:sale.unsized||0,bySize:sale.bySize||new Map()};
+  });
+  const order={'Fabricar ara':0,'Planificar':1,'Estoc suficient':2};
+  recs.sort((a,b)=>order[a.status]-order[b.status]||b.rate-a.rate||a.nom.localeCompare(b.nom,'ca'));
+  const seasonFilter=document.getElementById('stockSeasonFilter')?.value||'';
+  const statusFilter=document.getElementById('stockStatusFilter')?.value||'';
+  const shown=recs.filter(x=>(!seasonFilter||x.temporades.has(seasonFilter))&&(!statusFilter||x.status===statusFilter));
+  const counts={};recs.forEach(x=>counts[x.status]=(counts[x.status]||0)+1);
+  const totalUnits=recs.reduce((a,x)=>a+x.stock,0);
+  const toProduce=recs.reduce((a,x)=>a+x.suggest,0);
+  kg.innerHTML=`<div class="kc er"><div class="kl">🔴 Fabricar ara</div><div class="kv">${counts['Fabricar ara']||0}</div><div class="ks">famílies prioritàries</div></div>
+    <div class="kc"><div class="kl">🟠 Planificar</div><div class="kv">${counts['Planificar']||0}</div><div class="ks">pròxima temporada o revisió</div></div>
+    <div class="kc gr"><div class="kl">🟢 Estoc suficient</div><div class="kv">${counts['Estoc suficient']||0}</div><div class="ks">famílies sense reposició urgent</div></div>
+    <div class="kc"><div class="kl">Producció orientativa</div><div class="kv">${toProduce}</div><div class="ks">unitats, només prioritats actuals</div></div>
+    <div class="kc"><div class="kl">Stock total</div><div class="kv">${totalUnits}</div><div class="ks">${st.length} variants registrades</div></div>`;
+  const pills={'Fabricar ara':'red','Planificar':'orange','Estoc suficient':'green'};
+  tbp.innerHTML=shown.length?shown.map(x=>`<tr class="${x.status==='Fabricar ara'?'re':''}">
+    <td><span class="pill ${pills[x.status]}">${x.status}</span></td>
+    <td>${escStock(x.nom)}${x.introYear?'<div class="ks">Des de '+x.introYear+'</div>':''}</td><td>${escStock(x.season)}</td><td>${x.stock}</td>
+    <td>${escStock([...x.sizeStock.entries()].map(([size,n])=>size+' ('+n+')').join(' · ')||'—')}<div class="ks">${x.unsized?'Vendes sense mida: '+x.unsized+' u.':'Vendes amb mida: '+([...x.bySize.values()].reduce((a,b)=>a+b,0))+' u.'}</div></td><td>${x.coverage===null?'—':x.coverage.toFixed(1)+' fires'}</td>
+    <td>${x.rate?x.rate.toFixed(2):'—'}</td>
+    <td data-sort="${x.suggest}" style="font-weight:700;text-align:center">${x.suggest>0?x.suggest:'—'}</td>
+    <td>${escStock(x.status==='Estoc suficient'&&!x.fairCount&&!x.introYear?'No fabricar - '+x.reason:x.reason)}${x.status==='Planificar'&&x.missing?'<div class="ks">Necessitat potencial: '+x.missing+' u. (pendent de temporada)</div>':''}</td>
+  </tr>`).join(''):'<tr><td colspan="9">No hi ha famílies per als filtres seleccionats.</td></tr>';
+  if(tbBest){
+    // El rànquing inclou també famílies venudes sense existències actuals.
+    const ranked=[...sales.entries()].map(([key,v])=>({nom:groups.get(key)?.nom||key,qty:v.qty,fairs:v.fires.size})).sort((a,b)=>b.qty-a.qty).slice(0,10);
+    tbBest.innerHTML=ranked.map(x=>`<tr><td>${escStock(x.nom)}</td><td>${x.qty}</td><td>${x.fairs}</td><td>${x.fairs?(x.qty/x.fairs).toFixed(2):'—'}</td></tr>`).join('');
+  }
+  if(tbNoMove){const nm=recs.filter(x=>!x.qty&&x.stock>0).sort((a,b)=>b.stock-a.stock).slice(0,12);
+    tbNoMove.innerHTML=nm.map(x=>`<tr><td>${escStock(x.nom)}</td><td>${escStock(x.cat)}</td><td>${x.stock}</td><td>Sense vendes identificades per aquesta subcategoria</td></tr>`).join('')||'<tr><td colspan="4">No hi ha famílies sense moviment.</td></tr>';
+  }
+  if(tbOver){const over=recs.filter(x=>x.status==='Estoc suficient').sort((a,b)=>b.stock-a.stock).slice(0,30);
+    tbOver.innerHTML=over.map(x=>`<tr><td>${escStock(x.nom)}</td><td>${escStock(x.cat)}</td><td>${x.stock}</td><td>${x.coverage===null?'—':x.coverage.toFixed(1)+' fires'}</td><td>${escStock(x.reason)}</td></tr>`).join('')||'<tr><td colspan="5">Sense resultats.</td></tr>';
+  }
+  if(tq){tq.innerHTML=recs.filter(x=>x.status!=='Estoc suficient').slice(0,8).map(x=>`<tr><td>${escStock(x.status)}</td><td>${escStock(x.nom)}</td><td>${x.stock}</td><td>${x.fairCount}</td><td>${x.coverage===null?'—':x.coverage.toFixed(1)}</td><td>${x.suggest?'Produir '+x.suggest:'Planificar'}</td></tr>`).join('');}
+  tb.innerHTML=st.slice().sort((a,b)=>a.nom.localeCompare(b.nom,'ca')).map(r=>`<tr class="${r.stock<=1?'re':''}"><td><span class="bx ${bxc(r.botiga)}">${escStock(r.botiga)}</span></td><td>${escStock(r.familia)}</td><td>${escStock(r.cat)}</td><td>${escStock(r.model||'—')}</td><td>${escStock(r.temporada)}</td><td>${escStock(r.mida||'—')}</td><td>${escStock(r.color)}</td><td>${r.stock}</td><td>${escStock(r.obs||'—')}</td></tr>`).join('');
+}
+
+function openStockModal(id){ const el=document.getElementById(id); if(el) el.classList.add('show'); }
+function hideStockModal(id){ const el=document.getElementById(id); if(el) el.classList.remove('show'); }
+function closeStockModal(e,id){ if(e.target && e.target.id===id) hideStockModal(id); }
+
+
+// ── CONTROL DE COHERÈNCIA (només avisos; no modifica dades) ──
+function validateWorkbook(){
+ const issues=[];
+ const add=(level,where,what,action)=>issues.push({level,where,what,action});
+ const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim().replace(/\s+/g,' ');
+ const key=(brand,sub)=>norm(brand)+'|'+norm(sub);
+ const bySub=new Map(),byName=new Map();
+ STOCK.forEach(s=>{
+   const k=key(s.botiga,s.model||s.cat);if(!bySub.has(k))bySub.set(k,[]);bySub.get(k).push(s);
+   const n=key(s.botiga,s.nom);if(!byName.has(n))byName.set(n,[]);byName.get(n).push(s);
+   if(s.stock<0)add('Error','stock octubre26 · fila '+s.excelRow,'Estoc negatiu: '+s.nom,'Revisar la quantitat');
+   if(!s.model)add('Avís','stock octubre26 · fila '+s.excelRow,'Subcategoria buida: '+s.nom,'Informar la família comercial');
+   if(!s.temporada||s.temporada==='Sense definir')add('Informació','stock octubre26 · fila '+s.excelRow,'Temporada sense definir: '+s.nom,'Completar si correspon');
+ });
+ const seen=new Set();
+ STOCK.forEach(s=>{
+   const k=[s.botiga,s.nom,s.model,s.mida,s.color,s.temporada].map(norm).join('|');
+   if(seen.has(k))add('Avís','stock octubre26 · fila '+s.excelRow,'Variant repetida: '+s.nom+' / '+s.model,'Comprovar si és un duplicat o una entrada legítima');
+   seen.add(k);
+ });
+ ALL.forEach(r=>{
+   const where='VENDES · fila '+r.excelRow;
+   if(r.hasErr)add('Avís',where,'Import diferent de quantitat × preu unitari: '+r.nom,'Revisar el preu final');
+   if(r.qty<=0)add('Avís',where,'Quantitat no positiva: '+r.nom,'Comprovar si és una devolució');
+   if(!r.data)add('Error',where,'Data de venda no vàlida: '+r.nom,'Corregir la data');
+   if(r.data && r.any && Number(r.data.slice(0,4))!==r.any)add('Avís',where,'Any i data diferents: '+r.nom,'Revisar l’any');
+   if(!r.subcat)return;
+   const exact=bySub.get(key(r.botiga,r.subcat))||[];
+   if(!exact.length){
+     const sameName=byName.get(key(r.botiga,r.nom))||[];
+     if(sameName.length)add('Avís',where,'Subcategoria no coincident per «'+r.nom+'» ('+r.subcat+')','A estoc consta: '+[...new Set(sameName.map(x=>x.model))].join(', '));
+     else add('Informació',where,'Producte venut sense família equivalent a l’estoc: '+r.nom+' / '+r.subcat,'Pot ser descatalogat; revisar si encara es comercialitza');
+   }else if(r.any && exact.every(s=>s.antiguitat&&s.antiguitat>r.any)){
+     add('Avís',where,'Venda anterior a l’any d’introducció: '+r.nom,'Revisar Antiguitat a estoc');
+   }
+ });
+ const fairKeys=new Set(FIRES_DATA.map(f=>f.data+'|'+f.fKey));
+ const missingFairs=new Set();
+ ALL.forEach(r=>{if(r.data&&!fairKeys.has(r.data+'|'+r.fKey))missingFairs.add(r.data+'|'+r.fLab);});
+ missingFairs.forEach(v=>add('Informació','FIRES', 'Venda sense jornada coincident: '+v.replace('|',' · '),'Comprovar nom i data de la fira'));
+ FIRES_DATA.forEach(f=>{if(!(f.dies>0&&f.dies<=7))add('Avís','FIRES · '+f.data,'Durada sospitosa: '+f.lab+' ('+f.dies+' dies)','Revisar les jornades equivalents');});
+ DATA_ISSUES=issues;
+ const banner=document.getElementById('coherenceBanner');
+ const label=document.getElementById('coherenceText');
+ if(banner)banner.style.display=issues.length?'flex':'none';
+ if(label)label.textContent=issues.length+' incidència'+(issues.length===1?'':'s')+' per revisar · '+issues.filter(x=>x.level==='Error').length+' errors';
+ const tbody=document.getElementById('coherenceRows');
+ if(tbody)tbody.innerHTML=issues.map(x=>'<tr><td>'+escStock(x.level)+'</td><td>'+escStock(x.where)+'</td><td>'+escStock(x.what)+'</td><td>'+escStock(x.action)+'</td></tr>').join('')||'<tr><td colspan="4">No s’han detectat incidències.</td></tr>';
+ const summary=document.getElementById('coherenceSummary');if(summary)summary.textContent=issues.length+' incidències detectades. Els avisos informatius no impliquen necessàriament un error.';
+}
+
+// ── VALIDATION WARNING ───────────────────────────────
+function renderValidationWarning(errs){
+  const box=document.getElementById('vWarn');
+  const txt=document.getElementById('vWarnTxt');
+  if(!box) return;
+  if(errs>0){
+    box.classList.add('show');
+    if(txt) txt.textContent=`${errs} fila${errs===1?'':'es'} amb Preu final diferent del càlcul.`;
+  }else{
+    box.classList.remove('show');
+    if(txt) txt.textContent='';
+  }
+}
+function openValidation(){
+  const m=document.getElementById('validationModal');
+  if(m) m.classList.add('show');
+}
+function closeValidation(){
+  const m=document.getElementById('validationModal');
+  if(m) m.classList.remove('show');
+}
+
+// ═══════════════════════════════════════════════════════
+//  DATA HELPERS
+// ═══════════════════════════════════════════════════════
+function sm(d,k){ return d.reduce((s,r)=>s+(r[k]||0),0); }
+function grRev(d,k){
+  const r={};
+  d.forEach(x=>{ const key=x[k]||'Desconegut'; r[key]=(r[key]||0)+x.preuF; });
+  return r;
+}
+function grRevFira(d){
+  // Returns {fairLabel: revenue}
+  const fm=buildFM(d), r={};
+  Object.values(fm).forEach(v=>{ r[v.lab]=v.rev; });
+  return r;
+}
+function grSum(d,k,vk){
+  const r={};
+  d.forEach(x=>{ const key=x[k]||'Desconegut'; r[key]=(r[key]||0)+(x[vk]||0); });
+  return r;
+}
+function grCnt(d,k){
+  const r={};
+  d.forEach(x=>{ const key=x[k]||'Desconegut'; r[key]=(r[key]||0)+1; });
+  return r;
+}
+function buildFM(d){
+  const m={};
+  d.forEach(x=>{
+    const k=x.fKey;
+    if(!m[k]) m[k]={key:k,lab:x.fLab,rev:0,uni:0,tx:0,days:new Set()};
+    m[k].rev+=x.preuF; m[k].uni+=x.qty; m[k].tx+=1;
+    if(x.data) m[k].days.add(x.data);
+  });
+  return m;
+}
+function fairRate(f){const days=f?fairDays(f):0;return days&&!fairMissing(f).length?f.rev/days:0;}
+function buildTownDaily(d){
+ const out={};
+ d.forEach(x=>{const k=x.pob||'Desconeguda';if(!out[k])out[k]={rev:0,uni:0,days:new Set(),key:null};
+ out[k].rev+=x.preuF;out[k].uni+=x.qty;if(x.data)out[k].days.add(x.data+'|'+x.fKey);
+ });return out;
+}
+function townRate(f){let days=0;for(const k of f.days){const [date,...rest]=k.split('|');const e=lookupFair(date,rest.join('|'));if(!e||e.dies<=0)return 0;days+=e.dies;}return days?f.rev/days:0;}
+function topEntry(obj){
+  const es=Object.entries(obj);
+  return es.length ? es.sort((a,b)=>b[1]-a[1])[0] : null;
+}
+function fmt(v){ return (v||0).toLocaleString('ca-ES',{minimumFractionDigits:2,maximumFractionDigits:2})+' €'; }
+function bxc(b){ return b==='ByNuska'?'b-bn':b==='Confeccions Ribera'?'b-cr':b==='Carlitus'?'b-ca':''; }
+
+
+const HOME_GROUPS={resum:[['ov','Resum'],['tbl','Taules']],productes:[['pr','Productes'],['stk','Stock i producció'],['preus','Preus i rendibilitat']],botigues:[['cmp','Les nostres marques']],fires:[['fi','Rendiment de fires'],['history','Històric de fires'],['agenda','Agenda de fires']]};
+const HOME_TITLES={resum:'📊 Resum i taules',productes:'🧶 Productes i stock',botigues:'Les nostres marques',fires:'🎪 Fires'};
+let currentHomeGroup='';
+function refreshHomeStats(){
+ const put=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=value;};
+ try{
+  const sales=Array.isArray(FD)?FD:[];
+  put('homeStatSales',sales.length?`${sales.length.toLocaleString('ca-ES')} registres de venda`:'Carrega l’Excel per veure les vendes');
+  const stock=Array.isArray(STOCK)?STOCK:[];
+  put('homeStatProducts',stock.length?`${stock.length.toLocaleString('ca-ES')} registres d’estoc`:'Carrega l’Excel per veure l’estoc');
+  put('homeStatBrands','3 marques');
+  const fairs=typeof AGENDA_ITEMS!=='undefined'&&Array.isArray(AGENDA_ITEMS)?AGENDA_ITEMS:[];
+  const today=new Date().toISOString().slice(0,10);
+  const future=fairs.filter(r=>r.inici&&r.inici>=today&&!['Descartada','Autònoms!','Passem'].includes(r.estat)).length;
+  put('homeStatFairs',fairs.length?`${future} fires futures · ${fairs.length} registrades`:'Consulta l’agenda de fires');
+ }catch(e){console.warn('No es poden actualitzar els indicadors de portada',e);}
+}
+function goHome(){refreshHomeStats();document.getElementById('dash').classList.add('in-home');document.getElementById('homeScreen').style.display='block';window.scrollTo({top:0,behavior:'instant'});}
+function openGroup(group,section){
+ currentHomeGroup=group;
+ document.getElementById('homeScreen').style.display='none';
+ const dash=document.getElementById('dash');dash.style.display='block';dash.classList.remove('in-home');
+ document.getElementById('sectionTitle').textContent=HOME_TITLES[group];
+ const tabs=document.getElementById('groupTabs');tabs.replaceChildren();
+ HOME_GROUPS[group].forEach(([id,label])=>{const b=document.createElement('button');b.textContent=label;b.classList.toggle('active',id===(section||HOME_GROUPS[group][0][0]));b.onclick=()=>openSection(id);tabs.appendChild(b);});
+ openSection(section||HOME_GROUPS[group][0][0]);window.scrollTo({top:0,behavior:'instant'});
+}
+function openSection(id){
+ ['globalFilters','kg'].forEach(k=>{const el=document.getElementById(k);if(el)el.style.display=(currentHomeGroup==='resum' && id==='ov')?(k==='kg'?'grid':'block'):'none';});
+ const warning=document.getElementById('vWarn');if(warning)warning.style.display=(currentHomeGroup==='resum' && id==='ov' && Number(document.getElementById('erCnt')?.textContent||0)>0)?'':'none';
+ showT(id,'mt');
+ const entries=HOME_GROUPS[currentHomeGroup]||[];
+ document.querySelectorAll('#groupTabs button').forEach((b,i)=>b.classList.toggle('active',entries[i]?.[0]===id));
+}
+
+// ═══════════════════════════════════════════════════════
+//  TABS
+// ═══════════════════════════════════════════════════════
+function showT(name,tabsId){
+ const tabsEl=document.getElementById(tabsId);
+ if(!tabsEl)return;
+ const names=tabsId==='mt'?['ov','pr','fi','cmp','agenda','history','stk','preus','tbl']:['ts-sa','ts-bz','ts-pr','ts-ct','ts-fi','ts-to','ts-py','ts-er'];
+ names.forEach(n=>{const panel=document.getElementById('tab-'+n);if(panel){panel.classList.toggle('on',n===name);panel.hidden=n!==name;}});
+ tabsEl.querySelectorAll('.tab').forEach(el=>{const oc=el.getAttribute('onclick')||'';el.classList.toggle('on',oc.includes("showT('"+name+"','"+tabsId+"')"));});
+ if(name==='agenda'&&typeof renderAgenda==='function')renderAgenda();if(name==='history'&&typeof renderFairHistory==='function')renderFairHistory();
+ if(typeof CH!=='undefined')setTimeout(()=>Object.values(CH).forEach(ch=>{try{ch.resize()}catch(e){}}),80);
+}
+
+// ═══════════════════════════════════════════════════════
+//  TABLE SEARCH & SORT
+// ═══════════════════════════════════════════════════════
+function srchT(id,q){
+  const ql=q.toLowerCase();
+  document.querySelectorAll(`#${id} tbody tr`).forEach(r=>{
+    r.style.display=r.textContent.toLowerCase().includes(ql)?'':'none';
+  });
+}
+const SS={};
+function srt(id,col,th){
+  const key=id+col;
+  const asc=SS[key]!==true; SS[key]=asc;
+  document.querySelectorAll(`#${id} th`).forEach(h=>h.classList.remove('asc','desc'));
+  th.classList.add(asc?'asc':'desc');
+  const tb=document.querySelector(`#${id} tbody`);
+  [...tb.querySelectorAll('tr')].sort((a,b)=>{
+    const av=(a.cells[col]?.textContent||'').trim().replace(/[€\s]/g,'').replace(/\./g,'').replace(',','.');
+    const bv=(b.cells[col]?.textContent||'').trim().replace(/[€\s]/g,'').replace(/\./g,'').replace(',','.');
+    const an=parseFloat(av),bn=parseFloat(bv);
+    if(!isNaN(an)&&!isNaN(bn)) return asc?an-bn:bn-an;
+    return asc?av.localeCompare(bv,'ca'):bv.localeCompare(av,'ca');
+  }).forEach(r=>tb.appendChild(r));
+}
+
+
+// Controls de cerca i ordenació per a totes les taules de Resum i taules.
+const tableViews = {};
+function normalizeCell(v){return String(v??'').trim().toLocaleLowerCase('ca');}
+function compareCells(a,b){
+ const parse=v=>{const t=String(v).trim().replace(/\s/g,'').replace(/[€%]/g,'');if(!/^-?[\d.,]+$/.test(t))return null;const n=Number(t.replace(/\./g,'').replace(',','.'));return Number.isFinite(n)?n:null};
+ const an=parse(a),bn=parse(b);if(an!==null&&bn!==null)return an-bn;
+ const ad=String(a).match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/),bd=String(b).match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/);
+ if(ad&&bd)return new Date(+ad[3],+ad[2]-1,+ad[1])-new Date(+bd[3],+bd[2]-1,+bd[1]);
+ return String(a).localeCompare(String(b),'ca',{numeric:true,sensitivity:'base'});
+}
+function applyTableView(id){
+ const table=document.getElementById(id),v=tableViews[id];if(!table||!v)return;
+ const body=table.tBodies[0];if(!body)return;
+ const rows=[...body.rows];
+ rows.sort((a,b)=>v.col<0?0:(v.dir*compareCells(a.cells[v.col]?.textContent||'',b.cells[v.col]?.textContent||'')));
+ rows.forEach(r=>{const values=[...r.cells].map(c=>normalizeCell(c.textContent));r.hidden=!(values.join(' ').includes(normalizeCell(v.q))&&v.filters.every((f,i)=>!f||values[i]?.includes(normalizeCell(f))));body.appendChild(r)});
+}
+function initTableTools(){
+ document.querySelectorAll('#tab-tbl table[id]').forEach(table=>{
+  const id=table.id,headers=[...table.querySelectorAll('thead th')];
+  if(!headers.length)return;
+  tableViews[id]={q:'',filters:headers.map(()=>''),col:-1,dir:1};
+  const wrapper=table.closest('.tw');if(!wrapper)return;
+  let bar=wrapper.querySelector('.table-tools');
+  if(!bar){bar=document.createElement('div');bar.className='table-tools';const scroll=wrapper.querySelector('.tsc');scroll?.before(bar);}
+  const search=document.createElement('input');search.type='search';search.placeholder='Cercar a tota la taula…';search.setAttribute('aria-label','Cercar a '+id);
+  search.addEventListener('input',()=>{tableViews[id].q=search.value;if(id==='tSa'){pg=1;renderSalesT()}else applyTableView(id)});bar.appendChild(search);
+  const toggle=document.createElement('button');toggle.type='button';toggle.textContent='⚲ Filtrar columnes';bar.appendChild(toggle);
+  const filterWrap=document.createElement('div');filterWrap.className='column-filters';filterWrap.hidden=true;
+  headers.forEach((th,i)=>{const label=document.createElement('label');label.textContent=th.textContent.trim()||'Columna '+(i+1);const input=document.createElement('input');input.type='search';input.placeholder='Filtrar…';input.addEventListener('input',()=>{tableViews[id].filters[i]=input.value;if(id==='tSa'){pg=1;renderSalesT()}else applyTableView(id)});label.appendChild(input);filterWrap.appendChild(label);
+   th.removeAttribute('onclick');th.style.cursor='pointer';th.title='Ordenar per '+th.textContent.trim();th.setAttribute('tabindex','0');th.setAttribute('role','button');
+   const sort=()=>{const v=tableViews[id];v.dir=v.col===i?-v.dir:1;v.col=i;headers.forEach(h=>h.classList.remove('asc','desc'));th.classList.add(v.dir===1?'asc':'desc');if(id==='tSa'){pg=1;renderSalesT()}else applyTableView(id)};
+   th.addEventListener('click',sort);th.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();sort()}});
+  });
+  toggle.addEventListener('click',()=>{filterWrap.hidden=!filterWrap.hidden;toggle.setAttribute('aria-expanded',String(!filterWrap.hidden))});
+  bar.after(filterWrap);
+ });
+}
+document.addEventListener('DOMContentLoaded',initTableTools);
+
+// Historial de fires importat del CSV antic de Glide. No implica convocatòries confirmades el 2026.
+const FIRES_GLIDE = [{"Nom": "Fira del Joc i de Nadal", "Poble": "Berga", "Data": "2024-12-06T12:00:00.000Z", "Data fi": "", "EstatFira": "ACCEPTADA", "Detall": "Com ja portem dient durant XI Fires del Joc i de Nadal anteriors : Tothom a jugar ¡!!\n\nTornem amb la 12a Fira del Joc i de Nadal a Berga i tornem amb moltíssimes ganes d’oferir un dia inoblidable per tothom qui vingui perquè volem que el proper 6 de desembre i com cada any des de en fa 12 tornem a tenir un dels dies més bonics i il·lusionants a Berga: La Fira del Joc i de Nadal a Berga.", "Nota": "", "Enllaç": "", "Negociació": "", "Contacte": "", "Motiu NO": "", "🔒 Row ID": "fire-001"}, {"Nom": "Mercat de Nadal", "Poble": "Cal Rosal", "Data": "2025-12-20T12:00:00.000Z", "Data fi": "2025-12-21T12:00:00.000Z", "EstatFira": "ACCEPTADA", "Detall": "Cap de setmana de parades amb els millors regals i activitats familiars 🎁💫", "Nota": "Fira de Nadal de proximitat i ambient familiar", "Enllaç": "", "Negociació": "", "Contacte": "", "Motiu NO": "", "🔒 Row ID": "fire-002"}, {"Nom": "Fireta tocats del bolet", "Poble": "Montmajor", "Data": "2024-11-09T12:00:00.000Z", "Data fi": "", "EstatFira": "ACCEPTADA", "Detall": "La fira \"Tocats dels Bolets\" és una fira anual dedicada al món del bolet. Durant el matí, hi ha jornada de portes obertes al Museu del Bolet. La Tastabolet té lloc a la plaça del Mercat i es pot degustar diverses tapes de proximitat on el protagonista és el bolet, tot gaudint d'un vermut musical. El carrer es guarneix amb paradetes amb productes de proximitats i fets a mà.", "Nota": "", "Enllaç": "", "Negociació": "", "Contacte": "", "Motiu NO": "", "🔒 Row ID": "fire-003"}, {"Nom": "Fira de la Vella Farga", "Poble": "Lladurs", "Data": "2024-12-08T12:00:00.000Z", "Data fi": "", "EstatFira": "ACCEPTADA", "Detall": "Les Festes Nadalenques 🎅🏻 a La Vella Farga són realment especials. Els boscos es transformen en un paisatge de somni, amb la boira cobrint els arbres i el silenci trencat només pel so del vent 🌳\n", "Nota": "La fira més cuqui!", "Enllaç": "", "Negociació": "", "Contacte": "", "Motiu NO": "", "🔒 Row ID": "fire-004"}, {"Nom": "Fira de l'estany", "Poble": "L'estany", "Data": "2024-12-08T12:00:00.000Z", "Data fi": "", "EstatFira": "ACCEPTADA", "Detall": "La fira de l’Estany es celebra tradicionalment el 8 de desembre, coincidint amb la festa de la Immaculada concepció de la Mare de Déu (també coneguda com a festa de la Puríssima concepció)\nSón elements tradicionals de la festa major l’ofici religiós i el ball pla, entre altres activitats firals i lúdiques.\nTambé cal destacar el concurs de pintura ràpida, d’origen contemporani, que ha tingut un nombre creixent de participants.", "Nota": "", "Enllaç": "", "Negociació": "", "Contacte": "", "Motiu NO": "", "🔒 Row ID": "fire-005"}, {"Nom": "Fira del Joc i de Nadal", "Poble": "Berga", "Data": "2025-12-06T12:00:00.000Z", "Data fi": "", "EstatFira": "ACCEPTADA", "Detall": "Com ja portem dient durant XI Fires del Joc i de Nadal anteriors : Tothom a jugar ¡!!\n\nTornem amb la 12ª Fira del Joc i de Nadal a Berga i tornem amb moltíssimes ganes d’oferir un dia inoblidable per tothom qui vingui perquè volem que el proper 6 de desembre i com cada any des de en fa 12 tornem a tenir un dels dies més bonics i il·lusionants a Berga: La Fira del Joc i de Nadal a Berga.", "Nota": "La fira més juganera", "Enllaç": "", "Negociació": "", "Contacte": "", "Motiu NO": "", "🔒 Row ID": "5f8DUGDTSP-l939ueqlGCA"}, {"Nom": "Fira de Sta Llucia i els alls", "Poble": "Balaguer", "Data": "2025-12-06T12:00:00.000Z", "Data fi": "2025-12-07T12:00:00.000Z", "EstatFira": "PASSEM", "Detall": "Balaguer es prepara per viure una nova edició del Mercat de Santa Llúcia - Fira dels Alls, que omplirà el Centre Històric de parades, activitats familiars i tradició gastronòmica", "Nota": "", "Enllaç": "https://www.balaguer.cat/portal/102/", "Negociació": "13/10- Ens enviaran formulari si queren places a finals de mes", "Contacte": "paeria@balaguer.cat", "Motiu NO": "Dates i Primen antics paradistes", "🔒 Row ID": "LDcaSqqAcqWd29PA9ElI"}, {"Nom": "Fira d’Artistes i Mercat de Nadal 2025", "Poble": "Tàrrega", "Data": "2025-12-12T12:00:00.000Z", "Data fi": "2025-12-14T12:00:00.000Z", "EstatFira": "REBUTJADA", "Detall": "Tàrrega celebra una nova edició de Fira d’Artistes i Mercat de Nadal, una proposta ideal per gaudir del Nadal a Catalunya amb tota la família.\n\nAmb més de 60 expositors, tallers creatius, espectacles, música en directe i una deliciosa oferta de gastronomia de proximitat, aquesta fira transforma la ciutat en un espai acollidor, ple d’ornaments, art i il·lusió.\n\nLa iniciativa, organitzada per la Regidoria de Promoció Econòmica, reformula l’antiga Fira d’Artistes i Activitats Tradicionals per oferir un esdeveniment renovat, inspirador i ple de màgia.\n\nSigui per fer les compres nadalenques, viure experiències en família o descobrir artesania única, la Fira de Nadal de Tàrrega és una cita ineludible aquestes festes.", "Nota": "", "Enllaç": "https://www.tarrega.cat/promocioeconomica-governacio/fires-i-mercats-1#FiraArtistes", "Negociació": "10/10 - La Neus Contacta", "Contacte": "", "Motiu NO": "Demanen Autònom", "🔒 Row ID": "UAaIoW1BBSItZubV3Ksa"}, {"Nom": "Fira de Nadal i del torró Artesà", "Poble": "Cardedeu", "Data": "2025-12-12T12:00:00.000Z", "Data fi": "2025-12-14T12:00:00.000Z", "EstatFira": "REBUTJADA", "Detall": "Tan antigues com la mateixa vila, la seva celebració ja fou concedida pel rei Jaume I amb la “Carta de Repoblament” al 1272: “Una Fira que es faci i celebri cada any per la festa de la Santa Creu de mes de setembre, i que duri tres dies. \nA les parades hi ha en exposició i venda tota mena d'Articles Típics Nadalencs: Objectes de Regal, Artesania, Figures pel Pessebre, Avets, Plantes, Flors, Llums, Guarniments, Dolços, Torró Artesà, ... .", "Nota": "", "Enllaç": "http://www.firadenadal.cat/", "Negociació": "10/10 - La Neus Contacta . Enviat formulari: https://forms.office.com/Pages/ResponseDetailPage.aspx?id=DQSIkWdsW0yxEjajBLZtrQAAAAAAAAAAAAYAAK7vtY9UOTRHVVBaNjhVNVU3VVUxMkkxMVZYSDdLUi4u&rid=112&GetResponseToken=ouExAKDshvVtlepg4I__kxPrVBZJ6Dey1vX4twFGDJ8&origin=rc&prevsubpage=rcfre&d1obforrc=1&rcsidebar=0", "Contacte": "firanadalcardedeu@hotmail.com", "Motiu NO": "Primen antics paradistes", "🔒 Row ID": "cEODqGcsDH8MhyOEQf6I"}, {"Nom": "Navàs Nadal Market", "Poble": "Reus", "Data": "2025-12-17T12:00:00.000Z", "Data fi": "2026-01-04T12:00:00.000Z", "EstatFira": "PASSEM", "Detall": "🎄NAVÀS MARKET per Nadal\nDESEMBRE:\n17, 18, 19, 20, (21 tancat) 22 i 23\n\n👑NAVÀS MARKET per Reis\nGENER:\n2, 3 i 4", "Nota": "", "Enllaç": "https://www.instagram.com/navasmarket/", "Negociació": "09/10 - L'Anna contacta via mail a navasmarketreus@hotmail.com", "Contacte": "navasmarketreus@hotmail.com", "Motiu NO": "Dates i format", "🔒 Row ID": "9vsjKzOwLlbh8gS5SFn9"}, {"Nom": "Winter Market Sitges", "Poble": "Sitges", "Data": "2025-12-20T12:00:00.000Z", "Data fi": "2025-12-21T12:00:00.000Z", "EstatFira": "PASSEM", "Detall": "✨ Torna el Winter Market Sitges… i aquest any amb la desena edició!\n\nSi t’encanta el Nadal, les llums, els torrons, els dolços, les casetes de fusta, l’ambient festiu, el Pare Noel, en Mickey, els elfs i fins i tot el vi calent😉… aquest mercat t’enamorarà.", "Nota": "", "Enllaç": "https://www.instagram.com/wintermarketsitges/", "Negociació": "17/10- L'Anna contacta via instagram", "Contacte": "https://www.instagram.com/wintermarketsitges/", "Motiu NO": "", "🔒 Row ID": "xPsDdtNUVAEu8OaaRExe"}, {"Nom": "Fira de la Vella Farga", "Poble": "Lladurs", "Data": "2025-12-06T09:46:00.000Z", "Data fi": "2025-12-07T09:46:00.000Z", "EstatFira": "ACCEPTADA", "Detall": "Les Festes Nadalenques 🎅🏻 a La Vella Farga són realment especials. Els boscos es transformen en un paisatge de somni, amb la boira cobrint els arbres i el silenci trencat només pel so del vent 🌳\n", "Nota": "La fira més cuqui!", "Enllaç": "", "Negociació": "", "Contacte": "", "Motiu NO": "", "🔒 Row ID": "ztlzobC4RRuygNelNLz-bA"}, {"Nom": "Fira de les bruixes", "Poble": "Sant Feliu Sasserra", "Data": "2025-12-01T12:00:00.000Z", "Data fi": "", "EstatFira": "REBUTJADA", "Detall": "Una cita cultural que combina teatre, tradició i memòria històrica per retre homenatge a les dones perseguides per bruixeria.", "Nota": "CONTACTAR AL JULIOL", "Enllaç": "", "Negociació": "", "Contacte": "firabruixes@gmail.com", "Motiu NO": "Ens despertem massa tard", "🔒 Row ID": "I1aJ8BUZx1o4sePCnrQZ"}, {"Nom": "Fira de Nadal de l'Hospitalet de Llobregat", "Poble": "L'hospitalet de Llobregat", "Data": "2025-12-20T10:23:00.000Z", "Data fi": "2025-12-30T10:23:00.000Z", "EstatFira": "PASSEM", "Detall": "", "Nota": "", "Enllaç": "", "Negociació": "Ens contactn ells. busquen 10 artesans que vulguin exposar i vendre les seves creacions", "Contacte": "", "Motiu NO": "Son tots els dies, 24, 25, 26 de nadal....", "🔒 Row ID": "phxt2860T.a3zjGCQeKGuQ"}, {"Nom": "Fira Encesa de Llums 29 Novembre 2025", "Poble": "Mataró", "Data": "2025-11-30T15:21:00.000Z", "Data fi": "", "EstatFira": "PASSEM", "Detall": "", "Nota": "", "Enllaç": "", "Negociació": "26/10- l'Anna envia formulari", "Contacte": "https://docs.google.com/forms/d/e/1FAIpQLScGUzrqJjR6RbR4gn2bGXOl3AmVY3rPddqxZP67WOBC964CKw/formResponse?pli=1", "Motiu NO": "", "🔒 Row ID": "nPeV84DxR8qvBM9awbaSbQ"}, {"Nom": "Fira de Nadal d'Altafulla 2025", "Poble": "Altafulla", "Data": "2025-12-12T10:09:00.000Z", "Data fi": "2025-12-14T10:09:00.000Z", "EstatFira": "REBUTJADA", "Detall": "a Fira de Nadal d’Altafulla ofereix una àmplia varietat de parades d’artesania i productes típics: figures per al pessebre, decoració nadalenca feta a mà, regals originals i dolços tradicionals com torrons i neules, acompanyats de l’aroma del vi calent i la xocolata calenta.\n\nA més, compta amb una programació d’activitats per a totes les edats: tallers creatius i espectacles infantils, actuacions musicals en directe, contacontes, animació de carrer i moltes altres sorpreses que faran que cada visita sigui especial.\n\nLa Fira tindrà lloc a la Plaça de l’Església i la Plaça del Pou, amb els horaris següents:\n\n•    Divendres 12 de desembre: 18:00 – 21:00h\n•    Dissabte 13 de desembre: 11:00 – 21:00h\n•    Diumenge 14 de desembre: 11:00 – 15:00h", "Nota": "Aquest esdeveniment, consolidat com una cita imprescindible per als habitants de la comarca i visitants, transforma els carrers empedrats i la plaça de l’Església en un escenari màgic on es respira l’autèntic esperit nadalenc.", "Enllaç": "", "Negociació": "", "Contacte": "https://docs.google.com/forms/d/e/1FAIpQLSdMb6mvFH9fjWTHkpG5V8CFJcIY9jOmLfMldFa4LPzQ3b5i7Q/viewform?pli=1&pli=1", "Motiu NO": "", "🔒 Row ID": "8RMagiuXRUC6w5f27nfb9A"}, {"Nom": "Mercat de nadal", "Poble": "Cubells", "Data": "2025-12-20T20:56:00.000Z", "Data fi": "", "EstatFira": "ACCEPTADA", "Detall": "La plaça Sant Julià, envoltada pel Bosc de la Muralla, serà novament l’escenari del Mercat de Nadal de Cubells, que celebrarà la seva segona edició el proper 20 de desembre. El Mercat, que obrirà les portes a les 11.00 hores, oferirà una vintena de parades amb artesania, gastronomia i productes nadalencs.", "Nota": "El mercat concentra parades d’artesania i gastronomia típiques de Nadal i, paral·lelament, es porten a terme activitats durant tot el dia.", "Enllaç": "", "Negociació": "", "Contacte": "", "Motiu NO": "", "🔒 Row ID": "prARgCbPRs-WWpgFNezcZA"}, {"Nom": "Soul Market", "Poble": "Barcelona", "Data": "2025-12-13T12:00:00.000Z", "Data fi": "2025-12-14T12:00:00.000Z", "EstatFira": "ACCEPTADA", "Detall": "Soul Market Barcelona és molt més que un simple market; és un reflex de l’esperit emprenedor i de la passió per l’autenticitat. Aquí, les marques locals i les ments creatives troben un espai per brillar, oferint una àmplia gamma de tresors únics, incloent-hi productes sostenibles, obres d’art, articles reciclats, peces vintage, benestar, tallers i molt més.", "Nota": "La fira més d’estil i bon rotllo", "Enllaç": "https://www.instagram.com/soulmarketbcn/", "Negociació": "01/12-Neus", "Contacte": "", "Motiu NO": "", "🔒 Row ID": "taPBEukqF7gHTD6Ilh6h"}];
+const AGENDA_KEY='ordits_trames_agenda_v3';
+const AGENDA_DEFAULT=[{"id": "agenda-2026-01", "nom": "Fira del Joc i de Nadal", "poble": "Berga", "inici": "2026-12-06", "fi": "2026-12-06", "termini": "2026-11-11", "estat": "Ens hi volen", "marca": "Ambdues", "notes": "Inscripció municipal: confirmar tràmits", "url": "https://www.ajberga.cat/berga/396-turisme/turisme-fires"}, {"id": "agenda-2026-02", "nom": "Mercat de Nadal de Cubells", "poble": "Cubells", "inici": "2026-12-19", "fi": "2026-12-19", "termini": "", "estat": "Ens hi volen", "marca": "Ambdues", "notes": "Invitació rebuda", "url": "https://www.cubells.cat/promocio-turistica/mercat-de-nadal"}, {"id": "agenda-2026-03", "nom": "Mercat de Nadal de Cal Rosal", "poble": "Cal Rosal", "inici": "2026-12-19", "fi": "2026-12-20", "termini": "", "estat": "Ens hi volen", "marca": "Ambdues", "notes": "Invitació rebuda", "url": ""}, {"id": "agenda-2026-04", "nom": "Fira de Sant Martí", "poble": "Puig-reig", "inici": "2026-11-07", "fi": "2026-11-08", "termini": "2026-10-23", "estat": "Per consultar", "marca": "Per confirmar", "notes": "No consta requisit explícit d’autònoms", "url": "https://puig-reig.cat/arxiu/puig-reig-obre-el-periode-dinscripcions-per-participar-a-la-fira-de-sant-marti-els-dies-7-i-8-de-novembre-de-2026/"}, {"id": "agenda-2026-05", "nom": "BCN en las Alturas", "poble": "Barcelona", "inici": "2026-11-13", "fi": "2026-11-15", "termini": "", "estat": "Per consultar", "marca": "Confeccions Ribera", "notes": "ByNuska només té lliure el dia 13. Confirmar cost i participació parcial", "url": "https://www.bcnenlasalturas.com/"}, {"id": "agenda-2026-06", "nom": "Fira de Nadal", "poble": "Collbató", "inici": "2026-12-12", "fi": "2026-12-13", "termini": "2026-10-31", "estat": "Per consultar", "marca": "Confeccions Ribera", "notes": "Confirmar admissió i autònoms", "url": "https://www.collbato.cat/pl195/actualitat/noticies/id5239/s-obren-les-inscripcions-per-participar-en-la-fira-de-nadal-de-collbato.htm"}, {"id": "agenda-2026-07", "nom": "Mercat de Nadal", "poble": "Roquetes", "inici": "2026-12-12", "fi": "2026-12-13", "termini": "2026-11-20", "estat": "Per consultar", "marca": "Confeccions Ribera", "notes": "Fins a omplir places; confirmar requisits", "url": "https://roquetes.cat/web/obertes-les-inscripcions-per-participar-a-la-32a-fira-de-nadal-de-roquetes-%F0%9F%8E%84/"}, {"id": "agenda-2026-08", "nom": "Fira d’Artesans de Santa Llúcia", "poble": "Gelida", "inici": "2026-12-13", "fi": "2026-12-13", "termini": "2026-11-06", "estat": "Per consultar", "marca": "Confeccions Ribera", "notes": "Producte propi; revisar bases d’autònoms", "url": "https://www.gelida.cat/actualitat/noticies/oberta-la-inscripcio-a-la-xxxvi-edicio-de-la-fira-dartesans-i-mostra-dentitats-de-santa-llucia.html"}, {"id": "agenda-2026-09", "nom": "Market de Nadal de la Fàbrica Lehmann", "poble": "Barcelona", "inici": "2026-12-12", "fi": "2026-12-13", "termini": "", "estat": "Per consultar", "marca": "Confeccions Ribera", "notes": "Condicions publicades de 2025; confirmar 2026. marketnadal@fabricalehmann.barcelona", "url": "https://www.fabricalehmann.barcelona/activitats/market-de-nadal-2/"}, {"id": "agenda-2026-10", "nom": "Mercat de Nadal", "poble": "Les Masies de Voltregà", "inici": "2026-12-18", "fi": "2026-12-20", "termini": "", "estat": "Per consultar", "marca": "Per confirmar", "notes": "Demanen DNI/NIE, fotografies i assegurança RC", "url": "https://www.lesmasiesdevoltrega.cat/actualitat/noticies/obertes-les-inscripcions-per-participar-en-el-mercat-de-nadal-de-les-masies-de-voltrega.html?lang=ca"}, {"id": "agenda-2026-11", "nom": "Navàs NADAL Market", "poble": "Reus", "inici": "2026-12-21", "fi": "2026-12-23", "termini": "", "estat": "Per consultar", "marca": "Per confirmar", "notes": "Consultar places, cost i documentació: navasmarketreus@hotmail.com", "url": ""}, {"id": "agenda-2026-12", "nom": "Navàs REIS", "poble": "Reus", "inici": "2027-01-02", "fi": "2027-01-04", "termini": "", "estat": "Per consultar", "marca": "Per confirmar", "notes": "Consultar places, cost i documentació: navasmarketreus@hotmail.com", "url": ""}, {"id": "agenda-2026-13", "nom": "XXVII Fira de les Bruixes", "poble": "Sant Feliu Sasserra", "inici": "2026-11-01", "fi": "2026-11-01", "termini": "2026-09-18", "estat": "Descartada", "marca": "Ambdues", "notes": "Inscripció tancada; només llista d’espera", "url": "https://www.santfeliusasserra.cat/actualitat/agenda/xxvii-fira-de-les-bruixes.html"}, {"id": "agenda-2026-14", "nom": "Fira de Santa Llúcia", "poble": "Canyelles", "inici": "2026-11-21", "fi": "2026-11-22", "termini": "2026-08-31", "estat": "Descartada", "marca": "Confeccions Ribera", "notes": "Termini tancat; possible requisit d’activitat econòmica/autònoms", "url": "https://www.canyelles.org/fira-de-santa-llucia/la-24a-fira-de-santa-llucia-s-avanca-al-21-i-22-de-novembre"}, {"id": "agenda-2026-15", "nom": "Fira de Sant Martirià", "poble": "Banyoles", "inici": "2026-11-14", "fi": "2026-11-15", "termini": "", "estat": "Descartada", "marca": "Confeccions Ribera", "notes": "Demanen darrer rebut d’autònoms", "url": "https://seu.banyoles.cat/Categories-de-tr%C3%A0mits/Promoci%C3%B3-econ%C3%B2mica/Fira-Sant-Martiri%C3%A0-Novembre"}, {"id": "agenda-2026-16", "nom": "Fira de Nadal", "poble": "Blanes", "inici": "2026-12-18", "fi": "2026-12-21", "termini": "", "estat": "Descartada", "marca": "Confeccions Ribera", "notes": "Demanen rebut d’autònoms", "url": "https://seu.blanes.cat/skin/pts/pdf/Bases_Mercat_Nadal.pdf"}, {"id": "candidata-2026-01", "nom": "Caldes de Montbui – Mercat de Nadal", "poble": "Caldes de Montbui", "inici": "2026-12-04", "fi": "2026-12-08", "termini": "2026-10-31", "estat": "Per Consultar", "marca": "Ambdues", "notes": "CANDIDATA · Termini anunciat 31/10. Confirmar admissió sense alta d’autònoms, preu i disponibilitat. Dates segons convocatòria.", "url": "", "contacte": ""}, {"id": "candidata-2026-02", "nom": "Fira de Nadal – Sant Celoni", "poble": "Sant Celoni", "inici": "2026-12-05", "fi": "2026-12-06", "termini": "2026-10-31", "estat": "Per Consultar", "marca": "Ambdues", "notes": "CANDIDATA · Termini anunciat 31/10. Confirmar admissió sense alta d’autònoms i disponibilitat. Tarifa publicada: 7,04 €/dia/metre lineal; carpa no inclosa.", "url": "", "contacte": ""}, {"id": "candidata-2026-03", "nom": "Fira de Nadal – Tordera", "poble": "Tordera", "inici": "2026-11-28", "fi": "2026-11-29", "termini": "2026-11-13", "estat": "Per Consultar", "marca": "Ambdues", "notes": "CANDIDATA · Termini anunciat 13/11. Confirmar admissió sense alta d’autònoms, preu i disponibilitat.", "url": "", "contacte": ""}, {"id": "candidata-2026-04", "nom": "Vila Claus – Fira de Nadal", "poble": "Sant Pere de Vilamajor", "inici": "2026-12-12", "fi": "2026-12-13", "termini": "2026-11-15", "estat": "Per Consultar", "marca": "Ambdues", "notes": "CANDIDATA · Termini anunciat 15/11. Confirmar admissió sense alta d’autònoms. Carpa 3×3 m: 30 € els dos dies; caseta: 50 €.", "url": "", "contacte": ""}, {"id": "candidata-2026-05", "nom": "Un Nadal com cal – Fira de Nadal", "poble": "Sant Antoni de Vilamajor", "inici": "2026-11-28", "fi": "2026-11-29", "termini": "2026-11-16", "estat": "Per Consultar", "marca": "Ambdues", "notes": "CANDIDATA · Termini anunciat 16/11 o fins a exhaurir places. Confirmar admissió sense alta d’autònoms. Caseta: 50 € els dos dies.", "url": "", "contacte": ""}];
+const AGENDA_STATES=['Per Consultar','Sol·licitada','Ens hi volen','Confirmada','Celebrada','Autònoms!','Descartada','Passem'];
+function agendaState(v){const aliases={'Per consultar':'Per Consultar','Demanen autònoms':'Autònoms!','Demanen Autònoms':'Autònoms!','Cancel·lada':'Passem','Cancel·lat':'Passem','PASSEM':'Passem'};const clean=String(v??'').replace(/^[0-7]\.\s*/, '');return aliases[clean]||clean||'Per Consultar';}
+function agendaStateIndex(v){const i=AGENDA_STATES.indexOf(agendaState(v));return i<0?99:i;}
+function agendaStateLabel(v){const n=agendaStateIndex(v);return n===99?String(v||''):n+'. '+AGENDA_STATES[n];}
+function agendaNormalizeStates(){AGENDA_ITEMS.forEach(r=>{r.estat=agendaState(r.estat);});}
+
+const AGENDA_CONTACTS=['','Correu electrònic','Instagram','WhatsApp','Telèfon','Formulari web','Instància','Presencial','Altres'];
+const AGENDA_BRANDS=['Ambdues','ConfeccionsRibera','@ByNuska'];
+let agendaSortField='inici',agendaSortDirection=1;
+function agendaSortBy(field){agendaSortDirection=agendaSortField===field?-agendaSortDirection:1;agendaSortField=field;renderAgenda();}
+let AGENDA_ITEMS=[];
+function agendaEsc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function agendaIso(v){if(!v)return '';let m=String(v).match(/^(\d{4}-\d\d-\d\d)/);return m?m[1]:'';}
+function agendaDate(v){const d=agendaIso(v);return d?d.slice(8,10)+'/'+d.slice(5,7)+'/'+d.slice(0,4):'—';}
+function agendaHistorical(){return FIRES_GLIDE.map((r,i)=>({id:'hist-'+i,nom:r.Nom,poble:r.Poble,inici:agendaIso(r.Data),fi:agendaIso(r['Data fi'])||agendaIso(r.Data),termini:'',estat:r.EstatFira==='ACCEPTADA'?'Celebrada':r.EstatFira==='REBUTJADA'?(/aut[oò]nom/i.test(r['Motiu NO']||'')?'Autònoms!':'Descartada'):'Passem',marca:'',notes:[r.Nota,r['Motiu NO'],r['Negociació']].filter(Boolean).join(' · '),url:r.Enllaç||''}));}
+function agendaLoad(){try{const v=JSON.parse(localStorage.getItem(AGENDA_KEY));if(Array.isArray(v)){AGENDA_ITEMS=v;agendaNormalizeStates();const known=new Set(v.map(r=>r.id));const deleted=agendaDeletedIds();for(const r of [...agendaHistorical(),...AGENDA_DEFAULT])if(!known.has(r.id)&&!deleted.has(r.id))AGENDA_ITEMS.push(r);return;}}catch(e){} AGENDA_ITEMS=[...agendaHistorical().filter(r=>!agendaDeletedIds().has(r.id)),...AGENDA_DEFAULT];}
+const AGENDA_BACKUP_KEY='ordits_trames_backup_pending';
+const AGENDA_DELETED_KEY='ordits_trames_deleted_fair_ids';
+function agendaDeletedIds(){try{return new Set(JSON.parse(localStorage.getItem(AGENDA_DELETED_KEY)||'[]'));}catch(e){return new Set();}}
+function agendaBackupPending(value){try{localStorage.setItem(AGENDA_BACKUP_KEY,value?'1':'0');}catch(e){} agendaBackupBanner();}
+function agendaBackupBanner(){for(const id of ['agendaBackupWarning','historyBackupWarning']){const e=document.getElementById(id);if(e)e.style.display=localStorage.getItem(AGENDA_BACKUP_KEY)==='1'?'block':'none';}}
+function agendaSave(markPending=true){try{localStorage.setItem(AGENDA_KEY,JSON.stringify(AGENDA_ITEMS));if(markPending)agendaBackupPending(true);}catch(e){alert('No s’han pogut desar els canvis al navegador. Exporta una còpia JSON.');}}
+function agendaAlert(r){if(['Confirmada','Celebrada','Descartada','Autònoms!','Passem','Ens hi volen'].includes(r.estat))return '—';if(!r.termini)return 'Sense informació';const n=new Date(),today=[n.getFullYear(),String(n.getMonth()+1).padStart(2,'0'),String(n.getDate()).padStart(2,'0')].join('-');const diff=Math.round((new Date(r.termini+'T12:00:00')-new Date(today+'T12:00:00'))/86400000);return diff<0?'Termini vençut':diff<=7?'⚠️ '+diff+' dies':'Termini obert';}
+function agendaOverlaps(r){if(!r.inici||!r.fi||['Descartada','Autònoms!','Passem','Celebrada'].includes(r.estat))return '';const others=AGENDA_ITEMS.filter(x=>x.id!==r.id&&x.inici&&x.fi&&!['Descartada','Autònoms!','Passem','Celebrada'].includes(x.estat)&&x.inici<=r.fi&&x.fi>=r.inici);return others.length?'⚠️ Coincideix amb: '+others.map(x=>x.nom+' ('+x.poble+')').join(', '):'';}
+function agendaLinks(r){
+ const text=String(r.notes||'');
+ const urls=[...text.matchAll(/https?:\/\/[^\s<>"']+/g)].map(m=>m[0].replace(/[),.;]+$/,''));
+ const candidates=[r.url,r.urlInscripcio,...urls].filter(Boolean);
+ const uniq=[...new Set(candidates)];
+ return uniq.map((u,i)=>{try{const parsed=new URL(u);if(!['https:','http:'].includes(parsed.protocol))return '';const label=(u===r.url?'Web':u===r.urlInscripcio?'Formulari':/forms|inscrip|register|signup|eventbrite|typeform/i.test(u)?'Formulari':'Enllaç '+(i+1));return '<a href="'+agendaEsc(parsed.href)+'" target="_blank" rel="noopener noreferrer" style="display:block;margin:2px 0;text-decoration:underline;white-space:nowrap">'+agendaEsc(label)+' ↗</a>';}catch(e){return '';}}).join('')||'—';
+}
+function agendaNotesText(r){return String(r.notes||'').replace(/https?:\/\/[^\s<>"']+/g,'').replace(/\s{2,}/g,' ').trim()||'—';}
+
+const fairRangeView={agenda:null,history:null};
+function fairRangeToggle(prefix){
+ const pop=document.getElementById(prefix+'RangePop');if(!pop)return;
+ const open=pop.hidden;document.querySelectorAll('.fair-range-pop').forEach(el=>el.hidden=true);
+ document.querySelectorAll('.fair-range-trigger').forEach(el=>el.setAttribute('aria-expanded','false'));
+ pop.hidden=!open;if(open){const from=document.getElementById(prefix+'DateFrom').value;const base=from?new Date(from+'T12:00:00'):new Date();fairRangeView[prefix]=new Date(base.getFullYear(),base.getMonth(),1);fairRangeDraw(prefix);}
+ document.getElementById(prefix+'RangeTrigger').setAttribute('aria-expanded',String(open));
+}
+function fairRangeShift(prefix,delta){const d=fairRangeView[prefix];fairRangeView[prefix]=new Date(d.getFullYear(),d.getMonth()+delta,1);fairRangeDraw(prefix);}
+function fairRangeDraw(prefix){
+ const pop=document.getElementById(prefix+'RangePop'),d=fairRangeView[prefix];if(!pop||!d)return;
+ const y=d.getFullYear(),m=d.getMonth(),first=(new Date(y,m,1).getDay()+6)%7,days=new Date(y,m+1,0).getDate();
+ const from=document.getElementById(prefix+'DateFrom').value,to=document.getElementById(prefix+'DateTo').value;
+ const title=d.toLocaleDateString('ca-ES',{month:'long',year:'numeric'});
+ let html='<div class="fair-range-head"><button type="button" onclick="event.stopPropagation();fairRangeShift(&quot;'+prefix+'&quot;,-1)" aria-label="Mes anterior">‹</button><strong>'+title+'</strong><button type="button" onclick="event.stopPropagation();fairRangeShift(&quot;'+prefix+'&quot;,1)" aria-label="Mes següent">›</button></div><div class="fair-range-grid">';
+ for(const w of ['Dl','Dt','Dc','Dj','Dv','Ds','Dg'])html+='<span class="fair-weekday">'+w+'</span>';
+ for(let i=0;i<first;i++)html+='<span></span>';
+ for(let day=1;day<=days;day++){
+ const iso=y+'-'+String(m+1).padStart(2,'0')+'-'+String(day).padStart(2,'0');
+ const cls=(iso===from||iso===to?'range-end':from&&to&&iso>from&&iso<to?'in-range':'');
+ html+='<button type="button" class="'+cls+'" onclick="event.stopPropagation();fairRangePick(&quot;'+prefix+'&quot;,&quot;'+iso+'&quot;)" aria-label="'+day+' '+title+'">'+day+'</button>';
+ }
+ pop.innerHTML=html+'</div><div class="fair-range-help">Primer clic: inici · Segon clic: fi. Per a un sol dia, clica dues vegades el mateix dia.</div>';
+}
+function fairRangePick(prefix,iso){
+ const fromEl=document.getElementById(prefix+'DateFrom'),toEl=document.getElementById(prefix+'DateTo');
+ if(!fromEl.value||toEl.value){fromEl.value=iso;toEl.value='';}
+ else if(iso<fromEl.value){toEl.value=fromEl.value;fromEl.value=iso;}
+ else toEl.value=iso;
+ fairRangeSync(prefix);
+ const completed=Boolean(toEl.value);
+ // No tornem a renderitzar la taula al primer clic: això eliminava el
+ // calendari del DOM i el gestor global de clics el tancava immediatament.
+ if(!completed){fairRangeDraw(prefix);return;}
+ const pop=document.getElementById(prefix+'RangePop');
+ const trigger=document.getElementById(prefix+'RangeTrigger');
+ if(pop)pop.hidden=true;
+ if(trigger)trigger.setAttribute('aria-expanded','false');
+ if(prefix==='agenda')renderAgenda();else renderFairHistory();
+}
+function fairRangeSync(prefix){
+ const from=document.getElementById(prefix+'DateFrom')?.value||'',to=document.getElementById(prefix+'DateTo')?.value||'';
+ const fmt=iso=>iso?iso.slice(8,10)+'/'+iso.slice(5,7)+'/'+iso.slice(0,4):'';
+ const trigger=document.getElementById(prefix+'RangeTrigger');if(trigger)trigger.textContent=from?'📅 '+fmt(from)+(to?' – '+fmt(to):' · escull fi')+' ▾':'📅 Qualsevol data ▾';
+}
+document.addEventListener('click',function(e){if(!e.target.closest('.fair-range-wrap')){document.querySelectorAll('.fair-range-pop').forEach(el=>el.hidden=true);document.querySelectorAll('.fair-range-trigger').forEach(el=>el.setAttribute('aria-expanded','false'));}});
+
+function fairDateMatches(r, prefix){
+ const from=document.getElementById(prefix+'DateFrom')?.value||'';
+ const to=document.getElementById(prefix+'DateTo')?.value||'';
+ if(!from&&!to)return true;
+ // Intersecció de períodes: inclou fires de diversos dies que coincideixen amb el rang.
+ const start=r.inici||r.fi||'';
+ const end=r.fi||r.inici||'';
+ if(!start||!end)return false;
+ return (!from||end>=from)&&(!to||start<=to);
+}
+function clearFairDateFilters(prefix){
+ for(const suffix of ['DateFrom','DateTo']){const el=document.getElementById(prefix+suffix);if(el)el.value='';}
+ fairRangeSync(prefix);const pop=document.getElementById(prefix+'RangePop');if(pop)pop.hidden=true;
+ if(prefix==='agenda')renderAgenda();else renderFairHistory();
+}
+function fairToday(){const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');}
+function fairIsPast(r){const last=r.fi||r.inici;return !!last&&last<fairToday();}
+
+let fairViewMode='table';
+let fairCalendarMonth=new Date(new Date().getFullYear(),new Date().getMonth(),1);
+function setFairView(mode){
+ fairViewMode=mode==='calendar'?'calendar':'table';
+ const calendar=fairViewMode==='calendar';
+ document.getElementById('agendaTableView').hidden=calendar;
+ document.getElementById('fairCalendar').hidden=!calendar;
+ document.getElementById('fairCalendarNav').hidden=!calendar;
+ document.getElementById('fairTableBtn').setAttribute('aria-pressed',String(!calendar));
+ document.getElementById('fairCalendarBtn').setAttribute('aria-pressed',String(calendar));
+ if(calendar)renderFairCalendar();
+}
+function moveFairMonth(offset){fairCalendarMonth=new Date(fairCalendarMonth.getFullYear(),fairCalendarMonth.getMonth()+offset,1);renderFairCalendar();}
+function goFairCurrentMonth(){const d=new Date();fairCalendarMonth=new Date(d.getFullYear(),d.getMonth(),1);renderFairCalendar();}
+function fairIsoDay(d){return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');}
+function fairCalendarEvents(){
+ const view=document.getElementById('agendaVista').value;
+ const state=document.getElementById('agendaEstat')?.value||'';
+ const town=document.getElementById('agendaPoble').value;
+ const q=document.getElementById('agendaCerca').value.toLocaleLowerCase('ca');
+ return AGENDA_ITEMS.filter(r=>!fairIsPast(r)&&!!r.inici&&fairDateMatches(r,'agenda')&&(!state||r.estat===state)&&(!town||r.poble===town)&&(!q||[r.nom,r.poble,r.notes].join(' ').toLocaleLowerCase('ca').includes(q))&&(view==='all'||(view==='active'&&!['Celebrada','Descartada','Autònoms!','Passem'].includes(r.estat))||(view==='discarded'&&['Descartada','Autònoms!','Passem'].includes(r.estat))));
+}
+function renderFairCalendar(){
+ const el=document.getElementById('fairCalendar');if(!el||fairViewMode!=='calendar')return;
+ document.getElementById('fairMonthTitle').textContent=fairCalendarMonth.toLocaleDateString('ca-ES',{month:'long',year:'numeric'});
+ const events=fairCalendarEvents();
+ const year=fairCalendarMonth.getFullYear(),month=fairCalendarMonth.getMonth();
+ const first=new Date(year,month,1),startOffset=(first.getDay()+6)%7;
+ const start=new Date(year,month,1-startOffset);
+ const days=['Dl','Dt','Dc','Dj','Dv','Ds','Dg'];
+ let html='<div class="fair-cal-legend">'+[
+ ['#5a83bd','0. Per Consultar'],['#c49429','1. Sol·licitada'],['#9b69b4','2. Ens hi volen'],['#418257','3. Confirmada'],['#338e88','4. Celebrada']
+ ].map(([color,label])=>'<span><i class="fair-cal-dot" style="background:'+color+'"></i>'+label+'</span>').join('')+'</div><div class="fair-cal-grid">';
+ html+=days.map(d=>'<div class="fair-cal-weekday">'+d+'</div>').join('');
+ const today=fairIsoDay(new Date());
+ for(let i=0;i<42;i++){
+  const d=new Date(start.getFullYear(),start.getMonth(),start.getDate()+i);
+  const iso=fairIsoDay(d);
+  const dayEvents=events.filter(r=>r.inici<=iso&&(r.fi||r.inici)>=iso);
+  const outside=d.getMonth()!==month;
+  html+='<div class="fair-cal-day'+(outside?' outside':'')+(iso===today?' today':'')+'"><div class="fair-cal-day-number">'+d.getDate()+'</div>';
+  html+=dayEvents.map(r=>{
+   const stateNumber=agendaStateIndex(r.estat);const kind=stateNumber>=0&&stateNumber<=4?'state-'+stateNumber:'state-excluded';
+   const id=JSON.stringify(r.id).replace(/"/g,'&quot;');
+   return '<button type="button" class="fair-cal-event '+kind+'" title="'+agendaEsc(r.nom+' · '+agendaStateLabel(r.estat))+'" onclick="agendaShow('+id+')">'+agendaEsc(r.nom)+'</button>';
+  }).join('');
+  html+='</div>';
+ }
+ html+='</div>';
+ if(!events.length)html+='<div class="fair-cal-empty">No hi ha fires amb data per als filtres seleccionats.</div>';
+ el.innerHTML=html;
+}
+function renderAgenda(){refreshHomeStats();renderFairCalendar();const compact=document.getElementById("agendaCompactSort");if(compact)compact.value=agendaSortField;const p=document.getElementById('agendaPoble');if(!p)return;const chosen=p.value;p.innerHTML='<option value="">Totes</option>'+[...new Set(AGENDA_ITEMS.filter(r=>!fairIsPast(r)).map(r=>r.poble).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ca')).map(x=>'<option value="'+agendaEsc(x)+'">'+agendaEsc(x)+'</option>').join('');p.value=chosen;
+const view=document.getElementById('agendaVista').value,state=document.getElementById('agendaEstat')?.value||'',town=p.value,q=document.getElementById('agendaCerca').value.toLocaleLowerCase('ca');const data=AGENDA_ITEMS.filter(r=>!fairIsPast(r)&&fairDateMatches(r,'agenda')&&(!state||r.estat===state)&&(!town||r.poble===town)&&(!q||[r.nom,r.poble,r.notes].join(' ').toLocaleLowerCase('ca').includes(q))&&(view==='all'||(view==='active'&&!['Celebrada','Descartada','Autònoms!','Passem'].includes(r.estat))||(view==='discarded'&&['Descartada','Autònoms!','Passem'].includes(r.estat)))).sort((a,b)=>{const k=agendaSortField;const x=a[k],y=b[k];if(k==='estat')return (agendaStateIndex(x)-agendaStateIndex(y))*agendaSortDirection;if(k==='preu'){const nx=x===''||x==null?Infinity:Number(x),ny=y===''||y==null?Infinity:Number(y);return (nx-ny)*agendaSortDirection;}return String(x||'').localeCompare(String(y||''),'ca',{numeric:true,sensitivity:'base'})*agendaSortDirection;});
+document.getElementById('agendaKpis').innerHTML=[['Fires a la vista',data.length],['Ens hi volen',data.filter(x=>x.estat==='Ens hi volen').length],['Confirmades',data.filter(x=>x.estat==='Confirmada').length],['Terminis urgents',data.filter(x=>agendaAlert(x).includes('⚠️')).length]].map(([k,v])=>'<div class="kc"><div class="kl">'+k+'</div><div class="kv">'+v+'</div></div>').join('');
+document.getElementById('agendaRows').innerHTML=data.map(r=>'<tr><td data-label="Fira"><strong>'+agendaEsc(r.nom)+'</strong></td><td data-label="Població">'+agendaEsc(r.poble)+'</td><td data-label="Data inici">'+agendaDate(r.inici)+'</td><td data-label="Data fi">'+agendaDate(r.fi)+'</td><td data-label="Termini inscripció">'+agendaDate(r.termini)+'</td><td data-label="Avís">'+agendaEsc(agendaAlert(r))+'</td><td data-label="Estat">'+agendaEsc(agendaStateLabel(r.estat))+'</td><td data-label="Marca">'+agendaEsc(r.marca)+'</td><td data-label="Preu">'+((r.preu!==''&&r.preu!=null&&Number.isFinite(Number(r.preu)))?Math.round(Number(r.preu))+' €':'—')+'</td><td data-label="Observacions" style="max-width:155px;white-space:normal">'+agendaEsc(agendaNotesText(r))+'</td><td data-label="Contacte">'+agendaEsc(r.contacte||'—')+'</td><td data-label="Enllaços">'+agendaLinks(r)+'</td><td data-label="Accions"><span class="fair-row-actions"><button class="rb fair-icon-btn" type="button" title="Editar aquesta fira" aria-label="Editar aquesta fira" onclick="agendaShow('+JSON.stringify(r.id).replace(/"/g,'&quot;')+')">✏️</button><button class="rb fair-icon-btn" type="button" title="Duplicar aquesta fira" aria-label="Duplicar aquesta fira" onclick="agendaDuplicate('+JSON.stringify(r.id).replace(/"/g,'&quot;')+')">📋</button></span></td></tr>').join('')||'<tr><td colspan="13">No hi ha fires en aquesta vista.</td></tr>';}
+
+function agendaDuplicate(id){
+ const source=AGENDA_ITEMS.find(r=>r.id===id);if(!source)return;
+ const copy={...source,id:'copy-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),inici:'',fi:'',termini:'',estat:'Per Consultar',notes:'',duplicadaDe:id};
+ AGENDA_ITEMS.push(copy);agendaSave();
+ const view=document.getElementById('agendaVista');if(view)view.value='all';
+ renderAgenda();initFairHistory();agendaShow(copy.id);
+}
+function agendaNew(){const id='new-'+Date.now();AGENDA_ITEMS.push({id,nom:'Nova fira',poble:'',inici:'',fi:'',termini:'',estat:'Per Consultar',marca:'Ambdues',preu:'',notes:'',contacte:'',url:'',urlInscripcio:''});agendaSave();document.getElementById('agendaVista').value='all';renderAgenda();agendaShow(id);}
+function agendaCloseEditor(){for(const k of ["agendaDetail","historyDetail"]){const el=document.getElementById(k);if(el)el.style.display="none";}}
+function agendaShow(id){const r=AGENDA_ITEMS.find(x=>x.id===id);if(!r)return;const e=document.getElementById(document.getElementById('tab-history')?.hidden===false?'historyDetail':'agendaDetail');e.style.display='block';const fields=[['nom','Nom','text'],['poble','Població','text'],['inici','Data inici','date'],['fi','Data fi','date'],['termini','Termini inscripció','date'],['preu','Preu de la fira (€)','number'],['url','Web de la fira','url'],['urlInscripcio','Enllaç d’inscripció','url']];e.innerHTML='<div class="tht">Editar fira</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:12px 0">'+fields.map(([key,label,type])=>'<label style="display:grid;gap:5px">'+label+'<input class="fgs" style="width:100%" type="'+type+'" id="ag-'+key+'" value="'+agendaEsc(r[key]??'')+'"'+(key==='preu'?' min="0" max="100" step="1"':'')+'></label>').join('')+'<label style="display:grid;gap:5px">Marca / disponibilitat<select class="fgs" id="ag-marca">'+AGENDA_BRANDS.map(v=>'<option value="'+agendaEsc(v)+'" '+(v===r.marca||v==='ConfeccionsRibera'&&r.marca==='Confeccions Ribera'||v==='@ByNuska'&&r.marca==='ByNuska'?'selected':'')+'>'+agendaEsc(v)+'</option>').join('')+'</select></label><label style="display:grid;gap:5px">Com hem contactat?<select class="fgs" id="ag-contacte">'+AGENDA_CONTACTS.map(v=>'<option value="'+agendaEsc(v)+'" '+(v===(r.contacte||'')?'selected':'')+'>'+(v?agendaEsc(v):'Sense contactar / No indicat')+'</option>').join('')+'</select></label><label style="display:grid;gap:5px">Estat de la fira<select class="fgs" id="ag-estat">'+AGENDA_STATES.map((v,i)=>'<option value="'+agendaEsc(v)+'" '+(v===agendaState(r.estat)?'selected':'')+'>'+i+'. '+agendaEsc(v)+'</option>').join('')+'</select></label></div><label>Observacions<textarea id="ag-notes" class="fgs" style="display:block;width:100%;min-height:90px">'+agendaEsc(r.notes)+'</textarea></label><p style="margin:12px 0;color:#a05246">'+agendaEsc(agendaOverlaps(r))+'</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="rb" onclick="agendaUpdate('+JSON.stringify(id).replace(/"/g,'&quot;')+')">Desa i Tanca</button><button class="rb" onclick="agendaCloseEditor()">Tanca</button><button class="rb" style="margin-left:auto;color:#a52e30;border-color:#d9a1a1" onclick="agendaDelete('+JSON.stringify(id).replace(/"/g,'&quot;')+')">🗑️ Elimina la fira</button></div>';e.scrollIntoView({behavior:'smooth',block:'nearest'});}
+function agendaDelete(id){
+ const r=AGENDA_ITEMS.find(x=>x.id===id);if(!r)return;
+ if(!confirm('Vols eliminar definitivament la fira «'+r.nom+'» ('+(r.poble||'sense població')+')?\n\nAquesta acció no es pot desfer. Exporta una còpia JSON si vols conservar-ne una còpia.'))return;
+ AGENDA_ITEMS=AGENDA_ITEMS.filter(x=>x.id!==id);
+ if(String(id).startsWith('hist-')){try{const deleted=agendaDeletedIds();deleted.add(id);localStorage.setItem(AGENDA_DELETED_KEY,JSON.stringify([...deleted]));}catch(e){console.warn('No es pot registrar la supressió de la fira històrica',e);}}
+ agendaSave();agendaCloseEditor();renderAgenda();initFairHistory();agendaBackupBanner();
+}
+function agendaUpdate(id){
+ const r=AGENDA_ITEMS.find(x=>x.id===id);if(!r)return;
+ const updated={};
+ for(const k of ['nom','poble','inici','fi','termini','marca','preu','url','urlInscripcio','contacte','notes','estat'])updated[k]=document.getElementById('ag-'+k).value;
+ updated.estat=agendaState(updated.estat);
+ if(updated.inici&&updated.fi&&updated.fi<updated.inici){alert('La data fi no pot ser anterior a la data inici.');return;}
+ Object.assign(r,updated);
+ agendaSave();renderAgenda();initFairHistory();agendaCloseEditor();agendaBackupBanner();
+}
+function exportAgenda(){const a=document.createElement('a'),url=URL.createObjectURL(new Blob([JSON.stringify({format:'ordits-trames-agenda',version:1,exported:new Date().toISOString(),fires:AGENDA_ITEMS},null,2)],{type:'application/json'}));a.href=url;a.download='agenda_fires_ordits_i_trames.json';a.click();agendaBackupPending(false);setTimeout(()=>URL.revokeObjectURL(url),1500);}
+async function importAgenda(input){const f=input.files[0];if(!f)return;try{const data=JSON.parse(await f.text());if(data.format!=='ordits-trames-agenda'||!Array.isArray(data.fires))throw Error('Format no reconegut');if(!confirm('Substituir l’agenda actual per la còpia importada? Exporta primer una còpia si vols conservar els canvis.'))return;AGENDA_ITEMS=data.fires;try{localStorage.removeItem(AGENDA_DELETED_KEY);}catch(e){}agendaNormalizeStates();agendaSave(false);agendaBackupPending(false);renderAgenda();initFairHistory();agendaCloseEditor();}catch(e){alert('No s’ha pogut importar la còpia: '+e.message);}finally{input.value='';}}
+let historySortField='inici',historySortDirection=-1;
+function historySortBy(k){historySortDirection=historySortField===k?-historySortDirection:1;historySortField=k;renderFairHistory();}
+function initFairHistory(){const y=document.getElementById('historyYear'),st=document.getElementById('historyState');if(!y||!st)return;
+const years=[...new Set(AGENDA_ITEMS.filter(r=>r.inici && (r.inici<'2026-01-01'||r.estat==='Celebrada')).map(r=>r.inici.slice(0,4)))].sort().reverse();
+y.innerHTML='<option value="">Tots els anys</option>'+years.map(v=>'<option>'+v+'</option>').join('');
+st.innerHTML='<option value="">Tots els estats</option>'+AGENDA_STATES.map((v,i)=>'<option value="'+agendaEsc(v)+'">'+i+'. '+agendaEsc(v)+'</option>').join('');renderFairHistory();}
+function renderFairHistory(){const compact=document.getElementById("historyCompactSort");if(compact)compact.value=historySortField;const body=document.getElementById('historyRows');if(!body)return;
+const historyView=document.getElementById('historyView')?.value||'active';const excluded=['Descartada','Autònoms!','Passem'];const q=(document.getElementById('historySearch').value||'').toLocaleLowerCase('ca'),year=document.getElementById('historyYear').value,state=document.getElementById('historyState').value;
+const data=AGENDA_ITEMS.filter(r=>fairIsPast(r)&&fairDateMatches(r,'history')&&(historyView==='all'||(historyView==='active'&&!excluded.includes(r.estat))||(historyView==='discarded'&&excluded.includes(r.estat)))&&(!year||r.inici.startsWith(year))&&(!state||r.estat===state)&&(!q||[r.nom,r.poble,r.notes].join(' ').toLocaleLowerCase('ca').includes(q))).sort((a,b)=>{const x=a[historySortField],y=b[historySortField];if(historySortField==='estat')return (agendaStateIndex(x)-agendaStateIndex(y))*historySortDirection;if(historySortField==='preu')return ((x==null||x===''?Infinity:Number(x))-(y==null||y===''?Infinity:Number(y)))*historySortDirection;return String(x||'').localeCompare(String(y||''),'ca',{numeric:true,sensitivity:'base'})*historySortDirection;});
+document.getElementById('historyCount').textContent=data.length+' fires a l’històric';
+body.innerHTML=data.map(r=>'<tr><td data-label="Fira"><strong>'+agendaEsc(r.nom)+'</strong></td><td data-label="Població">'+agendaEsc(r.poble)+'</td><td data-label="Data inici">'+agendaDate(r.inici)+'</td><td data-label="Data fi">'+agendaDate(r.fi)+'</td><td data-label="Estat">'+agendaEsc(agendaStateLabel(r.estat))+'</td><td data-label="Marca">'+agendaEsc(r.marca)+'</td><td data-label="Preu">'+((r.preu!==''&&r.preu!=null&&Number.isFinite(Number(r.preu)))?Math.round(Number(r.preu))+' €':'—')+'</td><td data-label="Observacions" style="max-width:155px;white-space:normal">'+agendaEsc(agendaNotesText(r))+'</td><td data-label="Contacte">'+agendaEsc(r.contacte||'—')+'</td><td data-label="Enllaços">'+agendaLinks(r)+'</td><td data-label="Accions"><span class="fair-row-actions"><button class="rb fair-icon-btn" type="button" title="Editar aquesta fira" aria-label="Editar aquesta fira" onclick="agendaShow('+JSON.stringify(r.id).replace(/"/g,'&quot;')+')">✏️</button><button class="rb fair-icon-btn" type="button" title="Duplicar aquesta fira" aria-label="Duplicar aquesta fira" onclick="agendaDuplicate('+JSON.stringify(r.id).replace(/"/g,'&quot;')+')">📋</button></span></td></tr>').join('')||'<tr><td colspan="11">No hi ha fires amb aquests filtres.</td></tr>';
+}
+document.addEventListener('DOMContentLoaded',()=>{agendaLoad();renderAgenda();initFairHistory();agendaBackupBanner();});
+</script>
 </body>
 </html>
