@@ -443,6 +443,26 @@ td[data-label="Marca"]{white-space:nowrap;font-size:19px}
 #tab-agenda td[data-label="Enllaços"] a,#tab-history td[data-label="Enllaços"] a{display:block!important;white-space:nowrap!important}
 
 .week-plan{margin:15px 0 20px;padding:15px 17px;border:1px solid #e3d9cd;border-radius:14px;background:#faf8f4}.week-plan summary{cursor:pointer;font-weight:750;font-size:16px}.week-plan-intro,.week-plan-note{font-size:13px;line-height:1.55;color:#685e55;margin:10px 0}.week-plan-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:10px;margin-top:13px}.week-plan-card{background:white;border:1px solid #e8e1d9;border-radius:10px;padding:12px;min-width:0}.week-plan-card h4{font-size:14px;margin:0 0 6px}.week-plan-card p{font-size:12px;margin:6px 0;color:#6b625b}.week-plan-item{font-size:13px;line-height:1.45;padding:5px 0;border-top:1px solid #f0ece7}.week-plan-item strong{font-weight:650}.week-plan-state{font-size:11px;color:#70665c}.week-plan-advice{font-size:12px;margin-top:9px;padding:8px;border-radius:7px;background:#f2f5f1;color:#385847}.week-plan-empty{color:#9a6a31!important}
+
+/* Planificació: targetes acolorides, llegibles i amb estats diferenciats */
+.week-plan{background:linear-gradient(135deg,#fff9ee,#f4f9ff);border-color:#e7d8c4}
+.week-plan-grid{grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px}
+.week-plan-card{padding:0;overflow:hidden;border:1px solid #e4e7ed;box-shadow:0 3px 10px #2a32400c}
+.week-plan-card-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:13px 14px;background:#eaf0fa}
+.week-plan-card-head h4{margin:0;font-size:15px}.week-plan-count{font-size:11px;font-weight:750;border-radius:30px;background:#ffffffbd;padding:5px 9px;white-space:nowrap}
+.week-plan-card.going .week-plan-card-head{background:#d9f5e3;color:#165a35}
+.week-plan-card.wanted .week-plan-card-head{background:#e2f5ed;color:#206b50}
+.week-plan-card.pending .week-plan-card-head{background:#fff0cf;color:#805416}
+.week-plan-card.empty .week-plan-card-head{background:#e9edf5;color:#526079}
+.week-plan-card.blocked .week-plan-card-head{background:#fbe1e7;color:#922e4c}
+.week-plan-item{padding:12px 14px;border-top:1px solid #eee;line-height:1.45;background:#fff}
+.week-plan-item.going{border-left:4px solid #32a467}.week-plan-item.wanted{border-left:4px solid #54bca0}.week-plan-item.requested{border-left:4px solid #f0b94d}.week-plan-item.possible{border-left:4px solid #93a4bf}
+.week-plan-item-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}.week-plan-item-head strong{font-size:13px}
+.week-plan-pill{font-size:10px;font-weight:750;padding:4px 8px;border-radius:20px;white-space:nowrap;background:#edf1f6;color:#495c75}
+.week-plan-pill.going{background:#d9f5e3;color:#16643b}.week-plan-pill.wanted{background:#dff7ed;color:#16634e}.week-plan-pill.requested{background:#fff1cf;color:#8b5d12}
+.week-plan-town{font-size:12px;color:#665f58;margin-top:5px}.week-plan-metrics{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.week-plan-metrics span{font-size:11px;border-radius:7px;padding:5px 7px;background:#f3f6fa;color:#39495d}
+.week-plan-follow{margin-top:7px;font-size:11px;font-weight:600;color:#9a5418}.week-plan-advice{margin:10px 12px 12px;background:#f1f5ff;color:#384b78;line-height:1.5}.week-plan-empty{padding:12px 14px!important}
+.week-plan-blocked{display:flex;flex-direction:column;gap:5px;margin:12px;padding:17px;border-radius:10px;background:#fff0f2;color:#923e53;font-size:13px}.week-plan-blocked span{font-size:12px}
 </style>
 <style>
 .fair-cal-toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin:15px 0}
@@ -731,7 +751,7 @@ document.addEventListener('click',e=>{const p=document.getElementById('websPanel
     </div>
 
 <div id="tab-agenda" class="tc" hidden><div class="sec"><div class="sec-t">🗓️ Agenda de fires</div>
-<details class="week-plan"><summary>🧭 Planificació de caps de setmana · novembre i desembre 2026 <span style="font-size:12px;font-weight:400;color:#6b625d">(segons les fires desades)</span></summary><p class="week-plan-intro">Primer les fires on ja hi anem, després les que ens hi volen. Dins de cada nivell, comparació orientativa per cost, proximitat a Berga i temps d’espera de les sol·licituds. Una sol·licitud no equival a una plaça confirmada. Les distàncies són aproximacions per carretera, no rutes verificades.</p><div id="weekPlanGrid" class="week-plan-grid"></div><p class="week-plan-note">ℹ️ Els quilòmetres són orientatius i d’anada; no inclouen carburant, peatges ni allotjament. Si falta el preu o la data de contacte, es marca com a pendent i no s’inventa. Actualitzeu aquests camps en editar cada fira.</p></details>
+<details class="week-plan"><summary>🧭 Planificació de caps de setmana · novembre i desembre 2026 <span style="font-size:12px;font-weight:400;color:#6b625d">(segons les fires desades)</span></summary><p class="week-plan-intro">Primer les fires on ja hi anem, després les que ens hi volen. Dins de cada nivell, comparació orientativa per cost, proximitat a Berga i temps d’espera de les sol·licituds. Una sol·licitud no equival a una plaça confirmada. Les distàncies són aproximacions per carretera, no rutes verificades.</p><div id="weekPlanGrid" class="week-plan-grid"></div><p class="week-plan-note">ℹ️ Els quilòmetres són orientatius d’anada i tornada; no inclouen carburant, peatges ni allotjament. Si falta el preu o la data de contacte, es marca com a pendent i no s’inventa. Actualitzeu aquests camps en editar cada fira.</p></details>
 <p style="color:var(--tx2)">Edita les dates, els terminis, l'estat i les observacions. Les dades es desen en aquest navegador; fes una còpia de seguretat per conservar-les en altres dispositius.</p>
 <div class="fg" style="gap:10px;margin:12px 0;flex-wrap:wrap">
 <div class="fgi"><span class="fgl">Vista</span><select class="fgs" id="agendaVista" onchange="renderAgenda()"><option value="active">Sense descartades</option><option value="all">Totes les fires</option><option value="discarded">Només descartades</option></select></div>
@@ -2105,18 +2125,22 @@ function renderWeekendPlan(){
  const weekends=[['07–08 nov.','2026-11-07','2026-11-08'],['14–15 nov.','2026-11-14','2026-11-15'],['21–22 nov.','2026-11-21','2026-11-22'],['28–29 nov.','2026-11-28','2026-11-29'],['05–06 des.','2026-12-05','2026-12-06'],['12–13 des.','2026-12-12','2026-12-13'],['19–20 des.','2026-12-19','2026-12-20'],['26–27 des.','2026-12-26','2026-12-27']];
  const rejected=/aut[oò]nom|no hi anem|no ens volen|sense places|inscripci[oó] tancada|hem fet tard|descart|passem|no hi som|rebutjad/i;
  host.innerHTML=weekends.map(([title,from,to])=>{
+  const blocked=from==='2026-11-28';
   const entries=AGENDA_ITEMS.filter(r=>r.inici&&r.inici<=to&&(r.fi||r.inici)>=from&&!rejected.test(String(r.estat||''))&&!fairIsPast(r));
   const uniq=new Map();for(const r of entries){const key=[r.nom,r.poble].join('|').toLowerCase();if(!uniq.has(key)||fairPlanScore(r)<fairPlanScore(uniq.get(key)))uniq.set(key,r);}
   const list=[...uniq.values()].sort((a,b)=>fairPlanPriority(a)-fairPlanPriority(b)||fairPlanScore(a)-fairPlanScore(b)||String(a.nom).localeCompare(String(b.nom),'ca'));
   const top=list[0],hasAccepted=list.some(r=>fairPlanPriority(r)<=1);
   let advice=!list.length?'Sense alternatives actives: valorar producció o buscar una fira.':hasAccepted?'Prioritzeu les invitacions i comproveu si les dues marques poden cobrir fires diferents.':'Cap plaça acceptada: feu seguiment i manteniu una segona opció.';
-  if(top&&fairPlanPriority(top)===2&&fairRequestAge(top)>=14)advice+=' La primera opció fa 14 dies o més que espera resposta.';
+  if(blocked)advice='No disponible: ni Confeccions Ribera ni @ByNuska poden participar aquest cap de setmana. No cal buscar alternatives.';
+  if(!blocked&&top&&fairPlanPriority(top)===2&&fairRequestAge(top)>=14)advice+=' La primera opció fa 14 dies o més que espera resposta.';
   const items=list.map((r,i)=>{const km=fairDistanceKm(r),price=r.preu!==''&&r.preu!=null&&Number.isFinite(Number(r.preu))?Number(r.preu):null,age=fairRequestAge(r),requested=fairPlanPriority(r)===2;
    const follow=requested?(age===null?' · 📅 Falta data de petició':age>=14?' · 🔴 '+age+' dies sense resposta: insistir i activar alternativa':age>=7?' · 🟠 '+age+' dies sense resposta: fer seguiment':' · '+age+' dies des de la petició'):'';
-   const priceText=price===null?'Preu pendent':Math.round(price)+' € parada';const distanceText=km===null?'Distància pendent':'~'+km+' km anada (~'+(km*2)+' km A/T)';
-   return '<div class="week-plan-item"><strong>'+(i===0?'★ ':'')+agendaEsc(r.nom)+'</strong> · '+agendaEsc(r.poble||'—')+'<div class="week-plan-state">'+agendaEsc(r.estat||'Per consultar')+' · '+agendaEsc(r.marca||'Marca per definir')+'</div><div class="week-plan-state">'+agendaEsc(priceText)+' · '+agendaEsc(distanceText)+'</div>'+(requested?'<div class="week-plan-state">'+agendaEsc(follow.replace(/^ · /,''))+'</div>':'')+'</div>';
+   const priceText=price===null?'Preu pendent':Math.round(price)+' € parada';const distanceText=km===null?'Distància pendent':'~'+(km*2)+' km anada i tornada';
+   const priority=fairPlanPriority(r);const statusClass=['going','wanted','requested','possible'][priority];const statusIcon=['✅','💚','📨','🔎'][priority];
+   return '<div class="week-plan-item '+statusClass+'"><div class="week-plan-item-head"><strong>'+(i===0?'⭐ ':'')+agendaEsc(r.nom)+'</strong><span class="week-plan-pill '+statusClass+'">'+statusIcon+' '+agendaEsc(r.estat||'Per consultar')+'</span></div><div class="week-plan-town">📍 '+agendaEsc(r.poble||'—')+' · '+agendaEsc(r.marca||'Marca per definir')+'</div><div class="week-plan-metrics"><span>💶 '+agendaEsc(priceText)+'</span><span>🚗 '+agendaEsc(distanceText)+'</span></div>'+(requested?'<div class="week-plan-follow">'+agendaEsc(follow.replace(/^ · /,''))+'</div>':'')+'</div>';
   }).join('');
-  return '<div class="week-plan-card"><h4>'+title+'</h4><p>'+list.length+' opcions actives · Hi anem → Ens hi volen → Sol·licitada → Per consultar</p>'+(list.length?items:'<p class="week-plan-empty">Sense fires disponibles a l’agenda.</p>')+'<div class="week-plan-advice">'+advice+'</div></div>';
+  const tone=blocked?'blocked':!list.length?'empty':fairPlanPriority(top)===0?'going':fairPlanPriority(top)===1?'wanted':'pending';
+  return '<div class="week-plan-card '+tone+'"><div class="week-plan-card-head"><h4>📅 '+title+'</h4><span class="week-plan-count">'+(blocked?'⛔ No disponibles':list.length+' opcions')+'</span></div>'+(blocked?'<div class="week-plan-blocked">🚫 <strong>Cap de setmana no disponible</strong><span>Ni Confeccions Ribera ni @ByNuska poden fer fires.</span></div>':(list.length?items:'<p class="week-plan-empty">Sense fires disponibles a l’agenda.</p>'))+'<div class="week-plan-advice">💡 '+advice+'</div></div>';
  }).join('');
 }
 function renderAgenda(){renderWeekendPlan();agendaKpiSync();refreshHomeStats();renderFairCalendar();const compact=document.getElementById("agendaCompactSort");if(compact)compact.value=agendaSortField;const p=document.getElementById('agendaPoble');if(!p)return;const chosen=p.value;p.innerHTML='<option value="">Totes</option>'+[...new Set(AGENDA_ITEMS.filter(r=>!fairIsPast(r)).map(r=>r.poble).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ca')).map(x=>'<option value="'+agendaEsc(x)+'">'+agendaEsc(x)+'</option>').join('');p.value=chosen;
