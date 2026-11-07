@@ -555,7 +555,7 @@ td[data-label="Marca"]{white-space:nowrap;font-size:19px}
   <div class="hd-t">ORDITS I TRAMES <span>·</span> Dashboard</div>
   <div class="upz"><button id="homeHeaderBtn" onclick="goHome()">⌂ Inici</button>
     <button class="webs-toggle" id="websToggle" type="button" aria-expanded="false" aria-controls="websPanel" onclick="toggleWebs()">🌷 Les nostres webs ▾</button>
-    <button class="upbtn" onclick="document.getElementById('fi').click()">
+    <button class="upbtn" type="button" onclick="backupExportJSON()">💾 Exportar JSON complet</button><button class="upbtn" type="button" onclick="document.getElementById('backupImportFile').click()">📂 Importar JSON</button><input id="backupImportFile" type="file" accept=".json,application/json" hidden onchange="backupImportJSON(this)"><button class="upbtn" type="button" onclick="backupExportHTML()">⬇ Exportar HTML</button><button class="upbtn" onclick="document.getElementById('fi').click()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
       Carregar Excel
     </button>
@@ -787,7 +787,7 @@ document.addEventListener('click',e=>{const p=document.getElementById('websPanel
     <div id="tab-stk" class="tc" hidden>
       <div class="sec">
         <div class="sec-t">Stock i producció</div>
-        <div class="stock-actions" style="margin:8px 0 15px"><button class="rb" onclick="stockOpenEditor()">➕ Afegir producte</button><button class="rb" onclick="stockExportExcel()">📥 Exportar Excel actualitzat</button><button class="rb" onclick="stockExportJSON()">💾 Còpia de seguretat JSON</button><label class="rb" style="cursor:pointer">📂 Recuperar còpia JSON<input type="file" accept=".json" style="display:none" onchange="stockImportJSON(this)"></label><span class="ks" id="stockEditStatus"></span></div>
+        <div class="stock-actions" style="margin:8px 0 15px"><button class="rb" onclick="stockOpenEditor()">➕ Afegir producte</button><button class="rb" onclick="stockExportExcel()">📥 Exportar Excel actualitzat</button><span class="ks" id="stockEditStatus"></span></div>
         <div class="stock-brand-grid" id="stockBrandGrid" aria-label="Selecciona la marca de l’estoc"></div>
         <div id="stockBrandEmpty" class="stock-brand-empty" hidden></div>
         <div class="stock-note" id="stockBrandContent">
@@ -867,7 +867,7 @@ document.addEventListener('click',e=>{const p=document.getElementById('websPanel
 <div class="fgi"><span class="fgl">Estat de la fira</span><select class="fgs" id="agendaEstat" onchange="renderAgenda()"><option value="">Tots els estats</option><option value="Per Consultar">0. Per Consultar</option><option value="Sol·licitada">1. Sol·licitada</option><option value="Ens hi volen">2. Ens hi volen</option><option value="Confirmada">3. Confirmada</option><option value="Celebrada">4. Celebrada</option><option value="Autònoms!">5. Autònoms!</option><option value="Descartada">6. Descartada</option><option value="Passem">7. Passem</option></select></div>
 <div class="fgi"><span class="fgl">Població</span><select class="fgs" id="agendaPoble" onchange="renderAgenda()"><option value="">Totes</option></select></div>
 <div class="fgi"><span class="fgl">Cerca</span><input class="fgs" id="agendaCerca" oninput="renderAgenda()" placeholder="Nom, poble, notes…"></div>
-<div class="fgi fair-range-wrap"><span class="fgl">Dates</span><button class="fgs fair-range-trigger" type="button" id="agendaRangeTrigger" onclick="fairRangeToggle('agenda')" aria-label="Seleccionar inici i fi del període" aria-expanded="false">📅 Qualsevol data ▾</button><input type="hidden" id="agendaDateFrom"><input type="hidden" id="agendaDateTo"><div class="fair-range-pop" id="agendaRangePop" hidden></div></div><button class="rb" type="button" onclick="clearFairDateFilters('agenda')">Neteja dates</button><button class="rb" onclick="agendaNew()">+ Afegir fira</button><button class="rb" onclick="exportAgenda()">Exportar còpia JSON</button><button class="rb" onclick="document.getElementById('agendaImport').click()">Importar còpia JSON</button><input id="agendaImport" type="file" accept=".json,application/json" hidden onchange="importAgenda(this)"></div><div id="agendaBackupWarning" role="status" style="display:none;margin:12px 0;padding:12px;border:1px solid #e8b96c;border-radius:10px;background:#fff7e8;color:#754d16">⚠️ Has fet canvis a les fires que encara no has exportat. <button class="rb" onclick="exportAgenda()">Descarregar còpia JSON</button></div>
+<div class="fgi fair-range-wrap"><span class="fgl">Dates</span><button class="fgs fair-range-trigger" type="button" id="agendaRangeTrigger" onclick="fairRangeToggle('agenda')" aria-label="Seleccionar inici i fi del període" aria-expanded="false">📅 Qualsevol data ▾</button><input type="hidden" id="agendaDateFrom"><input type="hidden" id="agendaDateTo"><div class="fair-range-pop" id="agendaRangePop" hidden></div></div><button class="rb" type="button" onclick="clearFairDateFilters('agenda')">Neteja dates</button><button class="rb" onclick="agendaNew()">+ Afegir fira</button></div><div id="agendaBackupWarning" role="status" style="display:none;margin:12px 0;padding:12px;border:1px solid #e8b96c;border-radius:10px;background:#fff7e8;color:#754d16">⚠️ Has fet canvis a les fires que encara no has exportat. <button class="rb" onclick="backupExportJSON()">Descarregar còpia JSON</button></div>
 
 <div class="fair-cal-toolbar"><div class="fair-cal-switch"><button type="button" class="rb" id="fairTableBtn" onclick="setFairView('table')">☷ Taula</button><button type="button" class="rb" id="fairCalendarBtn" onclick="setFairView('calendar')">▦ Calendari</button></div><div id="fairCalendarNav" class="fair-cal-nav" hidden><button class="rb" onclick="moveFairMonth(-1)" aria-label="Mes anterior">‹</button><strong id="fairMonthTitle"></strong><button class="rb" onclick="moveFairMonth(1)" aria-label="Mes següent">›</button><button class="rb" onclick="goFairCurrentMonth()">Avui</button></div></div>
 <div id="fairCalendar" class="fair-calendar" hidden></div>
@@ -875,7 +875,7 @@ document.addEventListener('click',e=>{const p=document.getElementById('websPanel
 <div id="tab-history" class="tc" hidden><div class="sec"><div class="sec-t">📚 Històric de fires</div>
 <div class="fg" style="gap:10px;margin:12px 0;flex-wrap:wrap"><div class="fgi"><span class="fgl">Cerca</span><input class="fgs" id="historySearch" oninput="renderFairHistory()" placeholder="Fira, població, observacions…"></div><div class="fgi"><span class="fgl">Any</span><select class="fgs" id="historyYear" onchange="renderFairHistory()"><option value="">Tots els anys</option></select></div><div class="fgi"><span class="fgl">Mostrar</span><select class="fgs" id="historyView" onchange="renderFairHistory()"><option value="active">Sense descartades</option><option value="all">Totes les fires</option><option value="discarded">Només descartades</option></select></div><div class="fgi"><span class="fgl">Estat de la fira</span><select class="fgs" id="historyState" onchange="renderFairHistory()"><option value="">Tots els estats</option></select></div></div>
 <div class="fg" style="gap:10px;margin:8px 0 14px;flex-wrap:wrap"><div class="fgi fair-range-wrap"><span class="fgl">Dates</span><button class="fgs fair-range-trigger" type="button" id="historyRangeTrigger" onclick="fairRangeToggle('history')" aria-label="Seleccionar inici i fi del període" aria-expanded="false">📅 Qualsevol data ▾</button><input type="hidden" id="historyDateFrom"><input type="hidden" id="historyDateTo"><div class="fair-range-pop" id="historyRangePop" hidden></div></div><button class="rb" type="button" onclick="clearFairDateFilters('history')">Neteja dates</button></div><div id="historyCount" style="margin:8px 0;color:var(--tx2)"></div><div class="fair-mobile-sort"><label for="historyCompactSort">Ordena les fires per</label><select id="historyCompactSort" onchange="historySortBy(this.value)"><option value="inici">Data inici</option><option value="nom">Nom de la fira</option><option value="poble">Població</option><option value="fi">Data fi</option><option value="estat">Estat</option><option value="marca">Marca</option><option value="preu">Preu</option><option value="notes">Observacions</option><option value="contacte">Contacte</option></select></div>
-<div class="tw"><div class="tsc" style="overflow-x:auto"><table style="min-width:0"><thead><tr><th onclick="historySortBy('nom')" style="cursor:pointer">Fira ↕</th><th onclick="historySortBy('poble')" style="cursor:pointer">Població ↕</th><th onclick="historySortBy('inici')" style="cursor:pointer">Data inici ↕</th><th onclick="historySortBy('fi')" style="cursor:pointer">Data fi ↕</th><th onclick="historySortBy('estat')" style="cursor:pointer">Estat ↕</th><th onclick="historySortBy('marca')" style="cursor:pointer">Marca ↕</th><th onclick="historySortBy('preu')" style="cursor:pointer">€ ↕</th><th onclick="historySortBy('contacte')" style="cursor:pointer">Contacte ↕</th><th>Enllaços</th><th>Accions</th></tr></thead><tbody id="historyRows"></tbody></table></div></div><div id="historyBackupWarning" role="status" style="display:none;margin:12px 0;padding:12px;border:1px solid #e8b96c;border-radius:10px;background:#fff7e8;color:#754d16">⚠️ Hi ha canvis desats pendents d’exportar. <button class="rb" onclick="exportAgenda()">Descarregar còpia JSON</button></div><div id="historyDetail" class="sec" style="display:none;margin-top:15px"></div></div></div>
+<div class="tw"><div class="tsc" style="overflow-x:auto"><table style="min-width:0"><thead><tr><th onclick="historySortBy('nom')" style="cursor:pointer">Fira ↕</th><th onclick="historySortBy('poble')" style="cursor:pointer">Població ↕</th><th onclick="historySortBy('inici')" style="cursor:pointer">Data inici ↕</th><th onclick="historySortBy('fi')" style="cursor:pointer">Data fi ↕</th><th onclick="historySortBy('estat')" style="cursor:pointer">Estat ↕</th><th onclick="historySortBy('marca')" style="cursor:pointer">Marca ↕</th><th onclick="historySortBy('preu')" style="cursor:pointer">€ ↕</th><th onclick="historySortBy('contacte')" style="cursor:pointer">Contacte ↕</th><th>Enllaços</th><th>Accions</th></tr></thead><tbody id="historyRows"></tbody></table></div></div><div id="historyBackupWarning" role="status" style="display:none;margin:12px 0;padding:12px;border:1px solid #e8b96c;border-radius:10px;background:#fff7e8;color:#754d16">⚠️ Hi ha canvis desats pendents d’exportar. <button class="rb" onclick="backupExportJSON()">Descarregar còpia JSON</button></div><div id="historyDetail" class="sec" style="display:none;margin-top:15px"></div></div></div>
 <div id="tab-tbl" class="tc" hidden>
       <div class="tabs" id="st">
         <div class="tab on" onclick="showT('ts-sa','st')">Registres</div>
@@ -2380,7 +2380,7 @@ function agendaExtraNotesButton(r){
 }
 function agendaDelete(id){
  const r=AGENDA_ITEMS.find(x=>x.id===id);if(!r)return;
- if(!confirm('Vols eliminar definitivament la fira «'+r.nom+'» ('+(r.poble||'sense població')+')?\n\nAquesta acció no es pot desfer. Exporta una còpia JSON si vols conservar-ne una còpia.'))return;
+ if(!confirm('Vols eliminar definitivament la fira «'+r.nom+'» ('+(r.poble||'sense població')+')?\n\nAquesta acció no es pot desfer. Exporta la còpia JSON completa si vols conservar-ne una còpia.'))return;
  AGENDA_ITEMS=AGENDA_ITEMS.filter(x=>x.id!==id);
  if(String(id).startsWith('hist-')){try{const deleted=agendaDeletedIds();deleted.add(id);localStorage.setItem(AGENDA_DELETED_KEY,JSON.stringify([...deleted]));}catch(e){console.warn('No es pot registrar la supressió de la fira històrica',e);}}
  agendaSave();agendaCloseEditor();renderAgenda();initFairHistory();agendaBackupBanner();
@@ -2561,7 +2561,7 @@ document.addEventListener('DOMContentLoaded',()=>{agendaLoad();renderAgenda();in
       call("/rest/v1/productes?select=*&order=ordre.asc.nullslast,nom.asc",{},SB_KEY),
       call("/rest/v1/producte_imatges?select=*&order=ordre.asc",{},SB_KEY)
     ]);
-    products=Array.isArray(p)?p:[];images=Array.isArray(i)?i:[];render();
+    products=Array.isArray(p)?p:[];images=Array.isArray(i)?i:[];window.orditsCatalogSnapshot={products,images,scope:"public"};render();
   }
 
   async function loadAuthenticated(){
@@ -2572,7 +2572,7 @@ document.addEventListener('DOMContentLoaded',()=>{agendaLoad();renderAgenda();in
       call("/rest/v1/productes?select=*&order=ordre.asc.nullslast,nom.asc",{},session.access_token),
       call("/rest/v1/producte_imatges?select=*&order=ordre.asc",{},session.access_token)
     ]);
-    products=Array.isArray(p)?p:[];images=Array.isArray(i)?i:[];mode="admin";render();
+    products=Array.isArray(p)?p:[];images=Array.isArray(i)?i:[];window.orditsCatalogSnapshot={products,images,scope:"admin"};mode="admin";render();
   }
 
   async function signIn(email,password){
@@ -2708,6 +2708,59 @@ document.addEventListener('DOMContentLoaded',()=>{agendaLoad();renderAgenda();in
   });
   document.addEventListener("DOMContentLoaded",start);
 })();
+</script>
+
+<script id="ordits-unified-backup-v1">
+/* Una única còpia JSON per a totes les dades locals. No exporta credencials. */
+const BACKUP_EXCLUDED_KEYS=/auth|session|token|password|secret|supabase/i;
+function backupLocalData(){
+ const data={};
+ for(let i=0;i<localStorage.length;i++){
+  const k=localStorage.key(i);
+  if(!BACKUP_EXCLUDED_KEYS.test(k))data[k]=localStorage.getItem(k);
+ }
+ return data;
+}
+function backupPayload(){
+ return {format:'ordits-trames-backup-complet',version:1,exported:new Date().toISOString(),
+  localStorage:backupLocalData(),stock:typeof STOCK!=='undefined'?STOCK:null,
+  fires:typeof AGENDA_ITEMS!=='undefined'?AGENDA_ITEMS:null,
+  catalogSupabase:window.orditsCatalogSnapshot||null,
+  notes:['El catàleg Supabase és una instantània de lectura; importar aquest JSON NO modifica Supabase.',
+         'Les dades de vendes de l’Excel carregat no es poden recuperar automàticament en tornar a obrir el fitxer: conserva també l’Excel original.',
+         'La còpia no inclou contrasenyes ni sessions.']};
+}
+function backupDownload(content,name,type){
+ const url=URL.createObjectURL(new Blob([content],{type}));const a=document.createElement('a');
+ a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);
+}
+function backupExportJSON(){
+ const data=backupPayload();
+ backupDownload(JSON.stringify(data,null,2),'ordits_i_trames_copia_completa_'+new Date().toISOString().slice(0,10)+'.json','application/json');
+ if(typeof agendaBackupPending==='function')agendaBackupPending(false);
+ alert('Còpia JSON descarregada. Inclou fires, estoc i dades locals; el catàleg Supabase només com a instantània (si s’ha carregat). Desa també el teu Excel de vendes.');
+}
+async function backupImportJSON(input){
+ const f=input.files?.[0];if(!f)return;
+ try{
+  const d=JSON.parse(await f.text());
+  if(d.format!=='ordits-trames-backup-complet'||d.version!==1||!d.localStorage||typeof d.localStorage!=='object')throw Error('Aquest fitxer no és una còpia completa compatible.');
+  if(!confirm('Recuperar les dades locals de la còpia? Substituirà les fires i l’estoc locals actuals. No modificarà Supabase.'))return;
+  for(const [k,v] of Object.entries(d.localStorage)){
+   if(!BACKUP_EXCLUDED_KEYS.test(k)&&typeof v==='string')localStorage.setItem(k,v);
+  }
+  if(Array.isArray(d.stock))localStorage.setItem('ordits-trames-stock-edit-v1',JSON.stringify({version:1,updated:new Date().toISOString(),rows:d.stock}));
+  if(Array.isArray(d.fires))localStorage.setItem('ordits_trames_agenda_v3',JSON.stringify(d.fires));
+  alert('Dades locals recuperades. La pàgina es tornarà a carregar. Supabase no s’ha modificat.');location.reload();
+ }catch(e){alert('Error important la còpia: '+e.message)}finally{input.value=''}
+}
+function backupExportHTML(){
+ const clone=document.documentElement.cloneNode(true);
+ // El fitxer HTML és el programa. Les dades locals es recuperen amb el JSON únic.
+ const html='<!DOCTYPE html>\n'+clone.outerHTML;
+ backupDownload(html,'ordits_i_trames_dashboard_'+new Date().toISOString().slice(0,10)+'.html','text/html;charset=utf-8');
+ alert('HTML descarregat. Conserva al costat el JSON complet i l’Excel original. Per veure el catàleg Supabase cal connexió a internet.');
+}
 </script>
 
 </body>
