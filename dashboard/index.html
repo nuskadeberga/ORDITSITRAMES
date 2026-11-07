@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ORDITS I TRAMES · Dashboard</title>
+<title>ORDITS I TRAMES · Dashboard · Agenda dates destacades</title>
 <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/128/5395/5395996.png">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js">
 </script>
@@ -490,6 +490,64 @@ td[data-label="Marca"]{white-space:nowrap;font-size:19px}
 .fair-cal-empty{padding:16px;color:#766a63}
 @media(max-width:760px){.fair-cal-day{min-height:90px}.fair-cal-grid{min-width:610px}}
 </style>
+
+<style id="ordits-phase1-supabase-catalog">
+.sb-catalog-status{background:linear-gradient(135deg,#eef6f3,#f8fbfa);border:1px solid #cfe0d9;border-radius:14px;padding:13px 15px;margin-bottom:14px;display:flex;justify-content:space-between;gap:14px;align-items:center;flex-wrap:wrap}.sb-catalog-status strong{display:block;color:#2d5749;margin-bottom:3px}.sb-catalog-status span{font-size:.78rem;color:#61736d}.sb-catalog-status-actions{display:flex;gap:8px;flex-wrap:wrap}.sb-catalog-table-wrap{overflow:auto}#sbCatalogTable{min-width:1080px}#sbCatalogTable td{vertical-align:middle}.sb-cat-img{width:52px;height:52px;border-radius:10px;object-fit:cover;background:#eee;display:block}.sb-cat-noimg{width:52px;height:52px;border-radius:10px;background:#eee;display:grid;place-items:center;color:#999;font-size:11px}.sb-yes,.sb-no{display:inline-flex;align-items:center;border-radius:999px;padding:3px 8px;font-size:.68rem;font-weight:700}.sb-yes{background:#e6f4ea;color:#2f6b40}.sb-no{background:#f3e9e6;color:#8b4b3d}.sb-admin-dialog{border:0;border-radius:16px;padding:0;width:min(470px,calc(100vw - 28px));box-shadow:0 24px 80px #0004}.sb-admin-dialog::backdrop{background:#0006}.sb-admin-dialog form{padding:20px;display:grid;gap:14px}.sb-admin-dialog h3{font:600 1.25rem Georgia,serif;color:#513f39}.sb-admin-dialog p{font-size:.83rem;line-height:1.5;color:#6e615a}.sb-admin-dialog label{display:grid;gap:6px;font-size:.78rem;font-weight:600}.sb-admin-dialog input{width:100%;border:1px solid var(--bd);border-radius:9px;padding:10px 11px;font:inherit}.sb-dialog-actions{display:flex;justify-content:flex-end;gap:8px}.sb-primary{background:#d9f2e5!important;border-color:#b8ddca!important}@media(max-width:680px){.sb-catalog-status{align-items:stretch}.sb-catalog-status-actions{display:grid;grid-template-columns:1fr 1fr;width:100%}}
+</style>
+<style id="ordits-phase1b-auth-css">
+.sb-auth-actions{flex-wrap:wrap}
+#sbCatalogAdminMsg{min-height:18px;line-height:1.4}
+</style>
+
+<style id="ordits-phase1c-edit-css">
+#sbCatalogTable .sb-edit-input,
+#sbCatalogTable .sb-edit-select{
+  width:100%;min-width:110px;border:1px solid #d8ccc5;border-radius:8px;
+  padding:7px 8px;background:#fff;font:inherit;font-size:.78rem
+}
+#sbCatalogTable .sb-edit-name{min-width:170px}
+#sbCatalogTable .sb-edit-order{min-width:72px;max-width:85px}
+#sbCatalogTable .sb-check{width:20px;height:20px;accent-color:#5f9388}
+#sbCatalogTable .sb-save-product{white-space:nowrap;background:#d9f2e5;border-color:#b8ddca}
+#sbCatalogTable tr.sb-saving{opacity:.62}
+#sbCatalogTable tr.sb-saved{outline:2px solid #b8ddca;outline-offset:-2px}
+#sbCatalogTable tr.sb-save-error{outline:2px solid #dba3a3;outline-offset:-2px}
+.sb-admin-edit-note{
+  margin:10px 0 14px;padding:10px 12px;border-radius:10px;background:#fff7e8;
+  border:1px solid #ead6aa;color:#725b2d;font-size:.76rem;line-height:1.45
+}
+@media(max-width:700px){
+  #sbCatalogTable{min-width:1180px}
+}
+</style>
+
+<style id="ordits-agenda-blocs-css">
+.week-plan-bridge{
+ display:inline-block;margin-left:7px;padding:3px 7px;border-radius:999px;
+ font-size:10px;font-weight:700;background:#fff3cc;color:#7a5b00;
+ vertical-align:middle;white-space:nowrap
+}
+@media(max-width:600px){
+ .week-plan-bridge{display:block;width:max-content;margin:5px 0 0 0}
+}
+</style>
+
+<style id="ordits-agenda-dates-css">
+.week-plan-date{
+ display:inline-flex;align-items:center;gap:6px;
+ margin:8px 0 5px;padding:6px 10px;border-radius:10px;
+ background:#eef5ff;border:1px solid #d8e6fb;
+ color:#24476d;font-size:13px;line-height:1;
+ letter-spacing:.1px
+}
+.week-plan-date strong{font-size:14px;font-weight:800}
+.week-plan-town{margin-top:2px}
+@media(max-width:600px){
+ .week-plan-date{font-size:12.5px;padding:6px 9px}
+ .week-plan-date strong{font-size:13.5px}
+}
+</style>
+
 </head>
 <body>
 
@@ -616,6 +674,41 @@ document.addEventListener('click',e=>{const p=document.getElementById('websPanel
 
     <!-- ── PRODUCTES ── -->
     <div id="tab-pr" class="tc" hidden>
+      <div class="sec" id="supabaseCatalogSection">
+        <div class="sec-t">Catàleg únic · Supabase</div>
+        <div class="sb-catalog-status" id="sbCatalogStatus"><div><strong>Connectant amb Supabase…</strong><span>La vista pública carregarà automàticament els productes visibles.</span></div><div class="sb-catalog-status-actions"><button class="rb" type="button" id="sbCatalogRefresh">↻ Actualitzar</button><button class="rb" type="button" id="sbCatalogAdminBtn">🔐 Admin online</button></div></div>
+        <div id="sbCatalogEditNote" class="sb-admin-edit-note" hidden>
+          🔐 <strong>Edició segura activada.</strong> Els canvis es desen directament al catàleg mestre de Supabase i afecten també la web comercial. El camp <strong>Principal</strong> continua només informatiu en aquesta etapa.
+        </div>
+        <div class="kg sb-catalog-kpis" id="sbCatalogKpis"></div>
+        <div class="fb sb-catalog-filters"><div class="fbt">Filtres del catàleg Supabase</div><div class="fg"><div class="fgi"><span class="fgl">Marca</span><select class="fgs" id="sbCatalogBrand"><option value="">Totes</option><option value="BN">ByNuska</option><option value="CR">Confeccions Ribera</option></select></div><div class="fgi"><span class="fgl">Visibilitat</span><select class="fgs" id="sbCatalogVisibility"><option value="">Tots els carregats</option><option value="visible">Visibles a la web</option><option value="hidden">No visibles</option></select></div><div class="fgi"><span class="fgl">Cerca</span><input class="fgs" id="sbCatalogSearch" type="search" placeholder="Nom, categoria, subcategoria…"></div><button class="rb" type="button" id="sbCatalogReset">↺ Reiniciar</button></div></div>
+        <div class="tw"><div class="th"><span class="tht">Productes del catàleg mestre</span><span class="ks" id="sbCatalogCount"></span></div><div class="tsc sb-catalog-table-wrap"><table id="sbCatalogTable"><thead><tr><th>Foto</th><th>Marca</th><th>Producte</th><th>Tècnica / família</th><th>Categoria</th><th>Subcategoria</th><th>Visible a la web</th><th>Destacat</th><th>Principal</th><th>Ordre</th></tr></thead><tbody><tr><td colspan="11">Carregant catàleg…</td></tr></tbody></table></div></div>
+        
+<dialog id="sbCatalogAdminDialog" class="sb-admin-dialog">
+  <form id="sbCatalogAdminForm">
+    <h3>Admin online · Supabase</h3>
+    <p id="sbAuthIntro">Accés reservat a les persones autoritzades. El correu d'administració ja està preautoritzat a Supabase.</p>
+
+    <label>Correu
+      <input id="sbCatalogAdminEmail" type="email" value="orditsitrames@gmail.com" autocomplete="username" readonly>
+    </label>
+
+    <label>Contrasenya
+      <input id="sbCatalogAdminPassword" type="password" autocomplete="current-password" minlength="8" required>
+    </label>
+
+    <div class="sb-dialog-actions sb-auth-actions">
+      <button class="rb" type="button" id="sbCatalogAdminCancel">Cancel·lar</button>
+      <button class="rb" type="button" id="sbCatalogSignupBtn">Crear compte</button>
+      <button class="rb sb-primary" type="submit">Entrar</button>
+    </div>
+
+    <div class="ks" id="sbCatalogAdminMsg"></div>
+  </form>
+</dialog>
+
+      </div>
+
       <div class="sec">
         <div class="sec-t">Anàlisi de productes</div>
         <div class="cg">
@@ -694,6 +787,7 @@ document.addEventListener('click',e=>{const p=document.getElementById('websPanel
     <div id="tab-stk" class="tc" hidden>
       <div class="sec">
         <div class="sec-t">Stock i producció</div>
+        <div class="stock-actions" style="margin:8px 0 15px"><button class="rb" onclick="stockOpenEditor()">➕ Afegir producte</button><button class="rb" onclick="stockExportExcel()">📥 Exportar Excel actualitzat</button><button class="rb" onclick="stockExportJSON()">💾 Còpia de seguretat JSON</button><label class="rb" style="cursor:pointer">📂 Recuperar còpia JSON<input type="file" accept=".json" style="display:none" onchange="stockImportJSON(this)"></label><span class="ks" id="stockEditStatus"></span></div>
         <div class="stock-brand-grid" id="stockBrandGrid" aria-label="Selecciona la marca de l’estoc"></div>
         <div id="stockBrandEmpty" class="stock-brand-empty" hidden></div>
         <div class="stock-note" id="stockBrandContent">
@@ -731,12 +825,27 @@ document.addEventListener('click',e=>{const p=document.getElementById('websPanel
 
     </div>
 
+    <div class="modal-backdrop" id="stockEditModal" onclick="if(event.target===this)stockCloseEditor()">
+      <div class="modal" style="max-width:670px" onclick="event.stopPropagation()"><div class="modal-h"><div class="modal-t" id="stockEditTitle">Producte d’estoc</div><button class="closebtn" onclick="stockCloseEditor()">Tancar</button></div>
+      <form class="modal-b" onsubmit="stockSaveEditor(event)" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px">
+        <label>Marca<select id="seBrand" class="fgs" required><option>ByNuska</option><option>Confeccions Ribera</option><option>Carlitus</option></select></label>
+        <label>Família / Nom<input id="seName" class="fgs" required></label>
+        <label>Subcategoria / model<input id="seModel" class="fgs"></label>
+        <label>Categoria<input id="seCat" class="fgs"></label>
+        <label>Temporada<select id="seSeason" class="fgs"><option>Atemporal</option><option>Nadal</option><option>Hivern</option><option>Estiu</option><option>Sense definir</option></select></label>
+        <label>Mida / tipus<input id="seSize" class="fgs"></label>
+        <label>Color<input id="seColor" class="fgs"></label>
+        <label>Unitats en estoc<input id="seQty" class="fgs" type="number" min="0" step="1" required></label>
+        <label>Antiguitat (any)<input id="seYear" class="fgs" type="number" min="2023" max="2100"></label>
+        <label style="grid-column:1/-1">Observacions<textarea id="seObs" class="fgs" rows="3" style="width:100%"></textarea></label>
+        <div style="grid-column:1/-1;display:flex;gap:10px;justify-content:flex-end"><button type="button" class="rb" onclick="stockCloseEditor()">Cancel·lar</button><button type="submit" class="rb" style="background:#d9f2e5">Desar producte</button></div>
+      </form></div></div>
     <div class="modal-backdrop" id="stockModal" onclick="closeStockModal(event,'stockModal')">
       <div class="modal" onclick="event.stopPropagation()">
         <div class="modal-h"><div class="modal-t">Stock actual</div><button class="closebtn" onclick="hideStockModal('stockModal')">Tancar</button></div>
         <div class="modal-b">
           <div class="th"><span class="tht">Consulta per família, model, categoria, color, mida i observacions</span><input class="ts" placeholder="Cercar…" oninput="srchT('tSt',this.value)"></div>
-          <div class="tsc"><table id="tSt"><thead><tr><th>Marca</th><th>Família</th><th>Categoria</th><th>Subcategoria / model</th><th>Temporada</th><th>Mida / tipus</th><th>Color</th><th onclick="srt('tSt',7,this)">Stock<span class="sa"></span></th><th>Observacions</th></tr></thead><tbody></tbody></table></div>
+          <div class="tsc"><table id="tSt"><thead><tr><th>Marca</th><th>Família</th><th>Categoria</th><th>Subcategoria / model</th><th>Temporada</th><th>Mida / tipus</th><th>Color</th><th onclick="srt('tSt',7,this)">Stock<span class="sa"></span></th><th>Observacions</th><th>Accions</th></tr></thead><tbody></tbody></table></div>
         </div>
       </div>
     </div>
@@ -751,7 +860,7 @@ document.addEventListener('click',e=>{const p=document.getElementById('websPanel
     </div>
 
 <div id="tab-agenda" class="tc" hidden><div class="sec"><div class="sec-t">🗓️ Agenda de fires</div>
-<details class="week-plan"><summary>🧭 Planificació de caps de setmana · novembre i desembre 2026 <span style="font-size:12px;font-weight:400;color:#6b625d">(segons les fires desades)</span></summary><p class="week-plan-intro">Primer les fires on ja hi anem, després les que ens hi volen. Dins de cada nivell, comparació orientativa per cost, proximitat a Berga i temps d’espera de les sol·licituds. Una sol·licitud no equival a una plaça confirmada. Les distàncies són aproximacions per carretera, no rutes verificades.</p><div id="weekPlanGrid" class="week-plan-grid"></div><p class="week-plan-note">ℹ️ Els quilòmetres són orientatius d’anada i tornada; no inclouen carburant, peatges ni allotjament. Si falta el preu o la data de contacte, es marca com a pendent i no s’inventa. Actualitzeu aquests camps en editar cada fira.</p></details>
+<details class="week-plan"><summary>🧭 Planificació de blocs de fires · novembre i desembre 2026 <span style="font-size:12px;font-weight:400;color:#6b625d">(segons les fires desades)</span></summary><p class="week-plan-intro">Primer les fires on ja hi anem, després les que ens hi volen. Dins de cada nivell, comparació orientativa per cost, proximitat a Berga i temps d’espera de les sol·licituds. Una sol·licitud no equival a una plaça confirmada. Les distàncies són aproximacions per carretera, no rutes verificades.</p><div id="weekPlanGrid" class="week-plan-grid"></div><p class="week-plan-note">ℹ️ Els quilòmetres són orientatius d’anada i tornada; no inclouen carburant, peatges ni allotjament. Si falta el preu o la data de contacte, es marca com a pendent i no s’inventa. Actualitzeu aquests camps en editar cada fira.</p></details>
 <p style="color:var(--tx2)">Edita les dates, els terminis, l'estat i les observacions. Les dades es desen en aquest navegador; fes una còpia de seguretat per conservar-les en altres dispositius.</p>
 <div class="fg" style="gap:10px;margin:12px 0;flex-wrap:wrap">
 <div class="fgi"><span class="fgl">Vista</span><select class="fgs" id="agendaVista" onchange="renderAgenda()"><option value="active">Sense descartades</option><option value="all">Totes les fires</option><option value="discarded">Només descartades</option></select></div>
@@ -933,6 +1042,7 @@ document.getElementById('fi').addEventListener('change', e=>{
         STOCK = sraw.map((r,i)=>{const v=cleanStock(r);if(v)v.excelRow=i+2;return v;}).filter(Boolean);
       }
 
+      stockApplyEdits();
       loadPrices(wb);
       persistWorkbook(f.name, ev.target.result);
             document.getElementById('homeDataStatus').textContent='✓ Excel carregat · Les dades estan a punt per consultar.';
@@ -974,6 +1084,7 @@ async function restoreWorkbook(){
  ALL=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames.find(n=>n.trim().toUpperCase()==='VENDES')||wb.SheetNames[0]],{defval:''}).map((r,i)=>{const v=clean(r);if(v)v.excelRow=i+2;return v;}).filter(Boolean);
  const stockName=wb.SheetNames.find(n=>/stock|estoc/i.test(n)&&/octubre\s*26|octubre\s*2026/i.test(n)) || wb.SheetNames.find(n=>/stock|estoc/i.test(n));
  STOCK=stockName?XLSX.utils.sheet_to_json(wb.Sheets[stockName],{defval:''}).map((r,i)=>{const v=cleanStock(r);if(v)v.excelRow=i+2;return v;}).filter(Boolean):[];
+  stockApplyEdits();
   loadPrices(wb);
   document.getElementById('homeDataStatus').textContent='✓ Excel carregat · Les dades estan a punt per consultar.';document.getElementById('dash').style.display='block';
  document.getElementById('persistStatus').textContent='Fitxer pujat · '+new Date(saved.updated).toLocaleString('ca-ES');
@@ -1543,6 +1654,48 @@ function renderTopByBusiness(){
 }
 
 
+// Edicions locals de l'estoc, independents de l'Excel original.
+const STOCK_EDIT_KEY='ordits-trames-stock-edit-v1';
+let stockEditingIndex=-1;
+function stockApplyEdits(){
+ try{const v=JSON.parse(localStorage.getItem(STOCK_EDIT_KEY)||'null');if(v&&Array.isArray(v.rows))STOCK=v.rows;}catch(e){console.warn('No es poden recuperar les edicions d’estoc',e);}
+ stockEditNotice();
+}
+function stockEditNotice(){const e=document.getElementById('stockEditStatus');if(e)e.textContent=localStorage.getItem(STOCK_EDIT_KEY)?'✓ Estoc editat i desat en aquest navegador':'Els canvis es desen en aquest navegador';}
+function stockPersist(){try{localStorage.setItem(STOCK_EDIT_KEY,JSON.stringify({version:1,updated:new Date().toISOString(),rows:STOCK}));stockEditNotice();}catch(e){alert('No s’ha pogut desar l’estoc: '+e.message);}}
+function stockOpenEditor(index=-1){
+ stockEditingIndex=index;const r=index>=0?STOCK[index]:null;
+ document.getElementById('stockEditTitle').textContent=r?'Editar producte d’estoc':'Afegir producte d’estoc';
+ const v=(id,val)=>document.getElementById(id).value=val??'';
+ v('seBrand',r?.botiga||selectedStockBrand);v('seName',r?.familia||'');v('seModel',r?.model||'');v('seCat',r?.cat==='Sense categoria'?'':r?.cat||'');v('seSeason',r?.temporada||'Atemporal');v('seSize',r?.mida||'');v('seColor',r?.color==='Sense color'?'':r?.color||'');v('seQty',r?.stock??0);v('seYear',r?.antiguitat||'');v('seObs',r?.obs||'');
+ document.getElementById('stockEditModal').classList.add('show');
+}
+function stockCloseEditor(){document.getElementById('stockEditModal').classList.remove('show');}
+function stockSaveEditor(ev){
+ ev.preventDefault();const v=id=>document.getElementById(id).value.trim();
+ const r={botiga:v('seBrand'),nom:v('seName'),familia:v('seName'),model:v('seModel'),cat:v('seCat')||'Sense categoria',temporada:v('seSeason'),mida:v('seSize'),color:v('seColor')||'Sense color',stock:Number(v('seQty')),antiguitat:v('seYear')?Number(v('seYear')):null,obs:v('seObs')};
+ if(!r.nom||!Number.isInteger(r.stock)||r.stock<0){alert('Introdueix un nom i una quantitat entera no negativa.');return;}
+ if(stockEditingIndex>=0)STOCK[stockEditingIndex]={...STOCK[stockEditingIndex],...r};else STOCK.push(r);
+ selectedStockBrand=r.botiga;stockPersist();stockCloseEditor();renderStock();validateWorkbook();
+}
+function stockDelete(i){if(!STOCK[i]||!confirm('Eliminar aquesta línia d’estoc?'))return;STOCK.splice(i,1);stockPersist();renderStock();validateWorkbook();}
+function stockRowsForExcel(){return STOCK.map(r=>({'Marca':r.botiga,'Nom':r.familia,'Categoria':r.cat,'Subcategoria':r.model,'Temporada':r.temporada,'Tamany/Tipus':r.mida,'Color':r.color,'Stock':r.stock,'Antiguitat':r.antiguitat??'','Observacions':r.obs}));}
+function stockDownload(blob,name){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);}
+async function stockExportExcel(){
+ try{
+  let wb;try{const db=await openStore();const saved=await new Promise((ok,fail)=>{const q=db.transaction('files','readonly').objectStore('files').get(STORE_KEY);q.onsuccess=()=>ok(q.result);q.onerror=()=>fail(q.error);});db.close();if(saved)wb=XLSX.read(saved.binary,{type:'binary'});}catch(e){}
+  if(!wb)wb=XLSX.utils.book_new();
+  const name=wb.SheetNames.find(n=>/stock|estoc/i.test(n)&&/octubre\s*26|octubre\s*2026/i.test(n))||wb.SheetNames.find(n=>/stock|estoc/i.test(n))||'STOCK';
+  const ws=XLSX.utils.json_to_sheet(stockRowsForExcel());
+  if(wb.SheetNames.includes(name))wb.Sheets[name]=ws;else XLSX.utils.book_append_sheet(wb,ws,name);
+  const arr=XLSX.write(wb,{bookType:'xlsx',type:'array'});
+  stockDownload(new Blob([arr],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),'ORDITS_I_TRAMES_stock_actualitzat.xlsx');
+ }catch(e){alert('No s’ha pogut exportar l’Excel: '+e.message);}
+}
+function stockExportJSON(){stockDownload(new Blob([JSON.stringify({format:'ordits-trames-stock',version:1,exported:new Date().toISOString(),rows:STOCK},null,2)],{type:'application/json'}),'ordits_i_trames_stock_backup.json');}
+async function stockImportJSON(input){const f=input.files[0];if(!f)return;try{const d=JSON.parse(await f.text());if(d.format!=='ordits-trames-stock'||!Array.isArray(d.rows))throw Error('Format no reconegut');if(!confirm('Substituir tot l’estoc actual per aquesta còpia?'))return;STOCK=d.rows;stockPersist();renderStock();validateWorkbook();}catch(e){alert('No s’ha pogut importar: '+e.message);}finally{input.value='';}}
+window.addEventListener('DOMContentLoaded',()=>{stockApplyEdits();renderStock();});
+
 // ── STOCK ─────────────────────────────────────────────
 function renderStock(){
   const grid=document.getElementById('stockBrandGrid');
@@ -1668,7 +1821,7 @@ function renderStock(){
     tbOver.innerHTML=over.map(x=>`<tr><td>${escStock(x.nom)}</td><td>${escStock(x.cat)}</td><td>${x.stock}</td><td>${x.coverage===null?'—':x.coverage.toFixed(1)+' fires'}</td><td>${escStock(x.reason)}</td></tr>`).join('')||'<tr><td colspan="5">Sense resultats.</td></tr>';
   }
   if(tq){tq.innerHTML=recs.filter(x=>x.status!=='Estoc suficient').slice(0,8).map(x=>`<tr><td>${escStock(x.status)}</td><td>${escStock(x.nom)}</td><td>${x.stock}</td><td>${x.fairCount}</td><td>${x.coverage===null?'—':x.coverage.toFixed(1)}</td><td>${x.suggest?'Produir '+x.suggest:'Planificar'}</td></tr>`).join('');}
-  tb.innerHTML=st.slice().sort((a,b)=>a.nom.localeCompare(b.nom,'ca')).map(r=>`<tr class="${r.stock<=1?'re':''}"><td><span class="bx ${bxc(r.botiga)}">${escStock(r.botiga)}</span></td><td>${escStock(r.familia)}</td><td>${escStock(r.cat)}</td><td>${escStock(r.model||'—')}</td><td>${escStock(r.temporada)}</td><td>${escStock(r.mida||'—')}</td><td>${escStock(r.color)}</td><td>${r.stock}</td><td>${escStock(r.obs||'—')}</td></tr>`).join('');
+  tb.innerHTML=st.slice().sort((a,b)=>a.nom.localeCompare(b.nom,'ca')).map(r=>`<tr class="${r.stock<=1?'re':''}"><td><span class="bx ${bxc(r.botiga)}">${escStock(r.botiga)}</span></td><td>${escStock(r.familia)}</td><td>${escStock(r.cat)}</td><td>${escStock(r.model||'—')}</td><td>${escStock(r.temporada)}</td><td>${escStock(r.mida||'—')}</td><td>${escStock(r.color)}</td><td>${r.stock}</td><td>${escStock(r.obs||'—')}</td><td><button class="rb" onclick="stockOpenEditor(${STOCK.indexOf(r)})">✏️</button> <button class="rb" onclick="stockDelete(${STOCK.indexOf(r)})">🗑️</button></td></tr>`).join('');
 }
 
 function openStockModal(id){ const el=document.getElementById(id); if(el) el.classList.add('show'); }
@@ -2120,27 +2273,82 @@ function fairDistanceKm(r){const key=String(r.poble||'').trim();return Object.pr
 function fairRequestAge(r){if(!r.dataContacte||!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(r.dataContacte))return null;const day=Math.floor((new Date(fairToday()+'T12:00:00')-new Date(r.dataContacte+'T12:00:00'))/86400000);return day>=0?day:null;}
 function fairPlanPriority(r){const e=String(r.estat||'').toLowerCase();return /hi anem|confirmada/.test(e)?0:/ens hi volen/.test(e)?1:/sol·licitada/.test(e)?2:3;}
 function fairPlanScore(r){let score=[0,16,37,58][fairPlanPriority(r)];const km=fairDistanceKm(r);score+=km===null?14:Math.min(35,km*.16);const price=r.preu!==''&&r.preu!=null&&Number.isFinite(Number(r.preu))?Number(r.preu):null;score+=price===null?12:Math.min(35,price*.16);const age=fairRequestAge(r);if(fairPlanPriority(r)===2&&age!==null)score+=age>=14?24:age>=7?12:0;return score;}
+function fairIsoAddDays(iso,days){
+ const d=new Date(iso+'T12:00:00');d.setDate(d.getDate()+days);
+ return d.toISOString().slice(0,10);
+}
+function fairPlanDateLabel(iso){
+ const d=new Date(iso+'T12:00:00');
+ const mons=['gen.','febr.','març','abr.','maig','juny','jul.','ag.','set.','oct.','nov.','des.'];
+ return String(d.getDate()).padStart(2,'0')+' '+mons[d.getMonth()];
+}
+function fairPlanRangeLabel(from,to){
+ if(from===to)return fairPlanDateLabel(from);
+ const a=new Date(from+'T12:00:00'),b=new Date(to+'T12:00:00');
+ const mons=['gen.','febr.','març','abr.','maig','juny','jul.','ag.','set.','oct.','nov.','des.'];
+ if(a.getMonth()===b.getMonth())return String(a.getDate()).padStart(2,'0')+'–'+String(b.getDate()).padStart(2,'0')+' '+mons[b.getMonth()];
+ return String(a.getDate()).padStart(2,'0')+' '+mons[a.getMonth()]+' – '+String(b.getDate()).padStart(2,'0')+' '+mons[b.getMonth()];
+}
+function fairPlannerWeekends(){
+ // Manté el període actual del planificador (novembre-desembre 2026),
+ // però genera els dissabtes automàticament per evitar llistes rígides.
+ const out=[],start=new Date('2026-11-01T12:00:00'),end=new Date('2026-12-31T12:00:00');
+ const d=new Date(start);
+ while(d.getDay()!==6)d.setDate(d.getDate()+1);
+ while(d<=end){
+  const sat=d.toISOString().slice(0,10);
+  out.push({sat,sun:fairIsoAddDays(sat,1),fri:fairIsoAddDays(sat,-1),mon:fairIsoAddDays(sat,2),tue:fairIsoAddDays(sat,3)});
+  d.setDate(d.getDate()+7);
+ }
+ return out;
+}
 function renderWeekendPlan(){
  const host=document.getElementById('weekPlanGrid');if(!host)return;
- const weekends=[['07–08 nov.','2026-11-07','2026-11-08'],['14–15 nov.','2026-11-14','2026-11-15'],['21–22 nov.','2026-11-21','2026-11-22'],['28–29 nov.','2026-11-28','2026-11-29'],['05–06 des.','2026-12-05','2026-12-06'],['12–13 des.','2026-12-12','2026-12-13'],['19–20 des.','2026-12-19','2026-12-20'],['26–27 des.','2026-12-26','2026-12-27']];
+ const weekends=fairPlannerWeekends();
  const rejected=/aut[oò]nom|no hi anem|no ens volen|sense places|inscripci[oó] tancada|hem fet tard|descart|passem|no hi som|rebutjad/i;
- host.innerHTML=weekends.map(([title,from,to])=>{
-  const blocked=from==='2026-11-28';
-  const entries=AGENDA_ITEMS.filter(r=>r.inici&&r.inici<=to&&(r.fi||r.inici)>=from&&!rejected.test(String(r.estat||''))&&!fairIsPast(r));
+ host.innerHTML=weekends.map(w=>{
+  // Regla de bloc:
+  // divendres -> cap de setmana següent
+  // dilluns/dimarts -> cap de setmana anterior
+  // per tant cada finestra útil és divendres-dimarts.
+  const blocked=w.sat==='2026-11-28';
+  const entries=AGENDA_ITEMS.filter(r=>r.inici&&r.inici<=w.tue&&(r.fi||r.inici)>=w.fri&&!rejected.test(String(r.estat||''))&&!fairIsPast(r));
   const uniq=new Map();for(const r of entries){const key=[r.nom,r.poble].join('|').toLowerCase();if(!uniq.has(key)||fairPlanScore(r)<fairPlanScore(uniq.get(key)))uniq.set(key,r);}
-  const list=[...uniq.values()].sort((a,b)=>fairPlanPriority(a)-fairPlanPriority(b)||fairPlanScore(a)-fairPlanScore(b)||String(a.nom).localeCompare(String(b.nom),'ca'));
+  const list=[...uniq.values()].sort((a,b)=>
+   String(a.inici||'9999-12-31').localeCompare(String(b.inici||'9999-12-31'))||
+   fairPlanPriority(a)-fairPlanPriority(b)||
+   fairPlanScore(a)-fairPlanScore(b)||
+   String(a.nom).localeCompare(String(b.nom),'ca')
+  );
+
+  // El capçal parteix de dissabte-diumenge i només s'eixampla si hi ha fires
+  // divendres, dilluns o dimarts.
+  let titleFrom=w.sat,titleTo=w.sun;
+  for(const r of list){
+   const rs=r.inici,re=r.fi||r.inici;
+   if(rs<=w.fri&&re>=w.fri)titleFrom=w.fri;
+   if(rs<=w.mon&&re>=w.mon&&titleTo<w.mon)titleTo=w.mon;
+   if(rs<=w.tue&&re>=w.tue&&titleTo<w.tue)titleTo=w.tue;
+  }
+  const title=fairPlanRangeLabel(titleFrom,titleTo);
+  const extended=titleFrom!==w.sat||titleTo!==w.sun;
+  const bridgeLabel=extended?'<span class="week-plan-bridge">Pont / bloc ampliat</span>':'';
+
   const top=list[0],hasAccepted=list.some(r=>fairPlanPriority(r)<=1);
   let advice=!list.length?'Sense alternatives actives: valorar producció o buscar una fira.':hasAccepted?'Prioritzeu les invitacions i comproveu si les dues marques poden cobrir fires diferents.':'Cap plaça acceptada: feu seguiment i manteniu una segona opció.';
-  if(blocked)advice='No disponible: ni Confeccions Ribera ni @ByNuska poden participar aquest cap de setmana. No cal buscar alternatives.';
+  if(extended&&list.length)advice='Hi ha opcions més enllà del dissabte i diumenge. Valoreu combinacions dins del mateix bloc de dates. '+advice;
+  if(blocked)advice='No disponible: ni Confeccions Ribera ni @ByNuska poden participar aquest bloc. No cal buscar alternatives.';
   if(!blocked&&top&&fairPlanPriority(top)===2&&fairRequestAge(top)>=14)advice+=' La primera opció fa 14 dies o més que espera resposta.';
+
   const items=list.map((r,i)=>{const km=fairDistanceKm(r),price=r.preu!==''&&r.preu!=null&&Number.isFinite(Number(r.preu))?Number(r.preu):null,age=fairRequestAge(r),requested=fairPlanPriority(r)===2;
    const follow=requested?(age===null?' · 📅 Falta data de petició':age>=14?' · 🔴 '+age+' dies sense resposta: insistir i activar alternativa':age>=7?' · 🟠 '+age+' dies sense resposta: fer seguiment':' · '+age+' dies des de la petició'):'';
    const priceText=price===null?'Preu pendent':Math.round(price)+' € parada';const distanceText=km===null?'Distància pendent':'~'+(km*2)+' km anada i tornada';
    const priority=fairPlanPriority(r);const statusClass=['going','wanted','requested','possible'][priority];const statusIcon=['✅','💚','📨','🔎'][priority];
-   return '<div class="week-plan-item '+statusClass+'"><div class="week-plan-item-head"><strong>'+(i===0?'⭐ ':'')+agendaEsc(r.nom)+'</strong><span class="week-plan-pill '+statusClass+'">'+statusIcon+' '+agendaEsc(r.estat||'Per consultar')+'</span></div><div class="week-plan-town">📍 '+agendaEsc(r.poble||'—')+' · '+agendaEsc(r.marca||'Marca per definir')+'</div><div class="week-plan-metrics"><span>💶 '+agendaEsc(priceText)+'</span><span>🚗 '+agendaEsc(distanceText)+'</span></div>'+(requested?'<div class="week-plan-follow">'+agendaEsc(follow.replace(/^ · /,''))+'</div>':'')+'</div>';
+   const dates=(r.inici&&r.fi&&r.fi!==r.inici)?agendaDate(r.inici)+'–'+agendaDate(r.fi):(r.inici?agendaDate(r.inici):'');
+   return '<div class="week-plan-item '+statusClass+'"><div class="week-plan-item-head"><strong>'+(i===0?'⭐ ':'')+agendaEsc(r.nom)+'</strong><span class="week-plan-pill '+statusClass+'">'+statusIcon+' '+agendaEsc(r.estat||'Per consultar')+'</span></div>'+(dates?'<div class="week-plan-date">📅 <strong>'+agendaEsc(dates)+'</strong></div>':'')+'<div class="week-plan-town">📍 '+agendaEsc(r.poble||'—')+' · '+agendaEsc(r.marca||'Marca per definir')+'</div><div class="week-plan-metrics"><span>💶 '+agendaEsc(priceText)+'</span><span>🚗 '+agendaEsc(distanceText)+'</span></div>'+(requested?'<div class="week-plan-follow">'+agendaEsc(follow.replace(/^ · /,''))+'</div>':'')+'</div>';
   }).join('');
   const tone=blocked?'blocked':!list.length?'empty':fairPlanPriority(top)===0?'going':fairPlanPriority(top)===1?'wanted':'pending';
-  return '<div class="week-plan-card '+tone+'"><div class="week-plan-card-head"><h4>📅 '+title+'</h4><span class="week-plan-count">'+(blocked?'⛔ No disponibles':list.length+' opcions')+'</span></div>'+(blocked?'<div class="week-plan-blocked">🚫 <strong>Cap de setmana no disponible</strong><span>Ni Confeccions Ribera ni @ByNuska poden fer fires.</span></div>':(list.length?items:'<p class="week-plan-empty">Sense fires disponibles a l’agenda.</p>'))+'<div class="week-plan-advice">💡 '+advice+'</div></div>';
+  return '<div class="week-plan-card '+tone+'"><div class="week-plan-card-head"><h4>📅 '+title+' '+bridgeLabel+'</h4><span class="week-plan-count">'+(blocked?'⛔ No disponibles':list.length+' opcions')+'</span></div>'+(blocked?'<div class="week-plan-blocked">🚫 <strong>Bloc no disponible</strong><span>Ni Confeccions Ribera ni @ByNuska poden fer fires.</span></div>':(list.length?items:'<p class="week-plan-empty">Sense fires disponibles a l’agenda.</p>'))+'<div class="week-plan-advice">💡 '+advice+'</div></div>';
  }).join('');
 }
 function renderAgenda(){renderWeekendPlan();agendaKpiSync();refreshHomeStats();renderFairCalendar();const compact=document.getElementById("agendaCompactSort");if(compact)compact.value=agendaSortField;const p=document.getElementById('agendaPoble');if(!p)return;const chosen=p.value;p.innerHTML='<option value="">Totes</option>'+[...new Set(AGENDA_ITEMS.filter(r=>!fairIsPast(r)).map(r=>r.poble).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ca')).map(x=>'<option value="'+agendaEsc(x)+'">'+agendaEsc(x)+'</option>').join('');p.value=chosen;
@@ -2214,5 +2422,293 @@ body.innerHTML=data.map(r=>'<tr'+(agendaReviewReason(r)?' class="fair-review-row
 }
 document.addEventListener('DOMContentLoaded',()=>{agendaLoad();renderAgenda();initFairHistory();agendaBackupBanner();});
 </script>
+
+
+<script id="ordits-phase1b-supabase-auth-catalog-js">
+(()=>{
+  const SB_URL="https://yatwggswydjinwqqpbnp.supabase.co";
+  const SB_KEY="sb_publishable_otY48qOaNGGkpc-15oh6Aw_g5F35Y83";
+  const ADMIN_EMAIL="orditsitrames@gmail.com";
+  const SESSION_KEY="ordits_supabase_auth_session";
+  const BUCKET=SB_URL+"/storage/v1/object/public/productes/";
+
+  let mode="public", products=[], images=[], session=null, currentUser=null;
+  const $=s=>document.querySelector(s);
+  const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const norm=s=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+
+  function storeSession(s){
+    session=s||null;
+    try{
+      if(session)localStorage.setItem(SESSION_KEY,JSON.stringify(session));
+      else localStorage.removeItem(SESSION_KEY);
+    }catch(_){}
+  }
+  function readSession(){
+    try{return JSON.parse(localStorage.getItem(SESSION_KEY)||"null")}catch{return null}
+  }
+  function bearer(){ return session?.access_token || SB_KEY; }
+  function headers(token=bearer()){
+    return {apikey:SB_KEY,Authorization:"Bearer "+token,"Content-Type":"application/json"};
+  }
+  async function call(path,opts={},token=bearer()){
+    const r=await fetch(SB_URL+path,{...opts,headers:{...headers(token),...(opts.headers||{})},cache:"no-store"});
+    const tx=await r.text(); let d=null;
+    try{d=tx?JSON.parse(tx):null}catch{d=tx}
+    if(!r.ok)throw new Error(d?.msg||d?.message||d?.error_description||d?.error||("HTTP "+r.status));
+    return d;
+  }
+  async function refreshSession(){
+    if(!session?.refresh_token)return false;
+    try{
+      const d=await call("/auth/v1/token?grant_type=refresh_token",
+        {method:"POST",body:JSON.stringify({refresh_token:session.refresh_token})},SB_KEY);
+      if(d?.access_token){storeSession(d);return true}
+    }catch(_){}
+    storeSession(null); return false;
+  }
+  async function getUser(){
+    if(!session?.access_token)return null;
+    try{return await call("/auth/v1/user",{},session.access_token)}
+    catch{
+      if(await refreshSession())return call("/auth/v1/user",{},session.access_token);
+      return null;
+    }
+  }
+  async function isAdminUser(user){
+    if(!user?.id)return false;
+    const rows=await call("/rest/v1/admins?select=user_id,nom&user_id=eq."+encodeURIComponent(user.id),{},session.access_token);
+    return Array.isArray(rows)&&rows.length>0;
+  }
+
+  function imgmap(){
+    const m=new Map();
+    [...images].sort((a,b)=>(Number(b.principal)-Number(a.principal))||((a.ordre||0)-(b.ordre||0))).forEach(x=>{
+      if(!m.has(x.producte_id))m.set(x.producte_id,x)
+    });
+    return m;
+  }
+  function imgurl(p){
+    if(!p)return "";
+    if(/^https?:\/\//i.test(p))return p;
+    return BUCKET+String(p).split("/").map(encodeURIComponent).join("/");
+  }
+  function brand(m){return m==="BN"?"ByNuska":m==="CR"?"Confeccions Ribera":m||"—"}
+  function filtered(){
+    const b=$("#sbCatalogBrand")?.value||"",v=$("#sbCatalogVisibility")?.value||"",q=norm($("#sbCatalogSearch")?.value||"");
+    return products.filter(p=>
+      (!b||p.marca===b)&&
+      (!v||(v==="visible"?p.visible===true:p.visible===false))&&
+      (!q||norm([p.nom,p.tecnica,p.categoria,p.subcategoria,brand(p.marca)].join(" ")).includes(q))
+    )
+  }
+  function render(){
+    const body=$("#sbCatalogTable tbody"); if(!body)return;
+    const data=filtered(),im=imgmap();
+    const total=products.length,visible=products.filter(x=>x.visible===true).length,hidden=products.filter(x=>x.visible===false).length;
+    const bn=products.filter(x=>x.marca==="BN").length,cr=products.filter(x=>x.marca==="CR").length;
+
+    $("#sbCatalogKpis").innerHTML=[
+      ["Productes carregats",total,""],["Visibles a la web",visible,"gr"],["No visibles",hidden,hidden?"er":""],
+      ["ByNuska",bn,"ac"],["Confeccions Ribera",cr,"bl"]
+    ].map(([l,v,c])=>`<div class="kc ${c}"><div class="kl">${l}</div><div class="kv">${v}</div></div>`).join("");
+
+    $("#sbCatalogCount").textContent=`${data.length} de ${total} productes · mode ${mode==="admin"?"admin online":"públic"}`;
+    body.innerHTML=data.map(p=>{
+      const i=im.get(p.id),src=i?imgurl(i.storage_path):"";
+      if(mode==="admin"){
+        return `<tr data-sb-product-id="${esc(p.id)}">
+          <td>${src?`<img class="sb-cat-img" src="${esc(src)}" alt="${esc(i.alt_text||p.nom||"")}" loading="lazy">`:'<div class="sb-cat-noimg">Sense foto</div>'}</td>
+          <td><span class="bx ${p.marca==="BN"?"b-bn":"b-cr"}">${esc(brand(p.marca))}</span></td>
+          <td><input class="sb-edit-input sb-edit-name" data-field="nom" value="${esc(p.nom||"")}"></td>
+          <td><input class="sb-edit-input" data-field="tecnica" value="${esc(p.tecnica||"")}"></td>
+          <td><input class="sb-edit-input" data-field="categoria" value="${esc(p.categoria||"")}"></td>
+          <td><input class="sb-edit-input" data-field="subcategoria" value="${esc(p.subcategoria||"")}"></td>
+          <td style="text-align:center"><input class="sb-check" data-field="visible" type="checkbox" ${p.visible?"checked":""} aria-label="Visible a la web"></td>
+          <td style="text-align:center"><input class="sb-check" data-field="destacat" type="checkbox" ${p.destacat?"checked":""} aria-label="Destacat"></td>
+          <td style="text-align:center">${p.principal_grup?'<span class="sb-yes">Sí</span>':'<span class="sb-no">No</span>'}</td>
+          <td><input class="sb-edit-input sb-edit-order" data-field="ordre" type="number" min="0" step="1" value="${p.ordre??""}"></td>
+          <td><button class="rb sb-save-product" type="button" onclick="window.orditsSaveSupabaseProduct('${esc(p.id)}',this)">Desar</button></td>
+        </tr>`;
+      }
+      return `<tr>
+        <td>${src?`<img class="sb-cat-img" src="${esc(src)}" alt="${esc(i.alt_text||p.nom||"")}" loading="lazy">`:'<div class="sb-cat-noimg">Sense foto</div>'}</td>
+        <td><span class="bx ${p.marca==="BN"?"b-bn":"b-cr"}">${esc(brand(p.marca))}</span></td>
+        <td><strong>${esc(p.nom||"")}</strong></td>
+        <td>${esc(p.tecnica||"—")}</td><td>${esc(p.categoria||"—")}</td><td>${esc(p.subcategoria||"—")}</td>
+        <td><span class="${p.visible?"sb-yes":"sb-no"}">${p.visible?"Sí":"No"}</span></td>
+        <td>${p.destacat?"✓":"—"}</td><td>${p.principal_grup?"✓":"—"}</td><td>${p.ordre??"—"}</td><td>—</td>
+      </tr>`;
+    }).join("")||'<tr><td colspan="11">No hi ha productes amb aquests filtres.</td></tr>';
+
+    const st=$("#sbCatalogStatus");
+    if(st){
+      const title=st.querySelector("strong"),sub=st.querySelector("span");
+      title.textContent=mode==="admin"?"Admin online connectat":"Catàleg públic connectat";
+      sub.textContent=mode==="admin"
+        ?`Sessió segura: ${currentUser?.email||ADMIN_EMAIL}. Es mostren visibles i ocults. Pots editar el catàleg de manera segura.`
+        :"Només es mostren els productes visibles a la web comercial.";
+    }
+    const btn=$("#sbCatalogAdminBtn");
+    if(btn)btn.textContent=mode==="admin"?"🔓 Tancar sessió":"🔐 Admin online";
+    const editNote=$("#sbCatalogEditNote");
+    if(editNote)editNote.hidden=mode!=="admin";
+  }
+
+  async function loadPublic(){
+    mode="public"; currentUser=null;
+    const [p,i]=await Promise.all([
+      call("/rest/v1/productes?select=*&order=ordre.asc.nullslast,nom.asc",{},SB_KEY),
+      call("/rest/v1/producte_imatges?select=*&order=ordre.asc",{},SB_KEY)
+    ]);
+    products=Array.isArray(p)?p:[];images=Array.isArray(i)?i:[];render();
+  }
+
+  async function loadAuthenticated(){
+    currentUser=await getUser();
+    if(!currentUser)throw new Error("La sessió ha caducat.");
+    if(!(await isAdminUser(currentUser)))throw new Error("Aquest usuari no està autoritzat com a administrador d’Ordits i Trames.");
+    const [p,i]=await Promise.all([
+      call("/rest/v1/productes?select=*&order=ordre.asc.nullslast,nom.asc",{},session.access_token),
+      call("/rest/v1/producte_imatges?select=*&order=ordre.asc",{},session.access_token)
+    ]);
+    products=Array.isArray(p)?p:[];images=Array.isArray(i)?i:[];mode="admin";render();
+  }
+
+  async function signIn(email,password){
+    const d=await call("/auth/v1/token?grant_type=password",
+      {method:"POST",body:JSON.stringify({email,password})},SB_KEY);
+    if(!d?.access_token)throw new Error("No s’ha pogut iniciar la sessió.");
+    storeSession(d);
+    await loadAuthenticated();
+  }
+
+  async function signUp(email,password){
+    const d=await call("/auth/v1/signup",
+      {method:"POST",body:JSON.stringify({email,password})},SB_KEY);
+    if(d?.access_token){
+      storeSession(d); await loadAuthenticated();
+      return "Compte creat i sessió iniciada.";
+    }
+    return "Compte creat. Revisa el correu de confirmació i, després de confirmar-lo, torna aquí i prem «Entrar».";
+  }
+
+  async function logout(){
+    try{
+      if(session?.access_token)await call("/auth/v1/logout",{method:"POST"},session.access_token);
+    }catch(_){}
+    storeSession(null);currentUser=null;await loadPublic();
+  }
+
+
+  window.orditsSaveSupabaseProduct=async function(id,button){
+    if(mode!=="admin"||!session?.access_token){
+      alert("Cal iniciar sessió com a administrador.");
+      return;
+    }
+    const row=document.querySelector(`tr[data-sb-product-id="${CSS.escape(id)}"]`);
+    if(!row)return;
+    const get=f=>row.querySelector(`[data-field="${f}"]`);
+    const nom=(get("nom")?.value||"").trim();
+    if(!nom){alert("El nom del producte és obligatori.");return}
+    const ordreRaw=get("ordre")?.value;
+    const payload={
+      nom,
+      tecnica:(get("tecnica")?.value||"").trim()||null,
+      categoria:(get("categoria")?.value||"").trim(),
+      subcategoria:(get("subcategoria")?.value||"").trim()||null,
+      visible:!!get("visible")?.checked,
+      destacat:!!get("destacat")?.checked,
+      ordre:ordreRaw===""?null:Number(ordreRaw),
+      updated_at:new Date().toISOString()
+    };
+    if(!payload.categoria){alert("La categoria és obligatòria.");return}
+    if(payload.ordre!==null && (!Number.isInteger(payload.ordre)||payload.ordre<0)){
+      alert("L’ordre ha de ser un enter igual o superior a 0.");
+      return;
+    }
+    row.classList.remove("sb-saved","sb-save-error");
+    row.classList.add("sb-saving");
+    button.disabled=true;button.textContent="Desant…";
+    try{
+      const updated=await call(
+        "/rest/v1/productes?id=eq."+encodeURIComponent(id),
+        {
+          method:"PATCH",
+          headers:{"Prefer":"return=representation"},
+          body:JSON.stringify(payload)
+        },
+        session.access_token
+      );
+      if(!Array.isArray(updated)||!updated.length)throw new Error("Supabase no ha retornat el producte actualitzat.");
+      const ix=products.findIndex(x=>x.id===id);
+      if(ix>=0)products[ix]=updated[0];
+      row.classList.add("sb-saved");
+      button.textContent="Desat ✓";
+      setTimeout(()=>{row.classList.remove("sb-saved");button.textContent="Desar";},1400);
+    }catch(e){
+      row.classList.add("sb-save-error");
+      button.textContent="Error";
+      alert("No s’ha pogut desar el producte: "+(e.message||e));
+      setTimeout(()=>{row.classList.remove("sb-save-error");button.textContent="Desar";},1800);
+    }finally{
+      row.classList.remove("sb-saving");
+      button.disabled=false;
+    }
+  };
+
+  async function start(){
+    session=readSession();
+    if(session){
+      try{await loadAuthenticated();return}catch(_){storeSession(null)}
+    }
+    try{await loadPublic()}
+    catch(e){
+      const st=$("#sbCatalogStatus");
+      if(st)st.innerHTML='<div><strong>No s’ha pogut connectar amb Supabase</strong><span>'+esc(e.message||e)+'</span></div>';
+      const b=$("#sbCatalogTable tbody");if(b)b.innerHTML='<tr><td colspan="11">Error de connexió amb Supabase.</td></tr>';
+    }
+  }
+
+  $("#sbCatalogRefresh")?.addEventListener("click",()=>mode==="admin"?loadAuthenticated().catch(console.warn):loadPublic().catch(console.warn));
+  $("#sbCatalogAdminBtn")?.addEventListener("click",async()=>{
+    if(mode==="admin"){await logout();return}
+    $("#sbCatalogAdminMsg").textContent="";
+    $("#sbCatalogAdminEmail").value=ADMIN_EMAIL;
+    $("#sbCatalogAdminDialog")?.showModal();
+  });
+  $("#sbCatalogAdminCancel")?.addEventListener("click",()=>$("#sbCatalogAdminDialog")?.close());
+
+  $("#sbCatalogSignupBtn")?.addEventListener("click",async()=>{
+    const email=$("#sbCatalogAdminEmail").value.trim(),password=$("#sbCatalogAdminPassword").value,msg=$("#sbCatalogAdminMsg");
+    if(password.length<8){msg.textContent="La contrasenya ha de tenir almenys 8 caràcters.";return}
+    msg.textContent="Creant compte…";
+    try{
+      msg.textContent=await signUp(email,password);
+      if(mode==="admin")$("#sbCatalogAdminDialog").close();
+    }catch(e){msg.textContent="No s’ha pogut crear el compte: "+(e.message||e)}
+  });
+
+  $("#sbCatalogAdminForm")?.addEventListener("submit",async e=>{
+    e.preventDefault();
+    const email=$("#sbCatalogAdminEmail").value.trim(),password=$("#sbCatalogAdminPassword").value,msg=$("#sbCatalogAdminMsg");
+    msg.textContent="Entrant…";
+    try{
+      await signIn(email,password);
+      $("#sbCatalogAdminPassword").value="";
+      msg.textContent="";
+      $("#sbCatalogAdminDialog").close();
+    }catch(err){msg.textContent="No s’ha pogut entrar: "+(err.message||err)}
+  });
+
+  ["#sbCatalogBrand","#sbCatalogVisibility"].forEach(s=>$(s)?.addEventListener("change",render));
+  $("#sbCatalogSearch")?.addEventListener("input",render);
+  $("#sbCatalogReset")?.addEventListener("click",()=>{
+    $("#sbCatalogBrand").value="";$("#sbCatalogVisibility").value="";$("#sbCatalogSearch").value="";render()
+  });
+  document.addEventListener("DOMContentLoaded",start);
+})();
+</script>
+
 </body>
 </html>
