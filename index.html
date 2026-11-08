@@ -2449,7 +2449,7 @@ html[data-supabase="error"] .ordits-db-badge{opacity:1;background:#f5dddd;color:
 .ordits-admin-mode-intro{margin-bottom:16px}
 .ordits-admin-mode-intro h3{margin:4px 0 6px;font-family:Georgia,serif;font-size:34px;font-weight:500}
 .ordits-admin-mode-intro p{margin:0;color:#766c66}
-.ordits-admin-mode-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.ordits-admin-mode-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
 .ordits-mode-card{
   border:1px solid #e2d6ce;background:#fbf8f4;border-radius:20px;padding:22px;text-align:left;
   display:grid;gap:7px;cursor:pointer;transition:.2s ease
@@ -2666,6 +2666,35 @@ html.oit-related-enabled .oit-site-switcher{
 }
 </style>
 
+<style id="ordits-dashboard-link-style">
+/* Accés al dashboard des de la pantalla d'administració */
+.ordits-admin-mode-actions .ordits-dashboard-card{
+  text-decoration:none;color:inherit;display:grid;align-content:start;
+  justify-items:start;text-align:left;
+}
+.ordits-dashboard-card .ordits-mode-icon img{
+  display:block;width:40px;height:40px;object-fit:contain;margin:0;
+}
+.ordits-dashboard-card:focus-visible{outline:3px solid #7d4e3c;outline-offset:3px}
+
+/* El dashboard és una eina externa a les seccions de gestió de la web */
+.ordits-admin-mode-actions .ordits-dashboard-card{
+  background:linear-gradient(135deg,#e8f3f2 0%,#f4faf9 100%);
+  border:2px solid #78a9a7;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.75);
+  position:relative;
+}
+.ordits-admin-mode-actions .ordits-dashboard-card::after{
+  content:"EINA INDEPENDENT";
+  position:absolute;right:16px;top:17px;
+  font-size:10px;letter-spacing:.09em;font-weight:900;
+  color:#326c69;background:#fff;padding:6px 8px;border-radius:999px;
+}
+.ordits-admin-mode-actions .ordits-dashboard-card strong{color:#225b59}
+.ordits-admin-mode-actions .ordits-dashboard-card small{color:#476a68}
+.oit-external-arrow{font-size:17px;vertical-align:middle}
+@media(max-width:900px){.ordits-admin-mode-actions .ordits-dashboard-card::after{position:static;justify-self:start;grid-row:1}}
+</style>
 </head>
 <body>
 <script id="ordits-related-mode-bootstrap">
@@ -3765,6 +3794,18 @@ if ('serviceWorker' in navigator) {
               <strong>Web</strong>
               <small>Textos, contacte, fires i contingut general.</small>
             </button>
+            <a class="ordits-mode-card ordits-dashboard-card"
+               href="https://nuskadeberga.github.io/ORDITSITRAMES/dashboard/"
+               target="_blank" rel="noopener noreferrer"
+               aria-label="Obrir dashboard en una pestanya nova">
+              <span class="ordits-mode-icon">
+                <img src="https://cdn-icons-png.flaticon.com/512/12884/12884565.png"
+                     alt="" loading="lazy"
+                     onerror="this.style.display='none';this.parentElement.textContent='📊'">
+              </span>
+              <strong>Dashboard <span class="oit-external-arrow" aria-hidden="true">↗</span></strong>
+              <small>Accedeix a l’eina independent d’estoc, vendes i fires. S’obre en una pestanya nova.</small>
+            </a>
           </div>
         </div>
 
