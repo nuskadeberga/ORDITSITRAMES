@@ -339,6 +339,9 @@ th.desc .sa::after{content:' ↓';opacity:1}
 .fair-range-grid button:hover{background:#dbe9e0}.fair-range-grid button.in-range{background:#e0eee5;border-radius:0}.fair-range-grid button.range-end{background:#2d6b4b;color:white;border-radius:7px}
 .fair-range-help{font-size:11px;color:#52665b;margin-top:9px;line-height:1.4}
 .agenda-kpi-btn{font:inherit;text-align:left;cursor:pointer;width:100%;color:inherit;transition:box-shadow .15s,border-color .15s;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:5px;}
+.agenda-total-kpi{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:5px;min-width:0;cursor:default;}
+.agenda-total-kpi .kl{display:block;margin-bottom:0;white-space:normal;}
+.agenda-total-kpi .kv{display:block;}
 .agenda-kpi-btn .kl{display:block;margin-bottom:0;}
 .agenda-kpi-btn .kv{display:block;}
 .agenda-kpi-btn:hover{box-shadow:0 2px 12px #0002;border-color:#9c8a71;}
@@ -463,6 +466,17 @@ td[data-label="Marca"]{white-space:nowrap;font-size:19px}
 .week-plan-town{font-size:12px;color:#665f58;margin-top:5px}.week-plan-metrics{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.week-plan-metrics span{font-size:11px;border-radius:7px;padding:5px 7px;background:#f3f6fa;color:#39495d}
 .week-plan-follow{margin-top:7px;font-size:11px;font-weight:600;color:#9a5418}.week-plan-advice{margin:10px 12px 12px;background:#f1f5ff;color:#384b78;line-height:1.5}.week-plan-empty{padding:12px 14px!important}
 .week-plan-blocked{display:flex;flex-direction:column;gap:5px;margin:12px;padding:17px;border-radius:10px;background:#fff0f2;color:#923e53;font-size:13px}.week-plan-blocked span{font-size:12px}
+
+/* Menú compacte de còpies; no canvia les funcions existents */
+.hd .upz{flex-wrap:wrap}
+.cloud-state{font-size:12px;max-width:240px;line-height:1.35;color:#f3eae4}
+.data-menu{position:relative;z-index:1000}
+.data-menu>summary{list-style:none;cursor:pointer;background:var(--bn);color:white;border-radius:9px;padding:11px 15px;font:600 .83rem 'DM Sans',sans-serif;white-space:nowrap}
+.data-menu>summary::-webkit-details-marker{display:none}
+.data-menu-panel{position:absolute;right:0;top:calc(100% + 8px);min-width:230px;background:#fff;color:#302621;border:1px solid #dfd1c7;border-radius:12px;box-shadow:0 12px 30px #0003;padding:7px;display:flex;flex-direction:column;gap:3px}
+.data-menu-panel button{background:transparent;border:0;border-radius:7px;padding:11px;text-align:left;cursor:pointer;font:500 .85rem 'DM Sans',sans-serif;color:#302621}
+.data-menu-panel button:hover,.data-menu-panel button:focus{background:#f4e7df}
+.data-distinction{padding:12px 15px;border-radius:10px;background:#f3eee9;border:1px solid #e4d9ce;line-height:1.5;font-size:.85rem;margin:10px 0 15px}
 </style>
 <style>
 .fair-cal-toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin:15px 0}
@@ -555,10 +569,19 @@ td[data-label="Marca"]{white-space:nowrap;font-size:19px}
   <div class="hd-t">ORDITS I TRAMES <span>·</span> Dashboard</div>
   <div class="upz"><button id="homeHeaderBtn" onclick="goHome()">⌂ Inici</button>
     <button class="webs-toggle" id="websToggle" type="button" aria-expanded="false" aria-controls="websPanel" onclick="toggleWebs()">🌷 Les nostres webs ▾</button>
-    <button class="upbtn" type="button" onclick="backupExportJSON()">💾 Exportar JSON complet</button><button class="upbtn" type="button" onclick="document.getElementById('backupImportFile').click()">📂 Importar JSON</button><input id="backupImportFile" type="file" accept=".json,application/json" hidden onchange="backupImportJSON(this)"><button class="upbtn" type="button" onclick="backupExportHTML()">⬇ Exportar HTML</button><button class="upbtn" onclick="document.getElementById('fi').click()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
-      Carregar Excel
-    </button>
+    <span id="orditsCloudStatus" class="cloud-state" role="status" aria-live="polite">☁️ Connexió no iniciada · prem Sincronitzar</span>
+    <details class="data-menu" id="orditsDataMenu">
+      <summary>📁 Còpies i dades ▾</summary>
+      <div class="data-menu-panel">
+        <button type="button" onclick="orditsExportAllExcel();orditsCloseDataMenu()">📊 Exportar Excel complet</button>
+        <button type="button" onclick="backupExportJSON();orditsCloseDataMenu()">💾 Exportar JSON complet</button>
+        <button type="button" onclick="document.getElementById('backupImportFile').click();orditsCloseDataMenu()">📂 Importar JSON</button>
+        <button type="button" onclick="backupExportHTML();orditsCloseDataMenu()">⬇ Exportar HTML</button>
+        <button type="button" onclick="document.getElementById('fi').click();orditsCloseDataMenu()">⬆ Carregar Excel</button>
+        <button type="button" onclick="orditsCloudInit();orditsCloseDataMenu()">☁️ Sincronitzar Supabase</button>
+      </div>
+    </details>
+    <input id="backupImportFile" type="file" accept=".json,application/json" hidden onchange="backupImportJSON(this)">
     <input type="file" id="fi" accept=".xlsx,.xls,.csv">
   </div>
 </div>
@@ -675,7 +698,8 @@ document.addEventListener('click',e=>{const p=document.getElementById('websPanel
     <!-- ── PRODUCTES ── -->
     <div id="tab-pr" class="tc" hidden>
       <div class="sec" id="supabaseCatalogSection">
-        <div class="sec-t">Catàleg únic · Supabase</div>
+        <div class="sec-t">Catàleg de la web · Supabase</div>
+        <p class="data-distinction"><strong>Catàleg web ≠ estoc real.</strong> Aquí gestiones les fitxes que poden aparèixer a la web, la visibilitat, els destacats i l’ordre. Una fitxa pot representar moltes unitats iguals; no cal publicar una foto per cada peça. L’inventari complet es consulta i s’edita a <strong>Stock i producció</strong>.</p>
         <div class="sb-catalog-status" id="sbCatalogStatus"><div><strong>Connectant amb Supabase…</strong><span>La vista pública carregarà automàticament els productes visibles.</span></div><div class="sb-catalog-status-actions"><button class="rb" type="button" id="sbCatalogRefresh">↻ Actualitzar</button><button class="rb" type="button" id="sbCatalogAdminBtn">🔐 Admin online</button></div></div>
         <div id="sbCatalogEditNote" class="sb-admin-edit-note" hidden>
           🔐 <strong>Edició segura activada.</strong> Els canvis es desen directament al catàleg mestre de Supabase i afecten també la web comercial. El camp <strong>Principal</strong> continua només informatiu en aquesta etapa.
@@ -787,6 +811,7 @@ document.addEventListener('click',e=>{const p=document.getElementById('websPanel
     <div id="tab-stk" class="tc" hidden>
       <div class="sec">
         <div class="sec-t">Stock i producció</div>
+        <p class="data-distinction"><strong>Inventari real:</strong> inclou totes les unitats, models i variants, encara que no estiguin publicats al catàleg de la web. «Veure stock actual» consulta les dades d’estoc carregades inicialment des de l’Excel i, després de sincronitzar, conservades a Supabase. No és un recompte de fitxes ni d’imatges del catàleg.</p>
         <div class="stock-actions" style="margin:8px 0 15px"><button class="rb" onclick="stockOpenEditor()">➕ Afegir producte</button><button class="rb" onclick="stockExportExcel()">📥 Exportar Excel actualitzat</button><span class="ks" id="stockEditStatus"></span></div>
         <div class="stock-brand-grid" id="stockBrandGrid" aria-label="Selecciona la marca de l’estoc"></div>
         <div id="stockBrandEmpty" class="stock-brand-empty" hidden></div>
@@ -861,13 +886,13 @@ document.addEventListener('click',e=>{const p=document.getElementById('websPanel
 
 <div id="tab-agenda" class="tc" hidden><div class="sec"><div class="sec-t">🗓️ Agenda de fires</div>
 <details class="week-plan"><summary>🧭 Planificació de blocs de fires · novembre i desembre 2026 <span style="font-size:12px;font-weight:400;color:#6b625d">(segons les fires desades)</span></summary><p class="week-plan-intro">Primer les fires on ja hi anem, després les que ens hi volen. Dins de cada nivell, comparació orientativa per cost, proximitat a Berga i temps d’espera de les sol·licituds. Una sol·licitud no equival a una plaça confirmada. Les distàncies són aproximacions per carretera, no rutes verificades.</p><div id="weekPlanGrid" class="week-plan-grid"></div><p class="week-plan-note">ℹ️ Els quilòmetres són orientatius d’anada i tornada; no inclouen carburant, peatges ni allotjament. Si falta el preu o la data de contacte, es marca com a pendent i no s’inventa. Actualitzeu aquests camps en editar cada fira.</p></details>
-<p style="color:var(--tx2)">Edita les dates, els terminis, l'estat i les observacions. Les dades es desen en aquest navegador; fes una còpia de seguretat per conservar-les en altres dispositius.</p>
+<p style="color:var(--tx2)">Edita les dates, els terminis, l'estat i les observacions. Els canvis es desen localment i se sincronitzen amb Supabase quan la connexió és activa. Consulta l’estat de sincronització a la capçalera.</p>
 <div class="fg" style="gap:10px;margin:12px 0;flex-wrap:wrap">
-<div class="fgi"><span class="fgl">Vista</span><select class="fgs" id="agendaVista" onchange="renderAgenda()"><option value="active">Sense descartades</option><option value="all">Totes les fires</option><option value="discarded">Només descartades</option></select></div>
-<div class="fgi"><span class="fgl">Estat de la fira</span><select class="fgs" id="agendaEstat" onchange="renderAgenda()"><option value="">Tots els estats</option><option value="Per Consultar">0. Per Consultar</option><option value="Sol·licitada">1. Sol·licitada</option><option value="Ens hi volen">2. Ens hi volen</option><option value="Confirmada">3. Confirmada</option><option value="Celebrada">4. Celebrada</option><option value="Autònoms!">5. Autònoms!</option><option value="Descartada">6. Descartada</option><option value="Passem">7. Passem</option></select></div>
-<div class="fgi"><span class="fgl">Població</span><select class="fgs" id="agendaPoble" onchange="renderAgenda()"><option value="">Totes</option></select></div>
-<div class="fgi"><span class="fgl">Cerca</span><input class="fgs" id="agendaCerca" oninput="renderAgenda()" placeholder="Nom, poble, notes…"></div>
-<div class="fgi fair-range-wrap"><span class="fgl">Dates</span><button class="fgs fair-range-trigger" type="button" id="agendaRangeTrigger" onclick="fairRangeToggle('agenda')" aria-label="Seleccionar inici i fi del període" aria-expanded="false">📅 Qualsevol data ▾</button><input type="hidden" id="agendaDateFrom"><input type="hidden" id="agendaDateTo"><div class="fair-range-pop" id="agendaRangePop" hidden></div></div><button class="rb" type="button" onclick="clearFairDateFilters('agenda')">Neteja dates</button><button class="rb" onclick="agendaNew()">+ Afegir fira</button></div><div id="agendaBackupWarning" role="status" style="display:none;margin:12px 0;padding:12px;border:1px solid #e8b96c;border-radius:10px;background:#fff7e8;color:#754d16">⚠️ Has fet canvis a les fires que encara no has exportat. <button class="rb" onclick="backupExportJSON()">Descarregar còpia JSON</button></div>
+<div class="fgi"><span class="fgl">Vista</span><select class="fgs" id="agendaVista" onchange="agendaShowAllRegistered=false;renderAgenda()"><option value="active">Sense descartades</option><option value="all">Totes les fires</option><option value="discarded">Només descartades</option></select></div>
+<div class="fgi"><span class="fgl">Estat de la fira</span><select class="fgs" id="agendaEstat" onchange="agendaShowAllRegistered=false;renderAgenda()"><option value="">Tots els estats</option><option value="Per Consultar">0. Per Consultar</option><option value="Sol·licitada">1. Sol·licitada</option><option value="Ens hi volen">2. Ens hi volen</option><option value="Confirmada">3. Confirmada</option><option value="Celebrada">4. Celebrada</option><option value="Autònoms!">5. Autònoms!</option><option value="Descartada">6. Descartada</option><option value="Passem">7. Passem</option></select></div>
+<div class="fgi"><span class="fgl">Població</span><select class="fgs" id="agendaPoble" onchange="agendaShowAllRegistered=false;renderAgenda()"><option value="">Totes</option></select></div>
+<div class="fgi"><span class="fgl">Cerca</span><input class="fgs" id="agendaCerca" oninput="agendaShowAllRegistered=false;renderAgenda()" placeholder="Nom, poble, notes…"></div>
+<div class="fgi fair-range-wrap"><span class="fgl">Dates</span><button class="fgs fair-range-trigger" type="button" id="agendaRangeTrigger" onclick="fairRangeToggle('agenda')" aria-label="Seleccionar inici i fi del període" aria-expanded="false">📅 Qualsevol data ▾</button><input type="hidden" id="agendaDateFrom"><input type="hidden" id="agendaDateTo"><div class="fair-range-pop" id="agendaRangePop" hidden></div></div><button class="rb" type="button" onclick="clearFairDateFilters('agenda')">Neteja dates</button><button class="rb" onclick="agendaNew()">+ Afegir fira</button></div>
 
 <div class="fair-cal-toolbar"><div class="fair-cal-switch"><button type="button" class="rb" id="fairTableBtn" onclick="setFairView('table')">☷ Taula</button><button type="button" class="rb" id="fairCalendarBtn" onclick="setFairView('calendar')">▦ Calendari</button></div><div id="fairCalendarNav" class="fair-cal-nav" hidden><button class="rb" onclick="moveFairMonth(-1)" aria-label="Mes anterior">‹</button><strong id="fairMonthTitle"></strong><button class="rb" onclick="moveFairMonth(1)" aria-label="Mes següent">›</button><button class="rb" onclick="goFairCurrentMonth()">Avui</button></div></div>
 <div id="fairCalendar" class="fair-calendar" hidden></div>
@@ -875,7 +900,7 @@ document.addEventListener('click',e=>{const p=document.getElementById('websPanel
 <div id="tab-history" class="tc" hidden><div class="sec"><div class="sec-t">📚 Històric de fires</div>
 <div class="fg" style="gap:10px;margin:12px 0;flex-wrap:wrap"><div class="fgi"><span class="fgl">Cerca</span><input class="fgs" id="historySearch" oninput="renderFairHistory()" placeholder="Fira, població, observacions…"></div><div class="fgi"><span class="fgl">Any</span><select class="fgs" id="historyYear" onchange="renderFairHistory()"><option value="">Tots els anys</option></select></div><div class="fgi"><span class="fgl">Mostrar</span><select class="fgs" id="historyView" onchange="renderFairHistory()"><option value="active">Sense descartades</option><option value="all">Totes les fires</option><option value="discarded">Només descartades</option></select></div><div class="fgi"><span class="fgl">Estat de la fira</span><select class="fgs" id="historyState" onchange="renderFairHistory()"><option value="">Tots els estats</option></select></div></div>
 <div class="fg" style="gap:10px;margin:8px 0 14px;flex-wrap:wrap"><div class="fgi fair-range-wrap"><span class="fgl">Dates</span><button class="fgs fair-range-trigger" type="button" id="historyRangeTrigger" onclick="fairRangeToggle('history')" aria-label="Seleccionar inici i fi del període" aria-expanded="false">📅 Qualsevol data ▾</button><input type="hidden" id="historyDateFrom"><input type="hidden" id="historyDateTo"><div class="fair-range-pop" id="historyRangePop" hidden></div></div><button class="rb" type="button" onclick="clearFairDateFilters('history')">Neteja dates</button></div><div id="historyCount" style="margin:8px 0;color:var(--tx2)"></div><div class="fair-mobile-sort"><label for="historyCompactSort">Ordena les fires per</label><select id="historyCompactSort" onchange="historySortBy(this.value)"><option value="inici">Data inici</option><option value="nom">Nom de la fira</option><option value="poble">Població</option><option value="fi">Data fi</option><option value="estat">Estat</option><option value="marca">Marca</option><option value="preu">Preu</option><option value="notes">Observacions</option><option value="contacte">Contacte</option></select></div>
-<div class="tw"><div class="tsc" style="overflow-x:auto"><table style="min-width:0"><thead><tr><th onclick="historySortBy('nom')" style="cursor:pointer">Fira ↕</th><th onclick="historySortBy('poble')" style="cursor:pointer">Població ↕</th><th onclick="historySortBy('inici')" style="cursor:pointer">Data inici ↕</th><th onclick="historySortBy('fi')" style="cursor:pointer">Data fi ↕</th><th onclick="historySortBy('estat')" style="cursor:pointer">Estat ↕</th><th onclick="historySortBy('marca')" style="cursor:pointer">Marca ↕</th><th onclick="historySortBy('preu')" style="cursor:pointer">€ ↕</th><th onclick="historySortBy('contacte')" style="cursor:pointer">Contacte ↕</th><th>Enllaços</th><th>Accions</th></tr></thead><tbody id="historyRows"></tbody></table></div></div><div id="historyBackupWarning" role="status" style="display:none;margin:12px 0;padding:12px;border:1px solid #e8b96c;border-radius:10px;background:#fff7e8;color:#754d16">⚠️ Hi ha canvis desats pendents d’exportar. <button class="rb" onclick="backupExportJSON()">Descarregar còpia JSON</button></div><div id="historyDetail" class="sec" style="display:none;margin-top:15px"></div></div></div>
+<div class="tw"><div class="tsc" style="overflow-x:auto"><table style="min-width:0"><thead><tr><th onclick="historySortBy('nom')" style="cursor:pointer">Fira ↕</th><th onclick="historySortBy('poble')" style="cursor:pointer">Població ↕</th><th onclick="historySortBy('inici')" style="cursor:pointer">Data inici ↕</th><th onclick="historySortBy('fi')" style="cursor:pointer">Data fi ↕</th><th onclick="historySortBy('estat')" style="cursor:pointer">Estat ↕</th><th onclick="historySortBy('marca')" style="cursor:pointer">Marca ↕</th><th onclick="historySortBy('preu')" style="cursor:pointer">€ ↕</th><th onclick="historySortBy('contacte')" style="cursor:pointer">Contacte ↕</th><th>Enllaços</th><th>Accions</th></tr></thead><tbody id="historyRows"></tbody></table></div></div><div id="historyDetail" class="sec" style="display:none;margin-top:15px"></div></div></div>
 <div id="tab-tbl" class="tc" hidden>
       <div class="tabs" id="st">
         <div class="tab on" onclick="showT('ts-sa','st')">Registres</div>
@@ -1662,7 +1687,7 @@ function stockApplyEdits(){
  stockEditNotice();
 }
 function stockEditNotice(){const e=document.getElementById('stockEditStatus');if(e)e.textContent=localStorage.getItem(STOCK_EDIT_KEY)?'✓ Estoc editat i desat en aquest navegador':'Els canvis es desen en aquest navegador';}
-function stockPersist(){try{localStorage.setItem(STOCK_EDIT_KEY,JSON.stringify({version:1,updated:new Date().toISOString(),rows:STOCK}));stockEditNotice();}catch(e){alert('No s’ha pogut desar l’estoc: '+e.message);}}
+function stockPersist(){try{localStorage.setItem(STOCK_EDIT_KEY,JSON.stringify({version:1,updated:new Date().toISOString(),rows:STOCK}));stockEditNotice();if(window.orditsCloud)window.orditsCloud.queue("stock");}catch(e){alert('No s’ha pogut desar l’estoc: '+e.message);}}
 function stockOpenEditor(index=-1){
  stockEditingIndex=index;const r=index>=0?STOCK[index]:null;
  document.getElementById('stockEditTitle').textContent=r?'Editar producte d’estoc':'Afegir producte d’estoc';
@@ -2107,7 +2132,7 @@ const AGENDA_DELETED_KEY='ordits_trames_deleted_fair_ids';
 function agendaDeletedIds(){try{return new Set(JSON.parse(localStorage.getItem(AGENDA_DELETED_KEY)||'[]'));}catch(e){return new Set();}}
 function agendaBackupPending(value){try{localStorage.setItem(AGENDA_BACKUP_KEY,value?'1':'0');}catch(e){} agendaBackupBanner();}
 function agendaBackupBanner(){for(const id of ['agendaBackupWarning','historyBackupWarning']){const e=document.getElementById(id);if(e)e.style.display=localStorage.getItem(AGENDA_BACKUP_KEY)==='1'?'block':'none';}}
-function agendaSave(markPending=true){try{localStorage.setItem(AGENDA_KEY,JSON.stringify(AGENDA_ITEMS));if(markPending)agendaBackupPending(true);}catch(e){alert('No s’han pogut desar els canvis al navegador. Exporta una còpia JSON.');}}
+function agendaSave(markPending=true){try{localStorage.setItem(AGENDA_KEY,JSON.stringify(AGENDA_ITEMS));if(markPending){agendaBackupPending(true);if(window.orditsCloud)window.orditsCloud.queue("fires");}}catch(e){alert('No s’han pogut desar els canvis al navegador. Exporta una còpia JSON.');}}
 function agendaAlert(r){if(['Confirmada','Celebrada','Descartada','Autònoms!','Passem','Ens hi volen','Hi anem'].includes(r.estat))return '—';if(!r.termini)return '—';const n=new Date(),today=[n.getFullYear(),String(n.getMonth()+1).padStart(2,'0'),String(n.getDate()).padStart(2,'0')].join('-');const diff=Math.round((new Date(r.termini+'T12:00:00')-new Date(today+'T12:00:00'))/86400000);return diff<0?'Vençut':diff<=7?'⚠️ '+diff+' dies':'Obert';}
 function agendaOverlaps(r){if(!r.inici||!r.fi||['Descartada','Autònoms!','Passem','Celebrada'].includes(r.estat))return '';const others=AGENDA_ITEMS.filter(x=>x.id!==r.id&&x.inici&&x.fi&&!['Descartada','Autònoms!','Passem','Celebrada'].includes(x.estat)&&x.inici<=r.fi&&x.fi>=r.inici);return others.length?'⚠️ Coincideix amb: '+others.map(x=>x.nom+' ('+x.poble+')').join(', '):'';}
 function agendaLinks(r){
@@ -2255,16 +2280,23 @@ function renderFairCalendar(){
  el.innerHTML=html;
 }
 let agendaKpiActive='all';
-function agendaKpiSelect(kind){
- agendaKpiActive=agendaKpiActive===kind?'all':kind;
- const st=document.getElementById('agendaEstat');
- if(st)st.value=agendaKpiActive==='wanted'?'Ens hi volen':agendaKpiActive==='confirmed'?'Confirmada':'';
- const vista=document.getElementById('agendaVista');if(vista&&agendaKpiActive!=='all')vista.value='all';
+let agendaShowAllRegistered=false;
+function agendaShowAllRegisteredClick(){
+ agendaShowAllRegistered=true;
+ agendaKpiActive='all';
+ for(const [id,value] of [['agendaVista','all'],['agendaEstat',''],['agendaPoble',''],['agendaCerca',''],['agendaDateFrom',''],['agendaDateTo','']]){const el=document.getElementById(id);if(el)el.value=value;}
+ fairRangeSync('agenda');
+ const pop=document.getElementById('agendaRangePop');if(pop)pop.hidden=true;
+ setFairView('table');
  renderAgenda();
 }
-function agendaKpiSync(){const st=document.getElementById('agendaEstat');if(!st)return;
- if(agendaKpiActive==='wanted'&&st.value!=='Ens hi volen'||agendaKpiActive==='confirmed'&&st.value!=='Hi anem')agendaKpiActive='all';
+function agendaKpiSelect(kind){
+ agendaShowAllRegistered=false;
+ agendaKpiActive=agendaKpiActive===kind?'all':kind;
+ // Els KPI són filtres independents: no modifiquem els filtres manuals.
+ renderAgenda();
 }
+function agendaKpiSync(){} // No desactivar el KPI quan es canvia un filtre manual.
 
 const FAIR_BERGA_KM={
  'Berga':0,'Cal Rosal':5,'Puig-reig':15,'Montclar':20,'Lladurs':45,'Manlleu':65,'Les Masies de Voltregà':65,'Balaguer':110,'Cubells':125,'Collbató':85,'Caldes de Montbui':105,'Sant Celoni':115,'Sant Pere de Vilamajor':110,'Sant Antoni de Vilamajor':110,'Gelida':105,'Tordera':145,'Arbúcies':115,'Banyoles':125,'Barcelona':115,'St.Cugat':105,'Sant Cugat':105,'Sitges':145,'Canyelles':145,'Reus':165,'Roquetes':245,'Blanes':155
@@ -2352,9 +2384,11 @@ function renderWeekendPlan(){
  }).join('');
 }
 function renderAgenda(){renderWeekendPlan();agendaKpiSync();refreshHomeStats();renderFairCalendar();const compact=document.getElementById("agendaCompactSort");if(compact)compact.value=agendaSortField;const p=document.getElementById('agendaPoble');if(!p)return;const chosen=p.value;p.innerHTML='<option value="">Totes</option>'+[...new Set(AGENDA_ITEMS.filter(r=>!fairIsPast(r)).map(r=>r.poble).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ca')).map(x=>'<option value="'+agendaEsc(x)+'">'+agendaEsc(x)+'</option>').join('');p.value=chosen;
-const view=document.getElementById('agendaVista').value,state=document.getElementById('agendaEstat')?.value||'',town=p.value,q=document.getElementById('agendaCerca').value.toLocaleLowerCase('ca');const baseData=AGENDA_ITEMS.filter(r=>!fairIsPast(r)&&fairDateMatches(r,'agenda')&&(!state||r.estat===state)&&(!town||r.poble===town)&&(!q||[r.nom,r.poble,r.notes].join(' ').toLocaleLowerCase('ca').includes(q))&&(view==='all'||(view==='active'&&!agendaIsDiscarded(r))||(view==='discarded'&&agendaIsDiscarded(r)))).sort((a,b)=>{const k=agendaSortField;const x=a[k],y=b[k];if(k==='estat')return (agendaStateIndex(x)-agendaStateIndex(y))*agendaSortDirection;if(k==='preu'){const nx=x===''||x==null?Infinity:Number(x),ny=y===''||y==null?Infinity:Number(y);return (nx-ny)*agendaSortDirection;}return String(x||'').localeCompare(String(y||''),'ca',{numeric:true,sensitivity:'base'})*agendaSortDirection;});
-const data=agendaKpiActive==='urgent'?baseData.filter(r=>agendaAlert(r).includes('⚠️')):baseData;
-document.getElementById('agendaKpis').innerHTML=[['all','Fires a la vista',baseData.length],['wanted','Ens hi volen',baseData.filter(x=>x.estat==='Ens hi volen').length],['confirmed','Hi anem / Confirmades',baseData.filter(x=>x.estat==='Hi anem').length],['urgent','Terminis urgents',baseData.filter(x=>agendaAlert(x).includes('⚠️')).length]].map(([id,k,v])=>'<button type="button" class="kc agenda-kpi-btn'+(agendaKpiActive===id?' agenda-kpi-active':'')+'" onclick="agendaKpiSelect(\''+id+'\')" aria-pressed="'+(agendaKpiActive===id)+'" title="Filtra les fires: '+k+'"><span class="kl">'+k+'</span><span class="kv">'+v+'</span></button>').join('');
+const view=document.getElementById('agendaVista').value,state=document.getElementById('agendaEstat')?.value||'',town=p.value,q=document.getElementById('agendaCerca').value.toLocaleLowerCase('ca');const baseData=AGENDA_ITEMS.filter(r=>(agendaShowAllRegistered||!fairIsPast(r))&&fairDateMatches(r,'agenda')&&(!state||r.estat===state)&&(!town||r.poble===town)&&(!q||[r.nom,r.poble,r.notes].join(' ').toLocaleLowerCase('ca').includes(q))&&(view==='all'||(view==='active'&&!agendaIsDiscarded(r))||(view==='discarded'&&agendaIsDiscarded(r)))).sort((a,b)=>{const k=agendaSortField;const x=a[k],y=b[k];if(k==='estat')return (agendaStateIndex(x)-agendaStateIndex(y))*agendaSortDirection;if(k==='preu'){const nx=x===''||x==null?Infinity:Number(x),ny=y===''||y==null?Infinity:Number(y);return (nx-ny)*agendaSortDirection;}return String(x||'').localeCompare(String(y||''),'ca',{numeric:true,sensitivity:'base'})*agendaSortDirection;});
+const matchesKpi=(r,k)=>k==='wanted'?agendaState(r.estat)==='Ens hi volen':k==='confirmed'?['Hi anem','Confirmada'].includes(agendaState(r.estat)):k==='urgent'?agendaAlert(r).includes('⚠️'):true;
+const data=baseData.filter(r=>matchesKpi(r,agendaKpiActive));
+const kpiBase=AGENDA_ITEMS.filter(r=>!fairIsPast(r)&&fairDateMatches(r,'agenda')&&(view==='all'||(view==='active'&&!agendaIsDiscarded(r))||(view==='discarded'&&agendaIsDiscarded(r)))&&(!town||r.poble===town)&&(!q||[r.nom,r.poble,r.notes].join(' ').toLocaleLowerCase('ca').includes(q)));
+document.getElementById('agendaKpis').innerHTML='<button type="button" class="kc agenda-kpi-btn agenda-total-kpi'+(agendaShowAllRegistered?' agenda-kpi-active':'')+'" onclick="agendaShowAllRegisteredClick()" aria-pressed="'+agendaShowAllRegistered+'" title="Mostra totes les fires registrades i neteja tots els filtres, incloses les dates"><span class="kl">Total registrades</span><span class="kv">'+AGENDA_ITEMS.length+'</span></button>'+[['all','Fires a la vista',baseData.length],['wanted','Ens hi volen',kpiBase.filter(x=>matchesKpi(x,'wanted')).length],['confirmed','Hi anem / Confirmades',kpiBase.filter(x=>matchesKpi(x,'confirmed')).length],['urgent','Terminis urgents',kpiBase.filter(x=>matchesKpi(x,'urgent')).length]].map(([id,k,v])=>'<button type="button" class="kc agenda-kpi-btn'+(agendaKpiActive===id?' agenda-kpi-active':'')+'" onclick="agendaKpiSelect(\''+id+'\')" aria-pressed="'+(agendaKpiActive===id)+'" title="Filtra les fires: '+k+'"><span class="kl">'+k+'</span><span class="kv">'+v+'</span></button>').join('');
 document.getElementById('agendaRows').innerHTML=data.map(r=>'<tr'+(agendaReviewReason(r)?' class="fair-review-row"':'')+'><td data-label="Fira"><strong>'+agendaEsc(r.nom)+'</strong>'+agendaReviewMark(r)+'</td><td data-label="Població">'+agendaEsc(r.poble)+'</td><td data-label="Data inici">'+agendaDate(r.inici)+'</td><td data-label="Data fi">'+agendaDate(r.fi)+'</td><td data-label="Termini inscripció">'+agendaDeadlineChip(r)+'</td><td data-label="Estat">'+agendaEsc(agendaStateLabel(r.estat))+agendaReviewMark(r)+'</td><td data-label="Marca">'+agendaBrandIcons(r)+'</td><td data-label="Preu">'+((r.preu!==''&&r.preu!=null&&Number.isFinite(Number(r.preu)))?Math.round(Number(r.preu))+' €':'—')+'</td><td data-label="Contacte">'+agendaContactCell(r)+'</td><td data-label="Enllaços">'+agendaLinks(r)+'</td><td data-label="Accions"><span class="fair-row-actions"><button class="rb fair-icon-btn" type="button" title="Editar aquesta fira" aria-label="Editar aquesta fira" onclick="agendaShow('+JSON.stringify(r.id).replace(/"/g,'&quot;')+')">✏️</button><button class="rb fair-icon-btn" type="button" title="Duplicar aquesta fira" aria-label="Duplicar aquesta fira" onclick="agendaDuplicate('+JSON.stringify(r.id).replace(/"/g,'&quot;')+')">📋</button>'+agendaExtraNotesButton(r)+'</span></td></tr>').join('')||'<tr><td colspan="11">No hi ha fires en aquesta vista.</td></tr>';}
 
 function agendaDuplicate(id){
@@ -2756,12 +2790,96 @@ async function backupImportJSON(input){
 }
 function backupExportHTML(){
  const clone=document.documentElement.cloneNode(true);
- // El fitxer HTML és el programa. Les dades locals es recuperen amb el JSON únic.
+ // Insereix una instantània sense credencials, restaurable en obrir el fitxer exportat.
+ const snapshot=JSON.stringify({stock:STOCK,fires:AGENDA_ITEMS}).replace(/</g,'\\u003c');
+ const sc=document.createElement('script');sc.textContent='window.__orditsExportSnapshot='+snapshot+';';clone.querySelector('head').appendChild(sc);
  const html='<!DOCTYPE html>\n'+clone.outerHTML;
  backupDownload(html,'ordits_i_trames_dashboard_'+new Date().toISOString().slice(0,10)+'.html','text/html;charset=utf-8');
- alert('HTML descarregat. Conserva al costat el JSON complet i l’Excel original. Per veure el catàleg Supabase cal connexió a internet.');
+ alert('HTML descarregat amb una instantània d’estoc i fires. Per a restauracions completes conserva també el JSON i l’Excel.');
 }
 </script>
 
+<script id="ordits-cloud-sync-v1">
+(()=>{
+ const URL='https://yatwggswydjinwqqpbnp.supabase.co';
+ const KEY='sb_publishable_otY48qOaNGGkpc-15oh6Aw_g5F35Y83';
+ const SESSION='ordits_supabase_auth_session';
+ const localKey={stock:'ordits-trames-stock-edit-v1',fires:'ordits_trames_agenda_v3'};
+ let active=false, timers={},busy={},cloudUserId=null;
+ const status=(v)=>{let el=document.getElementById('orditsCloudStatus');if(el)el.textContent=v;};
+ const token=()=>{try{const x=JSON.parse(localStorage.getItem(SESSION)||'null');return x?.access_token||null}catch{return null}};
+ async function request(path,options={}){
+  const t=token();if(!t)throw Error('Inicia sessió com a administrador al Catàleg Supabase abans de sincronitzar.');
+  const res=await fetch(URL+'/rest/v1/'+path,{...options,headers:{apikey:KEY,Authorization:'Bearer '+t,'Content-Type':'application/json',...(options.headers||{})},cache:'no-store'});
+  const body=await res.text();let d;try{d=body?JSON.parse(body):null}catch{d=body}
+  if(!res.ok)throw Error(d?.message||d?.hint||('HTTP '+res.status));return d;
+ }
+ async function remote(kind){const d=await request('ordits_dashboard_data?kind=eq.'+kind+'&select=kind,payload,updated_at');return d?.[0]||null}
+ function current(kind){return kind==='stock'?STOCK:AGENDA_ITEMS}
+ function setLocal(kind,rows){
+  if(kind==='stock'){
+   STOCK=rows;localStorage.setItem(localKey.stock,JSON.stringify({version:1,updated:new Date().toISOString(),rows}));renderStock();validateWorkbook();
+  }else{
+   AGENDA_ITEMS=rows;localStorage.setItem(localKey.fires,JSON.stringify(rows));renderAgenda();initFairHistory();
+  }
+ }
+ async function save(kind){
+  if(busy[kind])return;busy[kind]=true;
+  try{
+   const existing=await remote(kind);
+   if(!existing){status('⚠️ Cal inicialitzar '+kind+' abans de desar');return}
+   await request('ordits_dashboard_data?kind=eq.'+kind,{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify({payload:current(kind),updated_at:new Date().toISOString(),updated_by:cloudUserId})});
+   status('☁️ '+kind+' desat a Supabase · '+new Date().toLocaleTimeString('ca-ES'));
+  }catch(e){status('⚠️ Canvis locals pendents: '+e.message);console.warn('Sync',e)}finally{busy[kind]=false}
+ }
+ function queue(kind){if(!active)return;clearTimeout(timers[kind]);status('☁️ Desant '+kind+'…');timers[kind]=setTimeout(()=>save(kind),800)}
+ async function init(){
+  try{
+   if(!token())throw Error('Entra com a administrador des de la pestanya Catàleg Supabase.');
+   const userRes=await fetch(URL+'/auth/v1/user',{headers:{apikey:KEY,Authorization:'Bearer '+token()}});
+   if(!userRes.ok)throw Error('Sessió caducada. Torna a iniciar sessió.');
+   const user=await userRes.json();cloudUserId=user.id;
+   // Comprova administració via RLS abans de mostrar cap opció d'importació.
+   await request('ordits_dashboard_data?select=kind&limit=1');
+   for(const kind of ['stock','fires']){
+    const found=await remote(kind);
+    if(found){
+     const local=current(kind);
+     if(JSON.stringify(local)!==JSON.stringify(found.payload)){
+      const take=confirm('Hi ha dades diferents per a '+kind+'.\n\nD’acord: carregar les dades de Supabase al dashboard.\nCancel·la: conservar les dades locals i NO sincronitzar aquest bloc fins que ho revisis.\n\nAbans de continuar, exporta el JSON complet si tens dubtes.');
+      if(!take){status('⚠️ '+kind+' pendent de reconciliar');return}
+     }
+     setLocal(kind,found.payload);
+    }else{
+     if(!confirm('No hi ha dades de '+kind+' a Supabase. Vols pujar-hi les dades ACTUALS del navegador?\n\nComprova abans que són les dades correctes.')){status('⚠️ Inicialització cancel·lada');return}
+     await request('ordits_dashboard_data',{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify({kind,payload:current(kind),updated_by:user.id})});
+    }
+   }
+   active=true;status('☁️ Sincronització activa');
+  }catch(e){active=false;status('⚠️ '+e.message);alert('Sincronització: '+e.message)}
+ }
+ window.orditsCloud={queue,init};window.orditsCloudInit=init;
+ window.orditsExportAllExcel=()=>{
+  try{
+   const wb=XLSX.utils.book_new();
+   XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(stockRowsForExcel()),'Estoc');
+   XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(AGENDA_ITEMS),'Fires');
+   const catalog=window.orditsCatalogSnapshot;
+   const products=Array.isArray(catalog)?catalog:(Array.isArray(catalog?.products)?catalog.products:[]);
+   const images=Array.isArray(catalog?.images)?catalog.images:[];
+   XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(products.length?products:[{Informacio:'Catàleg no carregat; no equival a un catàleg buit'}]),'Cataleg');
+   XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(images.length?images:[{Informacio:'Imatges no carregades; no equival a una llista buida'}]),'Imatges cataleg');
+   XLSX.writeFile(wb,'ordits_i_trames_dades_'+new Date().toISOString().slice(0,10)+'.xlsx');
+  }catch(e){alert('Error exportant Excel: '+e.message)}
+ };
+ // L'HTML exportat pot recuperar la instantània si no hi ha dades locals prèvies.
+ window.addEventListener('DOMContentLoaded',()=>{
+  const d=window.__orditsExportSnapshot;if(!d)return;
+  if(!localStorage.getItem(localKey.stock)&&Array.isArray(d.stock))localStorage.setItem(localKey.stock,JSON.stringify({version:1,rows:d.stock}));
+  if(!localStorage.getItem(localKey.fires)&&Array.isArray(d.fires))localStorage.setItem(localKey.fires,JSON.stringify(d.fires));
+ });
+})();
+</script>
+<script>function orditsCloseDataMenu(){const e=document.getElementById("orditsDataMenu");if(e)e.open=false}</script>
 </body>
 </html>
