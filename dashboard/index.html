@@ -715,7 +715,7 @@ document.addEventListener('click',e=>{const p=document.getElementById('websPanel
 
 <dialog id="sbCatalogRecoveryDialog" class="sb-admin-dialog">
   <form id="sbCatalogRecoveryForm">
-    <h3>Recuperar contrasenya</h3>
+    <h3>Definir una nova contrasenya</h3>
     <p>Et enviarem un correu de recuperació.</p>
     <label>Correu
       <input id="sbRecoveryEmail" type="email" value="orditsitrames@gmail.com" readonly>
@@ -2719,11 +2719,21 @@ document.addEventListener('DOMContentLoaded',()=>{agendaLoad();renderAgenda();in
     },session.access_token);
   }
   function showRecoverySetPasswordMode(){
+    const dlg=$("#sbCatalogRecoveryDialog");
+    if(!dlg)return;
+
+    // El diàleg original és dins d'una pestanya que pot estar oculta quan
+    // Supabase redirigeix directament a la portada. El movem al body.
+    if(dlg.parentElement!==document.body){
+      document.body.appendChild(dlg);
+    }
+
     $("#sbRecoveryNewPasswordWrap").hidden=false;
     $("#sbRecoverySendBtn").hidden=true;
     $("#sbRecoverySaveBtn").hidden=false;
     $("#sbRecoveryMsg").textContent="Enllaç validat. Escriu ara la nova contrasenya.";
-    if(!$("#sbCatalogRecoveryDialog").open)$("#sbCatalogRecoveryDialog").showModal();
+
+    if(!dlg.open)dlg.showModal();
   }
 
   async function start(){
