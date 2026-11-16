@@ -449,6 +449,7 @@ td[data-label="Marca"]{white-space:nowrap;font-size:19px}
 .week-plan-grid{grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px}
 .week-plan-card{padding:0;overflow:hidden;border:1px solid #e4e7ed;box-shadow:0 3px 10px #2a32400c}
 .week-plan-card-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:13px 14px;background:#eaf0fa}
+.week-plan-card.compact{align-self:start}.week-plan-card.compact summary{font-size:14px;padding:8px 12px}.week-plan-card.compact summary::after{content:"▸"}.week-plan-card.compact[open] summary::after{content:"▾"}
 .week-plan-card-head h4{margin:0;font-size:15px}.week-plan-count{font-size:11px;font-weight:750;border-radius:30px;background:#ffffffbd;padding:5px 9px;white-space:nowrap}
 .week-plan-card.going .week-plan-card-head{background:#d9f5e3;color:#165a35}
 .week-plan-card.wanted .week-plan-card-head{background:#e2f5ed;color:#206b50}
@@ -459,6 +460,7 @@ td[data-label="Marca"]{white-space:nowrap;font-size:19px}
 .week-plan-item.going{border-left:4px solid #32a467}.week-plan-item.wanted{border-left:4px solid #54bca0}.week-plan-item.requested{border-left:4px solid #f0b94d}.week-plan-item.possible{border-left:4px solid #93a4bf}
 .week-plan-item-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}.week-plan-item-head strong{font-size:13px}
 .week-plan-pill{font-size:10px;font-weight:750;padding:4px 8px;border-radius:20px;white-space:nowrap;background:#edf1f6;color:#495c75}
+.week-plan-item.rejected{border-left:4px solid #c64747}.week-plan-pill.rejected{background:#fce4e4;color:#922b2b}
 .week-plan-pill.going{background:#d9f5e3;color:#16643b}.week-plan-pill.wanted{background:#dff7ed;color:#16634e}.week-plan-pill.requested{background:#fff1cf;color:#8b5d12}
 .week-plan-town{font-size:12px;color:#665f58;margin-top:5px}.week-plan-metrics{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.week-plan-metrics span{font-size:11px;border-radius:7px;padding:5px 7px;background:#f3f6fa;color:#39495d}
 .week-plan-follow{margin-top:7px;font-size:11px;font-weight:600;color:#9a5418}.week-plan-advice{margin:10px 12px 12px;background:#f1f5ff;color:#384b78;line-height:1.5}.week-plan-empty{padding:12px 14px!important}
@@ -891,7 +893,7 @@ document.addEventListener('click',e=>{const p=document.getElementById('websPanel
     </div>
 
 <div id="tab-agenda" class="tc" hidden><div class="sec"><div class="sec-t">🗓️ Agenda de fires</div>
-<details class="week-plan"><summary>🧭 Planificació de blocs de fires · novembre i desembre 2026 <span style="font-size:12px;font-weight:400;color:#6b625d">(segons les fires desades)</span></summary><p class="week-plan-intro">Primer les fires on ja hi anem, després les que ens hi volen. Dins de cada nivell, comparació orientativa per cost, proximitat a Berga i temps d’espera de les sol·licituds. Una sol·licitud no equival a una plaça confirmada. Les distàncies són aproximacions per carretera, no rutes verificades.</p><div id="weekPlanGrid" class="week-plan-grid"></div><p class="week-plan-note">ℹ️ Els quilòmetres són orientatius d’anada i tornada; no inclouen carburant, peatges ni allotjament. Si falta el preu o la data de contacte, es marca com a pendent i no s’inventa. Actualitzeu aquests camps en editar cada fira.</p></details>
+<details class="week-plan"><summary>🧭 Planificació de blocs de fires · novembre i desembre 2026 <span style="font-size:12px;font-weight:400;color:#6b625d">(segons les fires desades)</span></summary><p class="week-plan-intro">Fires ordenades per estat i, dins de cada estat, per data d’inici.</p><div id="weekPlanGrid" class="week-plan-grid"></div><p class="week-plan-note">ℹ️ Els quilòmetres són orientatius d’anada i tornada; no inclouen carburant, peatges ni allotjament. Si falta el preu o la data de contacte, es marca com a pendent i no s’inventa. Actualitzeu aquests camps en editar cada fira.</p></details>
 <p style="color:var(--tx2)">Edita les dates, els terminis, l'estat i les observacions. Les dades es desen en aquest navegador; fes una còpia de seguretat per conservar-les en altres dispositius.</p>
 <div class="fg" style="gap:10px;margin:12px 0;flex-wrap:wrap">
 <div class="fgi"><span class="fgl">Vista</span><select class="fgs" id="agendaVista" onchange="renderAgenda()"><option value="active">Sense descartades</option><option value="all">Totes les fires</option><option value="discarded">Només descartades</option></select></div>
@@ -2104,7 +2106,7 @@ const AGENDA_KEY='ordits_trames_agenda_v3';
 const AGENDA_DEFAULT=[{"id": "agenda-2026-01", "nom": "Fira del Joc i de Nadal", "poble": "Berga", "inici": "2026-12-06", "fi": "2026-12-06", "termini": "2026-11-11", "estat": "Ens hi volen", "marca": "Ambdues", "notes": "Inscripció municipal: confirmar tràmits", "url": "https://www.ajberga.cat/berga/396-turisme/turisme-fires"}, {"id": "agenda-2026-02", "nom": "Mercat de Nadal de Cubells", "poble": "Cubells", "inici": "2026-12-19", "fi": "2026-12-19", "termini": "", "estat": "Ens hi volen", "marca": "Ambdues", "notes": "Invitació rebuda", "url": "https://www.cubells.cat/promocio-turistica/mercat-de-nadal"}, {"id": "agenda-2026-03", "nom": "Mercat de Nadal de Cal Rosal", "poble": "Cal Rosal", "inici": "2026-12-19", "fi": "2026-12-20", "termini": "", "estat": "Ens hi volen", "marca": "Ambdues", "notes": "Invitació rebuda", "url": ""}, {"id": "agenda-2026-04", "nom": "Fira de Sant Martí", "poble": "Puig-reig", "inici": "2026-11-07", "fi": "2026-11-08", "termini": "2026-10-23", "estat": "Per consultar", "marca": "Per confirmar", "notes": "No consta requisit explícit d’autònoms", "url": "https://puig-reig.cat/arxiu/puig-reig-obre-el-periode-dinscripcions-per-participar-a-la-fira-de-sant-marti-els-dies-7-i-8-de-novembre-de-2026/"}, {"id": "agenda-2026-05", "nom": "BCN en las Alturas", "poble": "Barcelona", "inici": "2026-11-13", "fi": "2026-11-15", "termini": "", "estat": "Per consultar", "marca": "Confeccions Ribera", "notes": "ByNuska només té lliure el dia 13. Confirmar cost i participació parcial", "url": "https://www.bcnenlasalturas.com/"}, {"id": "agenda-2026-06", "nom": "Fira de Nadal", "poble": "Collbató", "inici": "2026-12-12", "fi": "2026-12-13", "termini": "2026-10-31", "estat": "Per consultar", "marca": "Confeccions Ribera", "notes": "Confirmar admissió i autònoms", "url": "https://www.collbato.cat/pl195/actualitat/noticies/id5239/s-obren-les-inscripcions-per-participar-en-la-fira-de-nadal-de-collbato.htm"}, {"id": "agenda-2026-07", "nom": "Mercat de Nadal", "poble": "Roquetes", "inici": "2026-12-12", "fi": "2026-12-13", "termini": "2026-11-20", "estat": "Per consultar", "marca": "Confeccions Ribera", "notes": "Fins a omplir places; confirmar requisits", "url": "https://roquetes.cat/web/obertes-les-inscripcions-per-participar-a-la-32a-fira-de-nadal-de-roquetes-%F0%9F%8E%84/"}, {"id": "agenda-2026-08", "nom": "Fira d’Artesans de Santa Llúcia", "poble": "Gelida", "inici": "2026-12-13", "fi": "2026-12-13", "termini": "2026-11-06", "estat": "Per consultar", "marca": "Confeccions Ribera", "notes": "Producte propi; revisar bases d’autònoms", "url": "https://www.gelida.cat/actualitat/noticies/oberta-la-inscripcio-a-la-xxxvi-edicio-de-la-fira-dartesans-i-mostra-dentitats-de-santa-llucia.html"}, {"id": "agenda-2026-09", "nom": "Market de Nadal de la Fàbrica Lehmann", "poble": "Barcelona", "inici": "2026-12-12", "fi": "2026-12-13", "termini": "", "estat": "Per consultar", "marca": "Confeccions Ribera", "notes": "Condicions publicades de 2025; confirmar 2026. marketnadal@fabricalehmann.barcelona", "url": "https://www.fabricalehmann.barcelona/activitats/market-de-nadal-2/"}, {"id": "agenda-2026-10", "nom": "Mercat de Nadal", "poble": "Les Masies de Voltregà", "inici": "2026-12-18", "fi": "2026-12-20", "termini": "", "estat": "Per consultar", "marca": "Per confirmar", "notes": "Demanen DNI/NIE, fotografies i assegurança RC", "url": "https://www.lesmasiesdevoltrega.cat/actualitat/noticies/obertes-les-inscripcions-per-participar-en-el-mercat-de-nadal-de-les-masies-de-voltrega.html?lang=ca"}, {"id": "agenda-2026-11", "nom": "Navàs NADAL Market", "poble": "Reus", "inici": "2026-12-21", "fi": "2026-12-23", "termini": "", "estat": "Per consultar", "marca": "Per confirmar", "notes": "Consultar places, cost i documentació: navasmarketreus@hotmail.com", "url": ""}, {"id": "agenda-2026-12", "nom": "Navàs REIS", "poble": "Reus", "inici": "2027-01-02", "fi": "2027-01-04", "termini": "", "estat": "Per consultar", "marca": "Per confirmar", "notes": "Consultar places, cost i documentació: navasmarketreus@hotmail.com", "url": ""}, {"id": "agenda-2026-13", "nom": "XXVII Fira de les Bruixes", "poble": "Sant Feliu Sasserra", "inici": "2026-11-01", "fi": "2026-11-01", "termini": "2026-09-18", "estat": "Descartada", "marca": "Ambdues", "notes": "Inscripció tancada; només llista d’espera", "url": "https://www.santfeliusasserra.cat/actualitat/agenda/xxvii-fira-de-les-bruixes.html"}, {"id": "agenda-2026-14", "nom": "Fira de Santa Llúcia", "poble": "Canyelles", "inici": "2026-11-21", "fi": "2026-11-22", "termini": "2026-08-31", "estat": "Descartada", "marca": "Confeccions Ribera", "notes": "Termini tancat; possible requisit d’activitat econòmica/autònoms", "url": "https://www.canyelles.org/fira-de-santa-llucia/la-24a-fira-de-santa-llucia-s-avanca-al-21-i-22-de-novembre"}, {"id": "agenda-2026-15", "nom": "Fira de Sant Martirià", "poble": "Banyoles", "inici": "2026-11-14", "fi": "2026-11-15", "termini": "", "estat": "Descartada", "marca": "Confeccions Ribera", "notes": "Demanen darrer rebut d’autònoms", "url": "https://seu.banyoles.cat/Categories-de-tr%C3%A0mits/Promoci%C3%B3-econ%C3%B2mica/Fira-Sant-Martiri%C3%A0-Novembre"}, {"id": "agenda-2026-16", "nom": "Fira de Nadal", "poble": "Blanes", "inici": "2026-12-18", "fi": "2026-12-21", "termini": "", "estat": "Descartada", "marca": "Confeccions Ribera", "notes": "Demanen rebut d’autònoms", "url": "https://seu.blanes.cat/skin/pts/pdf/Bases_Mercat_Nadal.pdf"}, {"id": "candidata-2026-01", "nom": "Caldes de Montbui – Mercat de Nadal", "poble": "Caldes de Montbui", "inici": "2026-12-04", "fi": "2026-12-08", "termini": "2026-10-31", "estat": "Per Consultar", "marca": "Ambdues", "notes": "CANDIDATA · Termini anunciat 31/10. Confirmar admissió sense alta d’autònoms, preu i disponibilitat. Dates segons convocatòria.", "url": "", "contacte": ""}, {"id": "candidata-2026-02", "nom": "Fira de Nadal – Sant Celoni", "poble": "Sant Celoni", "inici": "2026-12-05", "fi": "2026-12-06", "termini": "2026-10-31", "estat": "Per Consultar", "marca": "Ambdues", "notes": "CANDIDATA · Termini anunciat 31/10. Confirmar admissió sense alta d’autònoms i disponibilitat. Tarifa publicada: 7,04 €/dia/metre lineal; carpa no inclosa.", "url": "", "contacte": ""}, {"id": "candidata-2026-03", "nom": "Fira de Nadal – Tordera", "poble": "Tordera", "inici": "2026-11-28", "fi": "2026-11-29", "termini": "2026-11-13", "estat": "Per Consultar", "marca": "Ambdues", "notes": "CANDIDATA · Termini anunciat 13/11. Confirmar admissió sense alta d’autònoms, preu i disponibilitat.", "url": "", "contacte": ""}, {"id": "candidata-2026-04", "nom": "Vila Claus – Fira de Nadal", "poble": "Sant Pere de Vilamajor", "inici": "2026-12-12", "fi": "2026-12-13", "termini": "2026-11-15", "estat": "Per Consultar", "marca": "Ambdues", "notes": "CANDIDATA · Termini anunciat 15/11. Confirmar admissió sense alta d’autònoms. Carpa 3×3 m: 30 € els dos dies; caseta: 50 €.", "url": "", "contacte": ""}, {"id": "candidata-2026-05", "nom": "Un Nadal com cal – Fira de Nadal", "poble": "Sant Antoni de Vilamajor", "inici": "2026-11-28", "fi": "2026-11-29", "termini": "2026-11-16", "estat": "Per Consultar", "marca": "Ambdues", "notes": "CANDIDATA · Termini anunciat 16/11 o fins a exhaurir places. Confirmar admissió sense alta d’autònoms. Caseta: 50 € els dos dies.", "url": "", "contacte": ""}];
 const AGENDA_STATES=['Per Consultar','Sol·licitada','Ens hi volen','Hi anem','Celebrada','Inscripció tancada','Sense places','No ens volen','No hi anem','No hi som','Autònoms!'];
 function agendaReviewReason(r){return r.revisarEstat===true;}
-function agendaState(v){const aliases={'Per consultar':'Per Consultar','Confirmada':'Hi anem','Passem':'No hi anem','Cancel·lada':'No hi anem','Cancel·lat':'No hi anem','PASSEM':'No hi anem','Demanen autònoms':'Autònoms!','Demanen Autònoms':'Autònoms!'};const clean=String(v??'').replace(/^\d+\.\s*/, '');return aliases[clean]||clean||'Per Consultar';}
+function agendaState(v){const aliases={'Per consultar':'Per Consultar','Confirmada':'Hi anem','No ens hi volen':'No ens volen','Passem':'No hi anem','Cancel·lada':'No hi anem','Cancel·lat':'No hi anem','PASSEM':'No hi anem','Demanen autònoms':'Autònoms!','Demanen Autònoms':'Autònoms!'};const clean=String(v??'').replace(/^\d+\.\s*/, '');return aliases[clean]||clean||'Per Consultar';}
 function agendaStateIndex(v){const i=AGENDA_STATES.indexOf(agendaState(v));return i<0?99:i;}
 function agendaStateLabel(v){const n=agendaStateIndex(v);return n===99?String(v||''):n+'. '+AGENDA_STATES[n];}
 function agendaNormalizeStates(){AGENDA_ITEMS.forEach(r=>{
@@ -2315,8 +2317,11 @@ const FAIR_BERGA_KM={
 };
 function fairDistanceKm(r){const key=String(r.poble||'').trim();return Object.prototype.hasOwnProperty.call(FAIR_BERGA_KM,key)?FAIR_BERGA_KM[key]:null;}
 function fairRequestAge(r){if(!r.dataContacte||!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(r.dataContacte))return null;const day=Math.floor((new Date(fairToday()+'T12:00:00')-new Date(r.dataContacte+'T12:00:00'))/86400000);return day>=0?day:null;}
-function fairPlanPriority(r){const e=String(r.estat||'').toLowerCase();return /hi anem|confirmada/.test(e)?0:/ens hi volen/.test(e)?1:/sol·licitada/.test(e)?2:3;}
-function fairPlanScore(r){let score=[0,16,37,58][fairPlanPriority(r)];const km=fairDistanceKm(r);score+=km===null?14:Math.min(35,km*.16);const price=r.preu!==''&&r.preu!=null&&Number.isFinite(Number(r.preu))?Number(r.preu):null;score+=price===null?12:Math.min(35,price*.16);const age=fairRequestAge(r);if(fairPlanPriority(r)===2&&age!==null)score+=age>=14?24:age>=7?12:0;return score;}
+const FAIR_PLAN_STATE_ORDER=[3,2,1,0,4,5,6,7,8,9,10];
+function fairPlanPriority(r){
+ const priority=FAIR_PLAN_STATE_ORDER.indexOf(agendaStateIndex(r.estat));
+ return priority<0?FAIR_PLAN_STATE_ORDER.length:priority;
+}
 function fairIsoAddDays(iso,days){
  const d=new Date(iso+'T12:00:00');d.setDate(d.getDate()+days);
  return d.toISOString().slice(0,10);
@@ -2349,19 +2354,22 @@ function fairPlannerWeekends(){
 function renderWeekendPlan(){
  const host=document.getElementById('weekPlanGrid');if(!host)return;
  const weekends=fairPlannerWeekends();
- const rejected=/aut[oò]nom|no hi anem|no ens volen|sense places|inscripci[oó] tancada|hem fet tard|descart|passem|no hi som|rebutjad/i;
+ const today=fairToday();
  host.innerHTML=weekends.map(w=>{
   // Regla de bloc:
   // divendres -> cap de setmana següent
   // dilluns/dimarts -> cap de setmana anterior
   // per tant cada finestra útil és divendres-dimarts.
   const blocked=w.sat==='2026-11-28';
-  const entries=AGENDA_ITEMS.filter(r=>r.inici&&r.inici<=w.tue&&(r.fi||r.inici)>=w.fri&&!rejected.test(String(r.estat||''))&&!fairIsPast(r));
-  const uniq=new Map();for(const r of entries){const key=[r.nom,r.poble].join('|').toLowerCase();if(!uniq.has(key)||fairPlanScore(r)<fairPlanScore(uniq.get(key)))uniq.set(key,r);}
+  const entries=AGENDA_ITEMS.filter(r=>r.inici&&r.inici<=w.tue&&(r.fi||r.inici)>=w.fri);
+  const uniq=new Map();
+  for(const r of entries){
+   const key=JSON.stringify([r.nom,r.poble,r.inici,r.fi||r.inici,agendaState(r.estat)]).toLowerCase();
+   if(!uniq.has(key))uniq.set(key,r);
+  }
   const list=[...uniq.values()].sort((a,b)=>
-   String(a.inici||'9999-12-31').localeCompare(String(b.inici||'9999-12-31'))||
    fairPlanPriority(a)-fairPlanPriority(b)||
-   fairPlanScore(a)-fairPlanScore(b)||
+   a.inici.localeCompare(b.inici)||
    String(a.nom).localeCompare(String(b.nom),'ca')
   );
 
@@ -2374,25 +2382,36 @@ function renderWeekendPlan(){
    if(rs<=w.mon&&re>=w.mon&&titleTo<w.mon)titleTo=w.mon;
    if(rs<=w.tue&&re>=w.tue&&titleTo<w.tue)titleTo=w.tue;
   }
+  const past=titleTo<today;
   const title=fairPlanRangeLabel(titleFrom,titleTo);
   const extended=titleFrom!==w.sat||titleTo!==w.sun;
   const bridgeLabel=extended?'<span class="week-plan-bridge">Pont / bloc ampliat</span>':'';
 
-  const top=list[0],hasAccepted=list.some(r=>fairPlanPriority(r)<=1);
-  let advice=!list.length?'Sense alternatives actives: valorar producció o buscar una fira.':hasAccepted?'Prioritzeu les invitacions i comproveu si les dues marques poden cobrir fires diferents.':'Cap plaça acceptada: feu seguiment i manteniu una segona opció.';
-  if(extended&&list.length)advice='Hi ha opcions més enllà del dissabte i diumenge. Valoreu combinacions dins del mateix bloc de dates. '+advice;
-  if(blocked)advice='No disponible: ni Confeccions Ribera ni @ByNuska poden participar aquest bloc. No cal buscar alternatives.';
-  if(!blocked&&top&&fairPlanPriority(top)===2&&fairRequestAge(top)>=14)advice+=' La primera opció fa 14 dies o més que espera resposta.';
+  const top=list.find(r=>!fairIsPast(r)&&agendaStateIndex(r.estat)<4);
+  const hasAccepted=top&&fairPlanPriority(top)<=1;
+  let advice=hasAccepted?'Prioritzeu les invitacions i comproveu si les dues marques poden cobrir fires diferents.':'Cap plaça acceptada: feu seguiment i manteniu una segona opció.';
+  if(extended)advice='Hi ha opcions més enllà del dissabte i diumenge. Valoreu combinacions dins del mateix bloc de dates. '+advice;
+  if(top&&fairPlanPriority(top)===2&&fairRequestAge(top)>=14)advice+=' La primera opció fa 14 dies o més que espera resposta.';
 
-  const items=list.map((r,i)=>{const km=fairDistanceKm(r),price=r.preu!==''&&r.preu!=null&&Number.isFinite(Number(r.preu))?Number(r.preu):null,age=fairRequestAge(r),requested=fairPlanPriority(r)===2;
+  const items=list.map(r=>{const km=fairDistanceKm(r),price=r.preu!==''&&r.preu!=null&&Number.isFinite(Number(r.preu))?Number(r.preu):null,age=fairRequestAge(r),requested=fairPlanPriority(r)===2;
    const follow=requested?(age===null?' · 📅 Falta data de petició':age>=14?' · 🔴 '+age+' dies sense resposta: insistir i activar alternativa':age>=7?' · 🟠 '+age+' dies sense resposta: fer seguiment':' · '+age+' dies des de la petició'):'';
    const priceText=price===null?'Preu pendent':Math.round(price)+' € parada';const distanceText=km===null?'Distància pendent':'~'+(km*2)+' km anada i tornada';
-   const priority=fairPlanPriority(r);const statusClass=['going','wanted','requested','possible'][priority];const statusIcon=['✅','💚','📨','🔎'][priority];
+   const priority=fairPlanPriority(r);
+   const rejected=agendaState(r.estat)==='No ens volen';
+   const statusClass=rejected?'rejected':['going','wanted','requested','possible'][priority]||'';
+   const statusIcon=rejected?'💔':['✅','💚','📨','🔎','🏁'][priority]||(agendaIsDiscarded(r)?'⛔':'');
    const dates=(r.inici&&r.fi&&r.fi!==r.inici)?agendaDate(r.inici)+'–'+agendaDate(r.fi):(r.inici?agendaDate(r.inici):'');
-   return '<div class="week-plan-item '+statusClass+'"><div class="week-plan-item-head"><strong>'+(i===0?'⭐ ':'')+agendaEsc(r.nom)+'</strong><span class="week-plan-pill '+statusClass+'">'+statusIcon+' '+agendaEsc(r.estat||'Per consultar')+'</span></div>'+(dates?'<div class="week-plan-date">📅 <strong>'+agendaEsc(dates)+'</strong></div>':'')+'<div class="week-plan-town">📍 '+agendaEsc(r.poble||'—')+' · '+agendaEsc(r.marca||'Marca per definir')+'</div><div class="week-plan-metrics"><span>💶 '+agendaEsc(priceText)+'</span><span>🚗 '+agendaEsc(distanceText)+'</span></div>'+(requested?'<div class="week-plan-follow">'+agendaEsc(follow.replace(/^ · /,''))+'</div>':'')+'</div>';
+   return '<div class="week-plan-item '+statusClass+'"><div class="week-plan-item-head"><strong>'+(r===top&&!blocked&&!past?'⭐ ':'')+agendaEsc(r.nom)+'</strong><span class="week-plan-pill '+statusClass+'">'+statusIcon+' '+agendaEsc(agendaState(r.estat))+'</span></div>'+(dates?'<div class="week-plan-date">📅 <strong>'+agendaEsc(dates)+'</strong></div>':'')+'<div class="week-plan-town">📍 '+agendaEsc(r.poble||'—')+' · '+agendaEsc(r.marca||'Marca per definir')+'</div><div class="week-plan-metrics"><span>💶 '+agendaEsc(priceText)+'</span><span>🚗 '+agendaEsc(distanceText)+'</span></div>'+(requested?'<div class="week-plan-follow">'+agendaEsc(follow.replace(/^ · /,''))+'</div>':'')+'</div>';
   }).join('');
-  const tone=blocked?'blocked':!list.length?'empty':fairPlanPriority(top)===0?'going':fairPlanPriority(top)===1?'wanted':'pending';
-  return '<div class="week-plan-card '+tone+'"><div class="week-plan-card-head"><h4>📅 '+title+' '+bridgeLabel+'</h4><span class="week-plan-count">'+(blocked?'⛔ No disponibles':list.length+' opcions')+'</span></div>'+(blocked?'<div class="week-plan-blocked">🚫 <strong>Bloc no disponible</strong><span>Ni Confeccions Ribera ni @ByNuska poden fer fires.</span></div>':(list.length?items:'<p class="week-plan-empty">Sense fires disponibles a l’agenda.</p>'))+'<div class="week-plan-advice">💡 '+advice+'</div></div>';
+  if(blocked||past||!top){
+   const reason=blocked?'No disponibles':past?'Passat':list.length?'Sense opcions actives':'Sense fires';
+   const availability=blocked?'<p class="week-plan-empty">Ni Confeccions Ribera ni @ByNuska poden fer fires en aquest bloc.</p>':'';
+   const content=items||'<p class="week-plan-empty">No hi ha fires a l’agenda per a aquestes dates.</p>';
+   const tone=blocked?'blocked':'empty';
+   return '<details class="week-plan-card compact '+tone+'"><summary class="week-plan-card-head"><span>📅 '+title+'</span><span class="week-plan-count">'+reason+'</span></summary>'+availability+content+'</details>';
+  }
+  const tone=fairPlanPriority(top)===0?'going':fairPlanPriority(top)===1?'wanted':'pending';
+  return '<div class="week-plan-card '+tone+'"><div class="week-plan-card-head"><h4>📅 '+title+' '+bridgeLabel+'</h4><span class="week-plan-count">'+list.length+' opcions'+'</span></div>'+items+'<div class="week-plan-advice">💡 '+advice+'</div></div>';
  }).join('');
 }
 function renderAgenda(){renderWeekendPlan();agendaKpiSync();refreshHomeStats();renderFairCalendar();const compact=document.getElementById("agendaCompactSort");if(compact)compact.value=agendaSortField;const p=document.getElementById('agendaPoble');if(!p)return;const chosen=p.value;p.innerHTML='<option value="">Totes</option>'+[...new Set(AGENDA_ITEMS.filter(r=>!fairIsPast(r)).map(r=>r.poble).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ca')).map(x=>'<option value="'+agendaEsc(x)+'">'+agendaEsc(x)+'</option>').join('');p.value=chosen;
