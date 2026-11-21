@@ -449,7 +449,6 @@ td[data-label="Marca"]{white-space:nowrap;font-size:19px}
 .week-plan-grid{grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px}
 .week-plan-card{padding:0;overflow:hidden;border:1px solid #e4e7ed;box-shadow:0 3px 10px #2a32400c}
 .week-plan-card-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:13px 14px;background:#eaf0fa}
-.week-plan-card.compact{align-self:start}.week-plan-card.compact summary{font-size:14px;padding:8px 12px}.week-plan-card.compact summary::after{content:"▸"}.week-plan-card.compact[open] summary::after{content:"▾"}
 .week-plan-card-head h4{margin:0;font-size:15px}.week-plan-count{font-size:11px;font-weight:750;border-radius:30px;background:#ffffffbd;padding:5px 9px;white-space:nowrap}
 .week-plan-card.going .week-plan-card-head{background:#d9f5e3;color:#165a35}
 .week-plan-card.wanted .week-plan-card-head{background:#e2f5ed;color:#206b50}
@@ -460,7 +459,6 @@ td[data-label="Marca"]{white-space:nowrap;font-size:19px}
 .week-plan-item.going{border-left:4px solid #32a467}.week-plan-item.wanted{border-left:4px solid #54bca0}.week-plan-item.requested{border-left:4px solid #f0b94d}.week-plan-item.possible{border-left:4px solid #93a4bf}
 .week-plan-item-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}.week-plan-item-head strong{font-size:13px}
 .week-plan-pill{font-size:10px;font-weight:750;padding:4px 8px;border-radius:20px;white-space:nowrap;background:#edf1f6;color:#495c75}
-.week-plan-item.rejected{border-left:4px solid #c64747}.week-plan-pill.rejected{background:#fce4e4;color:#922b2b}
 .week-plan-pill.going{background:#d9f5e3;color:#16643b}.week-plan-pill.wanted{background:#dff7ed;color:#16634e}.week-plan-pill.requested{background:#fff1cf;color:#8b5d12}
 .week-plan-town{font-size:12px;color:#665f58;margin-top:5px}.week-plan-metrics{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.week-plan-metrics span{font-size:11px;border-radius:7px;padding:5px 7px;background:#f3f6fa;color:#39495d}
 .week-plan-follow{margin-top:7px;font-size:11px;font-weight:600;color:#9a5418}.week-plan-advice{margin:10px 12px 12px;background:#f1f5ff;color:#384b78;line-height:1.5}.week-plan-empty{padding:12px 14px!important}
@@ -554,6 +552,11 @@ td[data-label="Marca"]{white-space:nowrap;font-size:19px}
 #sbCatalogForgotBtn{white-space:normal}
 #sbRecoveryNewPasswordWrap{display:grid;gap:10px;margin-top:10px}
 #sbRecoveryNewPasswordWrap[hidden]{display:none}
+</style>
+
+<style id="ordits-fires-2027-css">
+.agenda-sync-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:12px 0;padding:12px 14px;border:1px solid #d9e8e1;border-radius:12px;background:#f5fbf8}.agenda-sync-bar>div:first-child{display:grid;gap:3px}.agenda-sync-bar span{font-size:.78rem;color:var(--tx2)}.agenda-sync-actions{display:flex;gap:8px;flex-wrap:wrap}.agenda-radar{margin:14px 0;border:1px solid #eadfd9;border-radius:12px;background:#fff}.agenda-radar>summary{cursor:pointer;padding:12px 14px;font-weight:700}.agenda-radar-intro{margin:0;padding:0 14px 10px;color:var(--tx2);font-size:.82rem}.agenda-radar-grid{display:grid;gap:8px;padding:0 12px 12px}.agenda-radar-row{display:grid;grid-template-columns:minmax(180px,1.5fr) minmax(120px,.7fr) minmax(145px,.8fr) minmax(170px,1fr) auto;gap:10px;align-items:center;padding:10px;border:1px solid #eee4df;border-radius:10px}.agenda-radar-row small{display:block;color:var(--tx2);margin-top:2px}.agenda-radar-prio{font-weight:700}.agenda-reason-line{display:block;margin-top:3px;font-size:.72rem;color:#786660}.agenda-save-note{margin:10px 0;padding:9px 11px;border-radius:9px;background:#eef8f3;border:1px solid #cfe7da;color:#315d4c;font-size:.8rem}
+@media(max-width:800px){.agenda-sync-bar{align-items:stretch;flex-direction:column}.agenda-sync-actions{display:grid;grid-template-columns:1fr 1fr}.agenda-radar-row{grid-template-columns:1fr}.agenda-radar-row .rb{width:100%}}
 </style>
 </head>
 <body>
@@ -717,7 +720,7 @@ document.addEventListener('click',e=>{const p=document.getElementById('websPanel
 
 <dialog id="sbCatalogRecoveryDialog" class="sb-admin-dialog">
   <form id="sbCatalogRecoveryForm">
-    <h3>Definir una nova contrasenya</h3>
+    <h3>Recuperar contrasenya</h3>
     <p>Et enviarem un correu de recuperació.</p>
     <label>Correu
       <input id="sbRecoveryEmail" type="email" value="orditsitrames@gmail.com" readonly>
@@ -893,11 +896,13 @@ document.addEventListener('click',e=>{const p=document.getElementById('websPanel
     </div>
 
 <div id="tab-agenda" class="tc" hidden><div class="sec"><div class="sec-t">🗓️ Agenda de fires</div>
-<details class="week-plan"><summary>🧭 Planificació de blocs de fires · novembre i desembre 2026 <span style="font-size:12px;font-weight:400;color:#6b625d">(segons les fires desades)</span></summary><p class="week-plan-intro">Fires ordenades per estat i, dins de cada estat, per data d’inici.</p><div id="weekPlanGrid" class="week-plan-grid"></div><p class="week-plan-note">ℹ️ Els quilòmetres són orientatius d’anada i tornada; no inclouen carburant, peatges ni allotjament. Si falta el preu o la data de contacte, es marca com a pendent i no s’inventa. Actualitzeu aquests camps en editar cada fira.</p></details>
-<p style="color:var(--tx2)">Edita les dates, els terminis, l'estat i les observacions. Les dades es desen en aquest navegador; fes una còpia de seguretat per conservar-les en altres dispositius.</p>
+<details class="week-plan"><summary>🧭 Planificació de blocs de fires · novembre i desembre 2026 <span style="font-size:12px;font-weight:400;color:#6b625d">(segons les fires desades)</span></summary><p class="week-plan-intro">Primer les fires on ja hi anem, després les que ens hi volen. Dins de cada nivell, comparació orientativa per cost, proximitat a Berga i temps d’espera de les sol·licituds. Una sol·licitud no equival a una plaça confirmada. Les distàncies són aproximacions per carretera, no rutes verificades.</p><div id="weekPlanGrid" class="week-plan-grid"></div><p class="week-plan-note">ℹ️ Els quilòmetres són orientatius d’anada i tornada; no inclouen carburant, peatges ni allotjament. Si falta el preu o la data de contacte, es marca com a pendent i no s’inventa. Actualitzeu aquests camps en editar cada fira.</p></details>
+<p style="color:var(--tx2)">Edita les dates, els terminis, l'estat i les observacions. Les dades es desen en aquest navegador i, quan tens <strong>Admin online</strong> iniciat, les pots compartir amb Supabase.</p>
+<div class="agenda-sync-bar"><div><strong>☁️ Fires compartides · Supabase</strong><span id="agendaSyncStatus">Comprovant sessió…</span></div><div class="agenda-sync-actions"><button class="rb" type="button" onclick="agendaLoadFromSupabase()">↓ Carrega de Supabase</button><button class="rb sb-primary" type="button" onclick="agendaPushToSupabase()">↑ Actualitzar Supabase</button></div></div>
+<details class="agenda-radar" open><summary>🔭 Radar <span id="agendaRadarYear"></span> · fires per recuperar amb temps</summary><p class="agenda-radar-intro">Recupera l’històric de l’any anterior i proposa una data orientativa per tornar-la a revisar. <strong>No descarta permanentment cap fira</strong>: una coincidència o una decisió d’un any no s’hereta automàticament al següent.</p><div id="agendaRadar"></div></details>
 <div class="fg" style="gap:10px;margin:12px 0;flex-wrap:wrap">
 <div class="fgi"><span class="fgl">Vista</span><select class="fgs" id="agendaVista" onchange="renderAgenda()"><option value="active">Sense descartades</option><option value="all">Totes les fires</option><option value="discarded">Només descartades</option></select></div>
-<div class="fgi"><span class="fgl">Estat de la fira</span><select class="fgs" id="agendaEstat" onchange="agendaFilterStateChanged()"><option value="">Tots els estats</option></select></div>
+<div class="fgi"><span class="fgl">Estat de la fira</span><select class="fgs" id="agendaEstat" onchange="renderAgenda()"><option value="">Tots els estats</option><option value="Per consultar">1. Per consultar</option><option value="Sol·licitada">2. Sol·licitada</option><option value="Ens hi volen">3. Ens hi volen</option><option value="Hi anem">4. Hi anem</option><option value="No hi anem">5. No hi anem</option><option value="No ens hi volen">6. No ens hi volen</option></select></div>
 <div class="fgi"><span class="fgl">Població</span><select class="fgs" id="agendaPoble" onchange="renderAgenda()"><option value="">Totes</option></select></div>
 <div class="fgi"><span class="fgl">Cerca</span><input class="fgs" id="agendaCerca" oninput="renderAgenda()" placeholder="Nom, poble, notes…"></div>
 <div class="fgi fair-range-wrap"><span class="fgl">Dates</span><button class="fgs fair-range-trigger" type="button" id="agendaRangeTrigger" onclick="fairRangeToggle('agenda')" aria-label="Seleccionar inici i fi del període" aria-expanded="false">📅 Qualsevol data ▾</button><input type="hidden" id="agendaDateFrom"><input type="hidden" id="agendaDateTo"><div class="fair-range-pop" id="agendaRangePop" hidden></div></div><button class="rb" type="button" onclick="clearFairDateFilters('agenda')">Neteja dates</button><button class="rb" onclick="agendaNew()">+ Afegir fira</button><button class="rb" onclick="exportAgenda()">Exportar còpia JSON</button><button class="rb" onclick="document.getElementById('agendaImport').click()">Importar còpia JSON</button><input id="agendaImport" type="file" accept=".json,application/json" hidden onchange="importAgenda(this)"></div><div id="agendaBackupWarning" role="status" style="display:none;margin:12px 0;padding:12px;border:1px solid #e8b96c;border-radius:10px;background:#fff7e8;color:#754d16">⚠️ Has fet canvis a les fires que encara no has exportat. <button class="rb" onclick="exportAgenda()">Descarregar còpia JSON</button></div>
@@ -1725,7 +1730,7 @@ async function stockExportExcel(){
   stockDownload(new Blob([arr],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),'ORDITS_I_TRAMES_stock_actualitzat.xlsx');
  }catch(e){alert('No s’ha pogut exportar l’Excel: '+e.message);}
 }
-function stockExportJSON(){stockDownload(new Blob([JSON.stringify({format:'ordits-trames-stock',version:1,exported:new Date().toISOString(),rows:STOCK},null,2)],{type:'application/json'}),'ordits_i_trames_stock_backup.json');}
+function stockExportJSON(){stockDownload(new Blob([JSON.stringify({format:'ordits-trames-stock',version:2,exported:new Date().toISOString(),rows:STOCK},null,2)],{type:'application/json'}),'ordits_i_trames_stock_backup.json');}
 async function stockImportJSON(input){const f=input.files[0];if(!f)return;try{const d=JSON.parse(await f.text());if(d.format!=='ordits-trames-stock'||!Array.isArray(d.rows))throw Error('Format no reconegut');if(!confirm('Substituir tot l’estoc actual per aquesta còpia?'))return;STOCK=d.rows;stockPersist();renderStock();validateWorkbook();}catch(e){alert('No s’ha pogut importar: '+e.message);}finally{input.value='';}}
 window.addEventListener('DOMContentLoaded',()=>{stockApplyEdits();renderStock();});
 
@@ -2104,26 +2109,71 @@ document.addEventListener('DOMContentLoaded',initTableTools);
 const FIRES_GLIDE = [{"Nom": "Fira del Joc i de Nadal", "Poble": "Berga", "Data": "2024-12-06T12:00:00.000Z", "Data fi": "", "EstatFira": "ACCEPTADA", "Detall": "Com ja portem dient durant XI Fires del Joc i de Nadal anteriors : Tothom a jugar ¡!!\n\nTornem amb la 12a Fira del Joc i de Nadal a Berga i tornem amb moltíssimes ganes d’oferir un dia inoblidable per tothom qui vingui perquè volem que el proper 6 de desembre i com cada any des de en fa 12 tornem a tenir un dels dies més bonics i il·lusionants a Berga: La Fira del Joc i de Nadal a Berga.", "Nota": "", "Enllaç": "", "Negociació": "", "Contacte": "", "Motiu NO": "", "🔒 Row ID": "fire-001"}, {"Nom": "Mercat de Nadal", "Poble": "Cal Rosal", "Data": "2025-12-20T12:00:00.000Z", "Data fi": "2025-12-21T12:00:00.000Z", "EstatFira": "ACCEPTADA", "Detall": "Cap de setmana de parades amb els millors regals i activitats familiars 🎁💫", "Nota": "Fira de Nadal de proximitat i ambient familiar", "Enllaç": "", "Negociació": "", "Contacte": "", "Motiu NO": "", "🔒 Row ID": "fire-002"}, {"Nom": "Fireta tocats del bolet", "Poble": "Montmajor", "Data": "2024-11-09T12:00:00.000Z", "Data fi": "", "EstatFira": "ACCEPTADA", "Detall": "La fira \"Tocats dels Bolets\" és una fira anual dedicada al món del bolet. Durant el matí, hi ha jornada de portes obertes al Museu del Bolet. La Tastabolet té lloc a la plaça del Mercat i es pot degustar diverses tapes de proximitat on el protagonista és el bolet, tot gaudint d'un vermut musical. El carrer es guarneix amb paradetes amb productes de proximitats i fets a mà.", "Nota": "", "Enllaç": "", "Negociació": "", "Contacte": "", "Motiu NO": "", "🔒 Row ID": "fire-003"}, {"Nom": "Fira de la Vella Farga", "Poble": "Lladurs", "Data": "2024-12-08T12:00:00.000Z", "Data fi": "", "EstatFira": "ACCEPTADA", "Detall": "Les Festes Nadalenques 🎅🏻 a La Vella Farga són realment especials. Els boscos es transformen en un paisatge de somni, amb la boira cobrint els arbres i el silenci trencat només pel so del vent 🌳\n", "Nota": "La fira més cuqui!", "Enllaç": "", "Negociació": "", "Contacte": "", "Motiu NO": "", "🔒 Row ID": "fire-004"}, {"Nom": "Fira de l'estany", "Poble": "L'estany", "Data": "2024-12-08T12:00:00.000Z", "Data fi": "", "EstatFira": "ACCEPTADA", "Detall": "La fira de l’Estany es celebra tradicionalment el 8 de desembre, coincidint amb la festa de la Immaculada concepció de la Mare de Déu (també coneguda com a festa de la Puríssima concepció)\nSón elements tradicionals de la festa major l’ofici religiós i el ball pla, entre altres activitats firals i lúdiques.\nTambé cal destacar el concurs de pintura ràpida, d’origen contemporani, que ha tingut un nombre creixent de participants.", "Nota": "", "Enllaç": "", "Negociació": "", "Contacte": "", "Motiu NO": "", "🔒 Row ID": "fire-005"}, {"Nom": "Fira del Joc i de Nadal", "Poble": "Berga", "Data": "2025-12-06T12:00:00.000Z", "Data fi": "", "EstatFira": "ACCEPTADA", "Detall": "Com ja portem dient durant XI Fires del Joc i de Nadal anteriors : Tothom a jugar ¡!!\n\nTornem amb la 12ª Fira del Joc i de Nadal a Berga i tornem amb moltíssimes ganes d’oferir un dia inoblidable per tothom qui vingui perquè volem que el proper 6 de desembre i com cada any des de en fa 12 tornem a tenir un dels dies més bonics i il·lusionants a Berga: La Fira del Joc i de Nadal a Berga.", "Nota": "La fira més juganera", "Enllaç": "", "Negociació": "", "Contacte": "", "Motiu NO": "", "🔒 Row ID": "5f8DUGDTSP-l939ueqlGCA"}, {"Nom": "Fira de Sta Llucia i els alls", "Poble": "Balaguer", "Data": "2025-12-06T12:00:00.000Z", "Data fi": "2025-12-07T12:00:00.000Z", "EstatFira": "PASSEM", "Detall": "Balaguer es prepara per viure una nova edició del Mercat de Santa Llúcia - Fira dels Alls, que omplirà el Centre Històric de parades, activitats familiars i tradició gastronòmica", "Nota": "", "Enllaç": "https://www.balaguer.cat/portal/102/", "Negociació": "13/10- Ens enviaran formulari si queren places a finals de mes", "Contacte": "paeria@balaguer.cat", "Motiu NO": "Dates i Primen antics paradistes", "🔒 Row ID": "LDcaSqqAcqWd29PA9ElI"}, {"Nom": "Fira d’Artistes i Mercat de Nadal 2025", "Poble": "Tàrrega", "Data": "2025-12-12T12:00:00.000Z", "Data fi": "2025-12-14T12:00:00.000Z", "EstatFira": "REBUTJADA", "Detall": "Tàrrega celebra una nova edició de Fira d’Artistes i Mercat de Nadal, una proposta ideal per gaudir del Nadal a Catalunya amb tota la família.\n\nAmb més de 60 expositors, tallers creatius, espectacles, música en directe i una deliciosa oferta de gastronomia de proximitat, aquesta fira transforma la ciutat en un espai acollidor, ple d’ornaments, art i il·lusió.\n\nLa iniciativa, organitzada per la Regidoria de Promoció Econòmica, reformula l’antiga Fira d’Artistes i Activitats Tradicionals per oferir un esdeveniment renovat, inspirador i ple de màgia.\n\nSigui per fer les compres nadalenques, viure experiències en família o descobrir artesania única, la Fira de Nadal de Tàrrega és una cita ineludible aquestes festes.", "Nota": "", "Enllaç": "https://www.tarrega.cat/promocioeconomica-governacio/fires-i-mercats-1#FiraArtistes", "Negociació": "10/10 - La Neus Contacta", "Contacte": "", "Motiu NO": "Demanen Autònom", "🔒 Row ID": "UAaIoW1BBSItZubV3Ksa"}, {"Nom": "Fira de Nadal i del torró Artesà", "Poble": "Cardedeu", "Data": "2025-12-12T12:00:00.000Z", "Data fi": "2025-12-14T12:00:00.000Z", "EstatFira": "REBUTJADA", "Detall": "Tan antigues com la mateixa vila, la seva celebració ja fou concedida pel rei Jaume I amb la “Carta de Repoblament” al 1272: “Una Fira que es faci i celebri cada any per la festa de la Santa Creu de mes de setembre, i que duri tres dies. \nA les parades hi ha en exposició i venda tota mena d'Articles Típics Nadalencs: Objectes de Regal, Artesania, Figures pel Pessebre, Avets, Plantes, Flors, Llums, Guarniments, Dolços, Torró Artesà, ... .", "Nota": "", "Enllaç": "http://www.firadenadal.cat/", "Negociació": "10/10 - La Neus Contacta . Enviat formulari: https://forms.office.com/Pages/ResponseDetailPage.aspx?id=DQSIkWdsW0yxEjajBLZtrQAAAAAAAAAAAAYAAK7vtY9UOTRHVVBaNjhVNVU3VVUxMkkxMVZYSDdLUi4u&rid=112&GetResponseToken=ouExAKDshvVtlepg4I__kxPrVBZJ6Dey1vX4twFGDJ8&origin=rc&prevsubpage=rcfre&d1obforrc=1&rcsidebar=0", "Contacte": "firanadalcardedeu@hotmail.com", "Motiu NO": "Primen antics paradistes", "🔒 Row ID": "cEODqGcsDH8MhyOEQf6I"}, {"Nom": "Navàs Nadal Market", "Poble": "Reus", "Data": "2025-12-17T12:00:00.000Z", "Data fi": "2026-01-04T12:00:00.000Z", "EstatFira": "PASSEM", "Detall": "🎄NAVÀS MARKET per Nadal\nDESEMBRE:\n17, 18, 19, 20, (21 tancat) 22 i 23\n\n👑NAVÀS MARKET per Reis\nGENER:\n2, 3 i 4", "Nota": "", "Enllaç": "https://www.instagram.com/navasmarket/", "Negociació": "09/10 - L'Anna contacta via mail a navasmarketreus@hotmail.com", "Contacte": "navasmarketreus@hotmail.com", "Motiu NO": "Dates i format", "🔒 Row ID": "9vsjKzOwLlbh8gS5SFn9"}, {"Nom": "Winter Market Sitges", "Poble": "Sitges", "Data": "2025-12-20T12:00:00.000Z", "Data fi": "2025-12-21T12:00:00.000Z", "EstatFira": "PASSEM", "Detall": "✨ Torna el Winter Market Sitges… i aquest any amb la desena edició!\n\nSi t’encanta el Nadal, les llums, els torrons, els dolços, les casetes de fusta, l’ambient festiu, el Pare Noel, en Mickey, els elfs i fins i tot el vi calent😉… aquest mercat t’enamorarà.", "Nota": "", "Enllaç": "https://www.instagram.com/wintermarketsitges/", "Negociació": "17/10- L'Anna contacta via instagram", "Contacte": "https://www.instagram.com/wintermarketsitges/", "Motiu NO": "", "🔒 Row ID": "xPsDdtNUVAEu8OaaRExe"}, {"Nom": "Fira de la Vella Farga", "Poble": "Lladurs", "Data": "2025-12-06T09:46:00.000Z", "Data fi": "2025-12-07T09:46:00.000Z", "EstatFira": "ACCEPTADA", "Detall": "Les Festes Nadalenques 🎅🏻 a La Vella Farga són realment especials. Els boscos es transformen en un paisatge de somni, amb la boira cobrint els arbres i el silenci trencat només pel so del vent 🌳\n", "Nota": "La fira més cuqui!", "Enllaç": "", "Negociació": "", "Contacte": "", "Motiu NO": "", "🔒 Row ID": "ztlzobC4RRuygNelNLz-bA"}, {"Nom": "Fira de les bruixes", "Poble": "Sant Feliu Sasserra", "Data": "2025-12-01T12:00:00.000Z", "Data fi": "", "EstatFira": "REBUTJADA", "Detall": "Una cita cultural que combina teatre, tradició i memòria històrica per retre homenatge a les dones perseguides per bruixeria.", "Nota": "CONTACTAR AL JULIOL", "Enllaç": "", "Negociació": "", "Contacte": "firabruixes@gmail.com", "Motiu NO": "Ens despertem massa tard", "🔒 Row ID": "I1aJ8BUZx1o4sePCnrQZ"}, {"Nom": "Fira de Nadal de l'Hospitalet de Llobregat", "Poble": "L'hospitalet de Llobregat", "Data": "2025-12-20T10:23:00.000Z", "Data fi": "2025-12-30T10:23:00.000Z", "EstatFira": "PASSEM", "Detall": "", "Nota": "", "Enllaç": "", "Negociació": "Ens contactn ells. busquen 10 artesans que vulguin exposar i vendre les seves creacions", "Contacte": "", "Motiu NO": "Son tots els dies, 24, 25, 26 de nadal....", "🔒 Row ID": "phxt2860T.a3zjGCQeKGuQ"}, {"Nom": "Fira Encesa de Llums 29 Novembre 2025", "Poble": "Mataró", "Data": "2025-11-30T15:21:00.000Z", "Data fi": "", "EstatFira": "PASSEM", "Detall": "", "Nota": "", "Enllaç": "", "Negociació": "26/10- l'Anna envia formulari", "Contacte": "https://docs.google.com/forms/d/e/1FAIpQLScGUzrqJjR6RbR4gn2bGXOl3AmVY3rPddqxZP67WOBC964CKw/formResponse?pli=1", "Motiu NO": "", "🔒 Row ID": "nPeV84DxR8qvBM9awbaSbQ"}, {"Nom": "Fira de Nadal d'Altafulla 2025", "Poble": "Altafulla", "Data": "2025-12-12T10:09:00.000Z", "Data fi": "2025-12-14T10:09:00.000Z", "EstatFira": "REBUTJADA", "Detall": "a Fira de Nadal d’Altafulla ofereix una àmplia varietat de parades d’artesania i productes típics: figures per al pessebre, decoració nadalenca feta a mà, regals originals i dolços tradicionals com torrons i neules, acompanyats de l’aroma del vi calent i la xocolata calenta.\n\nA més, compta amb una programació d’activitats per a totes les edats: tallers creatius i espectacles infantils, actuacions musicals en directe, contacontes, animació de carrer i moltes altres sorpreses que faran que cada visita sigui especial.\n\nLa Fira tindrà lloc a la Plaça de l’Església i la Plaça del Pou, amb els horaris següents:\n\n•    Divendres 12 de desembre: 18:00 – 21:00h\n•    Dissabte 13 de desembre: 11:00 – 21:00h\n•    Diumenge 14 de desembre: 11:00 – 15:00h", "Nota": "Aquest esdeveniment, consolidat com una cita imprescindible per als habitants de la comarca i visitants, transforma els carrers empedrats i la plaça de l’Església en un escenari màgic on es respira l’autèntic esperit nadalenc.", "Enllaç": "", "Negociació": "", "Contacte": "https://docs.google.com/forms/d/e/1FAIpQLSdMb6mvFH9fjWTHkpG5V8CFJcIY9jOmLfMldFa4LPzQ3b5i7Q/viewform?pli=1&pli=1", "Motiu NO": "", "🔒 Row ID": "8RMagiuXRUC6w5f27nfb9A"}, {"Nom": "Mercat de nadal", "Poble": "Cubells", "Data": "2025-12-20T20:56:00.000Z", "Data fi": "", "EstatFira": "ACCEPTADA", "Detall": "La plaça Sant Julià, envoltada pel Bosc de la Muralla, serà novament l’escenari del Mercat de Nadal de Cubells, que celebrarà la seva segona edició el proper 20 de desembre. El Mercat, que obrirà les portes a les 11.00 hores, oferirà una vintena de parades amb artesania, gastronomia i productes nadalencs.", "Nota": "El mercat concentra parades d’artesania i gastronomia típiques de Nadal i, paral·lelament, es porten a terme activitats durant tot el dia.", "Enllaç": "", "Negociació": "", "Contacte": "", "Motiu NO": "", "🔒 Row ID": "prARgCbPRs-WWpgFNezcZA"}, {"Nom": "Soul Market", "Poble": "Barcelona", "Data": "2025-12-13T12:00:00.000Z", "Data fi": "2025-12-14T12:00:00.000Z", "EstatFira": "ACCEPTADA", "Detall": "Soul Market Barcelona és molt més que un simple market; és un reflex de l’esperit emprenedor i de la passió per l’autenticitat. Aquí, les marques locals i les ments creatives troben un espai per brillar, oferint una àmplia gamma de tresors únics, incloent-hi productes sostenibles, obres d’art, articles reciclats, peces vintage, benestar, tallers i molt més.", "Nota": "La fira més d’estil i bon rotllo", "Enllaç": "https://www.instagram.com/soulmarketbcn/", "Negociació": "01/12-Neus", "Contacte": "", "Motiu NO": "", "🔒 Row ID": "taPBEukqF7gHTD6Ilh6h"}];
 const AGENDA_KEY='ordits_trames_agenda_v3';
 const AGENDA_DEFAULT=[{"id": "agenda-2026-01", "nom": "Fira del Joc i de Nadal", "poble": "Berga", "inici": "2026-12-06", "fi": "2026-12-06", "termini": "2026-11-11", "estat": "Ens hi volen", "marca": "Ambdues", "notes": "Inscripció municipal: confirmar tràmits", "url": "https://www.ajberga.cat/berga/396-turisme/turisme-fires"}, {"id": "agenda-2026-02", "nom": "Mercat de Nadal de Cubells", "poble": "Cubells", "inici": "2026-12-19", "fi": "2026-12-19", "termini": "", "estat": "Ens hi volen", "marca": "Ambdues", "notes": "Invitació rebuda", "url": "https://www.cubells.cat/promocio-turistica/mercat-de-nadal"}, {"id": "agenda-2026-03", "nom": "Mercat de Nadal de Cal Rosal", "poble": "Cal Rosal", "inici": "2026-12-19", "fi": "2026-12-20", "termini": "", "estat": "Ens hi volen", "marca": "Ambdues", "notes": "Invitació rebuda", "url": ""}, {"id": "agenda-2026-04", "nom": "Fira de Sant Martí", "poble": "Puig-reig", "inici": "2026-11-07", "fi": "2026-11-08", "termini": "2026-10-23", "estat": "Per consultar", "marca": "Per confirmar", "notes": "No consta requisit explícit d’autònoms", "url": "https://puig-reig.cat/arxiu/puig-reig-obre-el-periode-dinscripcions-per-participar-a-la-fira-de-sant-marti-els-dies-7-i-8-de-novembre-de-2026/"}, {"id": "agenda-2026-05", "nom": "BCN en las Alturas", "poble": "Barcelona", "inici": "2026-11-13", "fi": "2026-11-15", "termini": "", "estat": "Per consultar", "marca": "Confeccions Ribera", "notes": "ByNuska només té lliure el dia 13. Confirmar cost i participació parcial", "url": "https://www.bcnenlasalturas.com/"}, {"id": "agenda-2026-06", "nom": "Fira de Nadal", "poble": "Collbató", "inici": "2026-12-12", "fi": "2026-12-13", "termini": "2026-10-31", "estat": "Per consultar", "marca": "Confeccions Ribera", "notes": "Confirmar admissió i autònoms", "url": "https://www.collbato.cat/pl195/actualitat/noticies/id5239/s-obren-les-inscripcions-per-participar-en-la-fira-de-nadal-de-collbato.htm"}, {"id": "agenda-2026-07", "nom": "Mercat de Nadal", "poble": "Roquetes", "inici": "2026-12-12", "fi": "2026-12-13", "termini": "2026-11-20", "estat": "Per consultar", "marca": "Confeccions Ribera", "notes": "Fins a omplir places; confirmar requisits", "url": "https://roquetes.cat/web/obertes-les-inscripcions-per-participar-a-la-32a-fira-de-nadal-de-roquetes-%F0%9F%8E%84/"}, {"id": "agenda-2026-08", "nom": "Fira d’Artesans de Santa Llúcia", "poble": "Gelida", "inici": "2026-12-13", "fi": "2026-12-13", "termini": "2026-11-06", "estat": "Per consultar", "marca": "Confeccions Ribera", "notes": "Producte propi; revisar bases d’autònoms", "url": "https://www.gelida.cat/actualitat/noticies/oberta-la-inscripcio-a-la-xxxvi-edicio-de-la-fira-dartesans-i-mostra-dentitats-de-santa-llucia.html"}, {"id": "agenda-2026-09", "nom": "Market de Nadal de la Fàbrica Lehmann", "poble": "Barcelona", "inici": "2026-12-12", "fi": "2026-12-13", "termini": "", "estat": "Per consultar", "marca": "Confeccions Ribera", "notes": "Condicions publicades de 2025; confirmar 2026. marketnadal@fabricalehmann.barcelona", "url": "https://www.fabricalehmann.barcelona/activitats/market-de-nadal-2/"}, {"id": "agenda-2026-10", "nom": "Mercat de Nadal", "poble": "Les Masies de Voltregà", "inici": "2026-12-18", "fi": "2026-12-20", "termini": "", "estat": "Per consultar", "marca": "Per confirmar", "notes": "Demanen DNI/NIE, fotografies i assegurança RC", "url": "https://www.lesmasiesdevoltrega.cat/actualitat/noticies/obertes-les-inscripcions-per-participar-en-el-mercat-de-nadal-de-les-masies-de-voltrega.html?lang=ca"}, {"id": "agenda-2026-11", "nom": "Navàs NADAL Market", "poble": "Reus", "inici": "2026-12-21", "fi": "2026-12-23", "termini": "", "estat": "Per consultar", "marca": "Per confirmar", "notes": "Consultar places, cost i documentació: navasmarketreus@hotmail.com", "url": ""}, {"id": "agenda-2026-12", "nom": "Navàs REIS", "poble": "Reus", "inici": "2027-01-02", "fi": "2027-01-04", "termini": "", "estat": "Per consultar", "marca": "Per confirmar", "notes": "Consultar places, cost i documentació: navasmarketreus@hotmail.com", "url": ""}, {"id": "agenda-2026-13", "nom": "XXVII Fira de les Bruixes", "poble": "Sant Feliu Sasserra", "inici": "2026-11-01", "fi": "2026-11-01", "termini": "2026-09-18", "estat": "Descartada", "marca": "Ambdues", "notes": "Inscripció tancada; només llista d’espera", "url": "https://www.santfeliusasserra.cat/actualitat/agenda/xxvii-fira-de-les-bruixes.html"}, {"id": "agenda-2026-14", "nom": "Fira de Santa Llúcia", "poble": "Canyelles", "inici": "2026-11-21", "fi": "2026-11-22", "termini": "2026-08-31", "estat": "Descartada", "marca": "Confeccions Ribera", "notes": "Termini tancat; possible requisit d’activitat econòmica/autònoms", "url": "https://www.canyelles.org/fira-de-santa-llucia/la-24a-fira-de-santa-llucia-s-avanca-al-21-i-22-de-novembre"}, {"id": "agenda-2026-15", "nom": "Fira de Sant Martirià", "poble": "Banyoles", "inici": "2026-11-14", "fi": "2026-11-15", "termini": "", "estat": "Descartada", "marca": "Confeccions Ribera", "notes": "Demanen darrer rebut d’autònoms", "url": "https://seu.banyoles.cat/Categories-de-tr%C3%A0mits/Promoci%C3%B3-econ%C3%B2mica/Fira-Sant-Martiri%C3%A0-Novembre"}, {"id": "agenda-2026-16", "nom": "Fira de Nadal", "poble": "Blanes", "inici": "2026-12-18", "fi": "2026-12-21", "termini": "", "estat": "Descartada", "marca": "Confeccions Ribera", "notes": "Demanen rebut d’autònoms", "url": "https://seu.blanes.cat/skin/pts/pdf/Bases_Mercat_Nadal.pdf"}, {"id": "candidata-2026-01", "nom": "Caldes de Montbui – Mercat de Nadal", "poble": "Caldes de Montbui", "inici": "2026-12-04", "fi": "2026-12-08", "termini": "2026-10-31", "estat": "Per Consultar", "marca": "Ambdues", "notes": "CANDIDATA · Termini anunciat 31/10. Confirmar admissió sense alta d’autònoms, preu i disponibilitat. Dates segons convocatòria.", "url": "", "contacte": ""}, {"id": "candidata-2026-02", "nom": "Fira de Nadal – Sant Celoni", "poble": "Sant Celoni", "inici": "2026-12-05", "fi": "2026-12-06", "termini": "2026-10-31", "estat": "Per Consultar", "marca": "Ambdues", "notes": "CANDIDATA · Termini anunciat 31/10. Confirmar admissió sense alta d’autònoms i disponibilitat. Tarifa publicada: 7,04 €/dia/metre lineal; carpa no inclosa.", "url": "", "contacte": ""}, {"id": "candidata-2026-03", "nom": "Fira de Nadal – Tordera", "poble": "Tordera", "inici": "2026-11-28", "fi": "2026-11-29", "termini": "2026-11-13", "estat": "Per Consultar", "marca": "Ambdues", "notes": "CANDIDATA · Termini anunciat 13/11. Confirmar admissió sense alta d’autònoms, preu i disponibilitat.", "url": "", "contacte": ""}, {"id": "candidata-2026-04", "nom": "Vila Claus – Fira de Nadal", "poble": "Sant Pere de Vilamajor", "inici": "2026-12-12", "fi": "2026-12-13", "termini": "2026-11-15", "estat": "Per Consultar", "marca": "Ambdues", "notes": "CANDIDATA · Termini anunciat 15/11. Confirmar admissió sense alta d’autònoms. Carpa 3×3 m: 30 € els dos dies; caseta: 50 €.", "url": "", "contacte": ""}, {"id": "candidata-2026-05", "nom": "Un Nadal com cal – Fira de Nadal", "poble": "Sant Antoni de Vilamajor", "inici": "2026-11-28", "fi": "2026-11-29", "termini": "2026-11-16", "estat": "Per Consultar", "marca": "Ambdues", "notes": "CANDIDATA · Termini anunciat 16/11 o fins a exhaurir places. Confirmar admissió sense alta d’autònoms. Caseta: 50 € els dos dies.", "url": "", "contacte": ""}];
-const AGENDA_STATES=['Per Consultar','Sol·licitada','Ens hi volen','Hi anem','Celebrada','Inscripció tancada','Sense places','No ens volen','No hi anem','No hi som','Autònoms!'];
+const AGENDA_STATES=['Per consultar','Sol·licitada','Ens hi volen','Hi anem','No hi anem','No ens hi volen'];
+const AGENDA_REASONS={
+ 'No hi anem':['Celebrada','No hi som','No hi volem anar'],
+ 'No ens hi volen':['Inscripció tancada','Sense places','Demanen autònoms']
+};
+const AGENDA_SUBREASONS={
+ 'No hi anem|No hi volem anar':['Coincideix amb una altra fira','No ens encaixa aquest any','No ens interessa','Altres']
+};
 function agendaReviewReason(r){return r.revisarEstat===true;}
-function agendaState(v){const aliases={'Per consultar':'Per Consultar','Confirmada':'Hi anem','No ens hi volen':'No ens volen','Passem':'No hi anem','Cancel·lada':'No hi anem','Cancel·lat':'No hi anem','PASSEM':'No hi anem','Demanen autònoms':'Autònoms!','Demanen Autònoms':'Autònoms!'};const clean=String(v??'').replace(/^\d+\.\s*/, '');return aliases[clean]||clean||'Per Consultar';}
-function agendaStateIndex(v){const i=AGENDA_STATES.indexOf(agendaState(v));return i<0?99:i;}
-function agendaStateLabel(v){const n=agendaStateIndex(v);return n===99?String(v||''):n+'. '+AGENDA_STATES[n];}
-function agendaNormalizeStates(){AGENDA_ITEMS.forEach(r=>{
- const old=String(r.estat||'').replace(/^\d+\.\s*/, '');
+function agendaState(v){
+ const clean=String(v??'').replace(/^\d+\.\s*/, '').trim();
+ const aliases={'Per consultar':'Per consultar','Per consultar':'Per consultar','Confirmada':'Hi anem','Passem':'No hi anem','PASSEM':'No hi anem','No ens volen':'No ens hi volen','No ens hi volen':'No ens hi volen'};
+ if(AGENDA_STATES.includes(clean))return clean;
+ return aliases[clean]||'Per consultar';
+}
+function agendaLegacyReason(old,r){
+ const n=[r?.notes,r?.notesAmpliades,r?.mesInfo].filter(Boolean).join(' ').toLocaleLowerCase('ca');
+ if(old==='Inscripció tancada')return 'Inscripció tancada';
+ if(old==='Sense places')return 'Sense places';
+ if(old==='Autònoms!'||old==='Demanen autònoms'||old==='Demanen Autònoms')return 'Demanen autònoms';
+ if(old==='No hi som')return 'No hi som';
+ if(old==='Passem'||old==='PASSEM')return 'No hi volem anar';
+ if(old==='Hem fet tard')return /places|adjudicad|llista d.espera|plena|ple/.test(n)?'Sense places':'Inscripció tancada';
  if(old==='Descartada'){
-   r.revisarEstat=true; // Els descartaments antics s'han de validar manualment
-   const n=String(r.notes||'').toLocaleLowerCase('ca');
-   if(/aut[oò]nom|rebut d.aut[oò]nom/.test(n)){r.estat='Autònoms!';}
-   else if(/no ens (hi )?volen|no ens han acceptat|rebutjad/.test(n)){r.estat='No ens volen';}
-   else if(/llista d.espera|sense places|ple(n|na|nes|ns)|exhaurit/.test(n)){r.estat='Sense places';}
-   else if(/inscripci[oó] tancada|termini tancat|hem fet tard|fora de termini/.test(n)){r.estat='Inscripció tancada';}
-   else if(/no hi som/.test(n)){r.estat='No hi som';}
-   else if(/no hi anem|no ens interessa|no podem anar/.test(n)){r.estat='No hi anem';}
-   else {r.estat='No hi anem';r.revisarEstat=true;}
- }else {r.estat=agendaState(old);if(r.revisarEstat!==true)r.revisarEstat=false;}
-});}
-function agendaIsDiscarded(r){return agendaStateIndex(r.estat)>=5;}
+   if(/aut[oò]nom|rebut d.aut[oò]nom/.test(n))return 'Demanen autònoms';
+   if(/llista d.espera|sense places|exhaurit|adjudicad|\bple(n|na|nes|ns)?\b/.test(n))return 'Sense places';
+   if(/inscripci[oó] tancada|termini tancat|hem fet tard|fora de termini/.test(n))return 'Inscripció tancada';
+   if(/no hi som/.test(n))return 'No hi som';
+   if(/no hi anem|no ens interessa|no podem anar/.test(n))return 'No hi volem anar';
+ }
+ return '';
+}
+function agendaNormalizeRecord(r){
+ const old=String(r.estat||'').replace(/^\d+\.\s*/, '').trim();
+ if(old==='Celebrada'){
+   // Els antics «Celebrada» provenen majoritàriament de l'històric ACCEPTADA.
+   // No els reinterpretam com «No hi anem» perquè podrien ser fires on sí que vam anar.
+   r.estat='Hi anem';
+ }else if(['Inscripció tancada','Sense places','Autònoms!','Demanen autònoms','Demanen Autònoms','Hem fet tard','No ens volen','No ens hi volen'].includes(old)){
+   r.estat='No ens hi volen';
+   if(!r.motiu)r.motiu=agendaLegacyReason(old,r);
+ }else if(['No hi som','Passem','PASSEM','Descartada'].includes(old)){
+   const reason=agendaLegacyReason(old,r);
+   r.estat=['Inscripció tancada','Sense places','Demanen autònoms'].includes(reason)?'No ens hi volen':'No hi anem';
+   if(!r.motiu)r.motiu=reason;
+ }else{
+   r.estat=agendaState(old);
+ }
+ if(!AGENDA_REASONS[r.estat]){r.motiu='';r.submotiu='';}
+ else{
+   if(!AGENDA_REASONS[r.estat].includes(r.motiu||''))r.motiu='';
+   const subkey=r.estat+'|'+(r.motiu||'');
+   if(!AGENDA_SUBREASONS[subkey])r.submotiu='';
+   else if(!AGENDA_SUBREASONS[subkey].includes(r.submotiu||''))r.submotiu='';
+ }
+ if(r.revisarAnySeguent===undefined)r.revisarAnySeguent=true;
+ if(r.revisarEstat!==true)r.revisarEstat=false;
+ return r;
+}
+function agendaStateIndex(v){const i=AGENDA_STATES.indexOf(agendaState(v));return i<0?99:i;}
+function agendaStateLabel(v){const n=agendaStateIndex(v);return n===99?String(v||''):(n+1)+'. '+AGENDA_STATES[n];}
+function agendaReasonLabel(r){return [r.motiu,r.submotiu].filter(Boolean).join(' · ');}
+function agendaFullStateLabel(r){const extra=agendaReasonLabel(r);return agendaStateLabel(r.estat)+(extra?' · '+extra:'');}
+function agendaNormalizeStates(){AGENDA_ITEMS.forEach(agendaNormalizeRecord);}
+function agendaIsDiscarded(r){return ['No hi anem','No ens hi volen'].includes(agendaState(r.estat));}
 function agendaReviewMark(r){return agendaReviewReason(r)?'<span title="Revisar el motiu del descart" style="display:inline-block;margin-left:6px;background:#ffe1a6;color:#744300;border-radius:6px;padding:2px 6px;font-size:11px;font-weight:700">⚠ Revisar</span>':'';}
 const AGENDA_CONTACTS=['','Correu electrònic','Instagram','WhatsApp','Telèfon','Formulari web','Instància','Presencial','Altres'];
 const AGENDA_BRANDS=['Ambdues','ConfeccionsRibera','@ByNuska'];
@@ -2133,7 +2183,7 @@ let AGENDA_ITEMS=[];
 function agendaEsc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function agendaIso(v){if(!v)return '';let m=String(v).match(/^(\d{4}-\d\d-\d\d)/);return m?m[1]:'';}
 function agendaDate(v){const d=agendaIso(v);return d?d.slice(8,10)+'/'+d.slice(5,7)+'/'+d.slice(0,4):'—';}
-function agendaHistorical(){return FIRES_GLIDE.map((r,i)=>({id:'hist-'+i,nom:r.Nom,poble:r.Poble,inici:agendaIso(r.Data),fi:agendaIso(r['Data fi'])||agendaIso(r.Data),termini:'',estat:r.EstatFira==='ACCEPTADA'?'Celebrada':r.EstatFira==='REBUTJADA'?(/aut[oò]nom/i.test(r['Motiu NO']||'')?'Autònoms!':'Descartada'):'Passem',marca:'',notes:[r.Nota,r['Motiu NO'],r['Negociació']].filter(Boolean).join(' · '),url:r.Enllaç||''}));}
+function agendaHistorical(){return FIRES_GLIDE.map((r,i)=>{const notes=[r.Nota,r['Motiu NO'],r['Negociació']].filter(Boolean).join(' · ');const rejected=r.EstatFira==='REBUTJADA';const aut=/aut[oò]nom/i.test(r['Motiu NO']||'');return {id:'hist-'+i,nom:r.Nom,poble:r.Poble,inici:agendaIso(r.Data),fi:agendaIso(r['Data fi'])||agendaIso(r.Data),termini:'',estat:r.EstatFira==='ACCEPTADA'?'Hi anem':rejected?'No ens hi volen':'No hi anem',motiu:rejected?(aut?'Demanen autònoms':''):'',submotiu:'',marca:'',notes,url:r.Enllaç||'',revisarAnySeguent:true};});}
 function agendaLoad(){try{const v=JSON.parse(localStorage.getItem(AGENDA_KEY));if(Array.isArray(v)){AGENDA_ITEMS=v;agendaNormalizeStates();const known=new Set(v.map(r=>r.id));const deleted=agendaDeletedIds();for(const r of [...agendaHistorical(),...AGENDA_DEFAULT])if(!known.has(r.id)&&!deleted.has(r.id))AGENDA_ITEMS.push(r);agendaNormalizeStates();agendaSave(false);return;}}catch(e){} AGENDA_ITEMS=[...agendaHistorical().filter(r=>!agendaDeletedIds().has(r.id)),...AGENDA_DEFAULT];agendaNormalizeStates();agendaSave(false);}
 const AGENDA_BACKUP_KEY='ordits_trames_backup_pending';
 const AGENDA_DELETED_KEY='ordits_trames_deleted_fair_ids';
@@ -2141,8 +2191,8 @@ function agendaDeletedIds(){try{return new Set(JSON.parse(localStorage.getItem(A
 function agendaBackupPending(value){try{localStorage.setItem(AGENDA_BACKUP_KEY,value?'1':'0');}catch(e){} agendaBackupBanner();}
 function agendaBackupBanner(){for(const id of ['agendaBackupWarning','historyBackupWarning']){const e=document.getElementById(id);if(e)e.style.display=localStorage.getItem(AGENDA_BACKUP_KEY)==='1'?'block':'none';}}
 function agendaSave(markPending=true){try{localStorage.setItem(AGENDA_KEY,JSON.stringify(AGENDA_ITEMS));if(markPending)agendaBackupPending(true);}catch(e){alert('No s’han pogut desar els canvis al navegador. Exporta una còpia JSON.');}}
-function agendaAlert(r){if(['Confirmada','Celebrada','Descartada','Autònoms!','Passem','Ens hi volen','Hi anem'].includes(r.estat))return '—';if(!r.termini)return '—';const n=new Date(),today=[n.getFullYear(),String(n.getMonth()+1).padStart(2,'0'),String(n.getDate()).padStart(2,'0')].join('-');const diff=Math.round((new Date(r.termini+'T12:00:00')-new Date(today+'T12:00:00'))/86400000);return diff<0?'Vençut':diff<=7?'⚠️ '+diff+' dies':'Obert';}
-function agendaOverlaps(r){if(!r.inici||!r.fi||['Descartada','Autònoms!','Passem','Celebrada'].includes(r.estat))return '';const others=AGENDA_ITEMS.filter(x=>x.id!==r.id&&x.inici&&x.fi&&!['Descartada','Autònoms!','Passem','Celebrada'].includes(x.estat)&&x.inici<=r.fi&&x.fi>=r.inici);return others.length?'⚠️ Coincideix amb: '+others.map(x=>x.nom+' ('+x.poble+')').join(', '):'';}
+function agendaAlert(r){if(['Hi anem','No hi anem','No ens hi volen','Ens hi volen'].includes(agendaState(r.estat)))return '—';if(!r.termini)return '—';const n=new Date(),today=[n.getFullYear(),String(n.getMonth()+1).padStart(2,'0'),String(n.getDate()).padStart(2,'0')].join('-');const diff=Math.round((new Date(r.termini+'T12:00:00')-new Date(today+'T12:00:00'))/86400000);return diff<0?'Vençut':diff<=7?'⚠️ '+diff+' dies':'Obert';}
+function agendaOverlaps(r){if(!r.inici||!r.fi||agendaIsDiscarded(r))return '';const others=AGENDA_ITEMS.filter(x=>x.id!==r.id&&x.inici&&x.fi&&!agendaIsDiscarded(x)&&x.inici<=r.fi&&x.fi>=r.inici);return others.length?'⚠️ Coincideix amb: '+others.map(x=>x.nom+' ('+x.poble+')').join(', '):'';}
 function agendaLinks(r){
  const text=String(r.notes||'');
  const urls=[...text.matchAll(/https?:\/\/[^\s<>"']+/g)].map(m=>m[0].replace(/[),.;]+$/,''));
@@ -2235,6 +2285,57 @@ function clearFairDateFilters(prefix){
 function fairToday(){const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');}
 function fairIsPast(r){const last=r.fi||r.inici;return !!last&&last<fairToday();}
 
+const AGENDA_SYNC_SEEN_KEY='ordits_agenda_supabase_seen_v2';
+function agendaSyncSeen(v){try{if(v)localStorage.setItem(AGENDA_SYNC_SEEN_KEY,v);else return localStorage.getItem(AGENDA_SYNC_SEEN_KEY)||'';}catch(e){return '';}}
+function agendaSyncUi(msg){const el=document.getElementById('agendaSyncStatus');if(!el)return;if(msg){el.textContent=msg;return;}const st=window.orditsAgendaSupabase?.status?.();el.textContent=st?.admin?'Admin online: '+(st.email||'sessió activa')+'.':'Per sincronitzar, inicia Admin online a Catàleg Supabase.';}
+async function agendaLoadFromSupabase(){
+ try{
+  if(!window.orditsAgendaSupabase?.status?.().admin)throw new Error('Cal iniciar sessió a Catàleg Supabase → Admin online.');
+  agendaSyncUi('Carregant Supabase…');const row=await window.orditsAgendaSupabase.get();
+  if(!row||!Array.isArray(row.payload))throw new Error('Supabase no ha retornat una agenda vàlida.');
+  if(AGENDA_ITEMS.length&&JSON.stringify(AGENDA_ITEMS)!==JSON.stringify(row.payload)&&!confirm('Carregar Supabase substituirà la còpia local de fires d’aquest navegador. Vols continuar?')){agendaSyncUi();return;}
+  AGENDA_ITEMS=row.payload;agendaNormalizeStates();agendaSave(false);agendaSyncSeen(row.updated_at||'');agendaBackupPending(false);renderAgenda();initFairHistory();agendaSyncUi('Carregat de Supabase · '+new Date(row.updated_at).toLocaleString('ca-ES'));
+ }catch(e){agendaSyncUi('Error: '+(e.message||e));alert('No s’ha pogut carregar Supabase: '+(e.message||e));}
+}
+async function agendaPushToSupabase(){
+ try{
+  if(!window.orditsAgendaSupabase?.status?.().admin)throw new Error('Cal iniciar sessió a Catàleg Supabase → Admin online.');
+  agendaNormalizeStates();agendaSyncUi('Comprovant versió compartida…');
+  const current=await window.orditsAgendaSupabase.get();const seen=agendaSyncSeen();
+  if(seen&&current?.updated_at&&seen!==current.updated_at){throw new Error('Supabase s’ha actualitzat des de l’última càrrega. Carrega primer la versió compartida per evitar sobreescriure canvis d’una altra persona.');}
+  if(!seen&&current?.payload&&JSON.stringify(current.payload)!==JSON.stringify(AGENDA_ITEMS)){
+    if(!confirm('La versió de Supabase és diferent de la còpia local. Si continues, la substituiràs per aquesta agenda local.\n\nVols actualitzar Supabase igualment?')){agendaSyncUi();return;}
+  }
+  agendaSyncUi('Actualitzant Supabase…');const saved=await window.orditsAgendaSupabase.save(AGENDA_ITEMS,current?.updated_at||'');
+  agendaSyncSeen(saved.updated_at||'');agendaBackupPending(false);agendaSyncUi('Supabase actualitzat · '+new Date(saved.updated_at).toLocaleString('ca-ES'));
+ }catch(e){agendaSyncUi('Error: '+(e.message||e));alert('No s’ha pogut actualitzar Supabase: '+(e.message||e));}
+}
+function agendaFairKey(r){return (String(r.poble||'').trim().toLocaleLowerCase('ca')+'|'+String(r.nom||'').replace(/\b20\d{2}\b/g,'').replace(/\s+/g,' ').trim().toLocaleLowerCase('ca'));}
+function agendaShiftYear(iso,years=1){if(!iso||!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(iso))return '';const d=new Date(iso+'T12:00:00');d.setFullYear(d.getFullYear()+years);return fairIsoDay(d);}
+function agendaAddDays(iso,days){if(!iso)return '';const d=new Date(iso+'T12:00:00');d.setDate(d.getDate()+days);return fairIsoDay(d);}
+function agendaRadarTargetYear(){return new Date().getFullYear()+1;}
+function agendaRadarPriority(r){
+ if(r.estat==='No ens hi volen'&&['Inscripció tancada','Sense places'].includes(r.motiu))return ['Alta','Arribar-hi abans'];
+ if(r.estat==='No hi anem'&&r.motiu==='Celebrada')return ['Alta','La vam detectar massa tard'];
+ if(r.estat==='No hi anem'&&r.motiu==='No hi som')return ['Normal','Revisar coincidències'];
+ if(r.estat==='No hi anem'&&r.motiu==='No hi volem anar'&&r.submotiu==='No ens interessa')return ['Baixa','Reavaluar, no descartar'];
+ return ['Normal','Tornar-la a valorar'];
+}
+function agendaRadarCandidates(){
+ const target=agendaRadarTargetYear(),cut=String(target)+'-01-01',existing=new Set(AGENDA_ITEMS.filter(r=>r.inici&&r.inici.startsWith(String(target))).map(agendaFairKey));
+ const latest=new Map();
+ for(const r of AGENDA_ITEMS){if(!r.inici||r.inici>=cut||r.revisarAnySeguent===false)continue;const k=agendaFairKey(r),prev=latest.get(k);if(!prev||r.inici>prev.inici)latest.set(k,r);}
+ return [...latest.values()].filter(r=>!existing.has(agendaFairKey(r))).map(r=>{const delta=target-Number(r.inici.slice(0,4));const approx=agendaShiftYear(r.inici,delta);const prevDeadline=r.termini?agendaShiftYear(r.termini,delta):'';const [prio,why]=agendaRadarPriority(r);const contactBy=prevDeadline?agendaAddDays(prevDeadline,-45):agendaAddDays(approx,prio==='Alta'?-150:prio==='Baixa'?-60:-100);return {r,target,approx,prevDeadline,prio,why,contactBy};}).sort((a,b)=>(a.contactBy||a.approx).localeCompare(b.contactBy||b.approx));
+}
+function renderAgendaRadar(){
+ const year=document.getElementById('agendaRadarYear'),box=document.getElementById('agendaRadar');if(!box)return;const target=agendaRadarTargetYear();if(year)year.textContent=target;
+ const data=agendaRadarCandidates();
+ box.innerHTML='<div class="agenda-radar-grid">'+(data.length?data.map(x=>'<div class="agenda-radar-row"><div><strong>'+agendaEsc(x.r.nom)+'</strong><small>'+agendaEsc(x.r.poble||'')+' · '+agendaEsc(agendaFullStateLabel(x.r))+'</small></div><div><span class="agenda-radar-prio">'+x.prio+'</span><small>'+agendaEsc(x.why)+'</small></div><div><strong>≈ '+agendaDate(x.approx)+'</strong><small>data orientativa</small></div><div><strong>Revisar: '+agendaDate(x.contactBy)+'</strong><small>'+(x.prevDeadline?'basat en el termini anterior':'estimació preventiva')+'</small></div><button class="rb" type="button" onclick="agendaCreateNextEdition('+JSON.stringify(x.r.id).replace(/"/g,'&quot;')+')">+ Crear '+target+'</button></div>').join(''):'<div style="padding:10px;color:var(--tx2)">No hi ha fires pendents de recuperar per '+target+'.</div>')+'</div>';
+}
+function agendaCreateNextEdition(id){
+ const source=AGENDA_ITEMS.find(r=>String(r.id)===String(id));if(!source||!source.inici)return;const target=agendaRadarTargetYear(),delta=target-Number(source.inici.slice(0,4));const copy={...source,id:'radar-'+target+'-'+Date.now(),inici:agendaShiftYear(source.inici,delta),fi:agendaShiftYear(source.fi||source.inici,delta),termini:'',dataContacte:'',estat:'Per consultar',motiu:'',submotiu:'',revisarAnySeguent:true,referenciaAnyAnterior:source.id,dataOrientativa:true,notesAmpliades:[source.notesAmpliades,'Edició '+target+' creada des del radar. Dates orientatives fins que es confirmi la convocatòria.'].filter(Boolean).join('\n')};AGENDA_ITEMS.push(copy);agendaSave();renderAgenda();initFairHistory();agendaShow(copy.id);
+}
+
 let fairViewMode='table';
 let fairCalendarMonth=new Date(new Date().getFullYear(),new Date().getMonth(),1);
 function setFairView(mode){
@@ -2255,7 +2356,7 @@ function fairCalendarEvents(){
  const state=document.getElementById('agendaEstat')?.value||'';
  const town=document.getElementById('agendaPoble').value;
  const q=document.getElementById('agendaCerca').value.toLocaleLowerCase('ca');
- return AGENDA_ITEMS.filter(r=>!fairIsPast(r)&&!!r.inici&&fairDateMatches(r,'agenda')&&(agendaKpiActive!=='urgent'||agendaAlert(r).includes('⚠️'))&&(!state||r.estat===state)&&(!town||r.poble===town)&&(!q||[r.nom,r.poble,r.notes].join(' ').toLocaleLowerCase('ca').includes(q))&&(view==='all'||(view==='active'&&!agendaIsDiscarded(r))||(view==='discarded'&&agendaIsDiscarded(r))));
+ return AGENDA_ITEMS.filter(r=>!fairIsPast(r)&&!!r.inici&&fairDateMatches(r,'agenda')&&(agendaKpiActive!=='urgent'||agendaAlert(r).includes('⚠️'))&&(!state||r.estat===state)&&(!town||r.poble===town)&&(!q||[r.nom,r.poble,r.notes,r.motiu,r.submotiu].join(' ').toLocaleLowerCase('ca').includes(q))&&(view==='all'||(view==='active'&&!agendaIsDiscarded(r))||(view==='discarded'&&agendaIsDiscarded(r))));
 }
 function renderFairCalendar(){
  const el=document.getElementById('fairCalendar');if(!el||fairViewMode!=='calendar')return;
@@ -2266,7 +2367,7 @@ function renderFairCalendar(){
  const start=new Date(year,month,1-startOffset);
  const days=['Dl','Dt','Dc','Dj','Dv','Ds','Dg'];
  let html='<div class="fair-cal-legend">'+[
- ['#5a83bd','0. Per Consultar'],['#c49429','1. Sol·licitada'],['#9b69b4','2. Ens hi volen'],['#418257','3. Hi anem'],['#338e88','4. Celebrada']
+ ['#5a83bd','1. Per consultar'],['#c49429','2. Sol·licitada'],['#9b69b4','3. Ens hi volen'],['#418257','4. Hi anem'],['#8a817b','5–6. No hi anem / No ens hi volen']
  ].map(([color,label])=>'<span><i class="fair-cal-dot" style="background:'+color+'"></i>'+label+'</span>').join('')+'</div><div class="fair-cal-grid">';
  html+=days.map(d=>'<div class="fair-cal-weekday">'+d+'</div>').join('');
  const today=fairIsoDay(new Date());
@@ -2277,9 +2378,9 @@ function renderFairCalendar(){
   const outside=d.getMonth()!==month;
   html+='<div class="fair-cal-day'+(outside?' outside':'')+(iso===today?' today':'')+'"><div class="fair-cal-day-number">'+d.getDate()+'</div>';
   html+=dayEvents.map(r=>{
-   const stateNumber=agendaStateIndex(r.estat);const kind=stateNumber>=0&&stateNumber<=4?'state-'+stateNumber:'state-excluded';
+   const stateNumber=agendaStateIndex(r.estat);const kind=stateNumber>=0&&stateNumber<=3?'state-'+stateNumber:'state-excluded';
    const id=JSON.stringify(r.id).replace(/"/g,'&quot;');
-   return '<button type="button" class="fair-cal-event '+kind+'" title="'+agendaEsc(r.nom+(r.poble?' ('+r.poble+')':'')+' · '+agendaStateLabel(r.estat))+'" onclick="agendaShow('+id+')">'+agendaEsc(r.nom+(r.poble?' ('+r.poble+')':''))+'</button>';
+   return '<button type="button" class="fair-cal-event '+kind+'" title="'+agendaEsc(r.nom+(r.poble?' ('+r.poble+')':'')+' · '+agendaFullStateLabel(r))+'" onclick="agendaShow('+id+')">'+agendaEsc(r.nom+(r.poble?' ('+r.poble+')':''))+'</button>';
   }).join('');
   html+='</div>';
  }
@@ -2295,19 +2396,6 @@ function agendaKpiSelect(kind){
  const vista=document.getElementById('agendaVista');if(vista&&agendaKpiActive!=='all')vista.value='all';
  renderAgenda();
 }
-function initAgendaStateFilter(){
- const state=document.getElementById('agendaEstat');
- state.innerHTML='<option value="">Tots els estats</option>'+AGENDA_STATES.map(v=>'<option value="'+agendaEsc(v)+'">'+agendaEsc(agendaStateLabel(v))+'</option>').join('');
-}
-function agendaFilterStateChanged(){
- const state=document.getElementById('agendaEstat').value;
- const view=document.getElementById('agendaVista');
- if(state){
-  const discarded=agendaIsDiscarded({estat:state});
-  if((discarded&&view.value==='active')||(!discarded&&view.value==='discarded'))view.value='all';
- }
- renderAgenda();
-}
 function agendaKpiSync(){const st=document.getElementById('agendaEstat');if(!st)return;
  if(agendaKpiActive==='wanted'&&st.value!=='Ens hi volen'||agendaKpiActive==='confirmed'&&st.value!=='Hi anem')agendaKpiActive='all';
 }
@@ -2317,11 +2405,8 @@ const FAIR_BERGA_KM={
 };
 function fairDistanceKm(r){const key=String(r.poble||'').trim();return Object.prototype.hasOwnProperty.call(FAIR_BERGA_KM,key)?FAIR_BERGA_KM[key]:null;}
 function fairRequestAge(r){if(!r.dataContacte||!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(r.dataContacte))return null;const day=Math.floor((new Date(fairToday()+'T12:00:00')-new Date(r.dataContacte+'T12:00:00'))/86400000);return day>=0?day:null;}
-const FAIR_PLAN_STATE_ORDER=[3,2,1,0,4,5,6,7,8,9,10];
-function fairPlanPriority(r){
- const priority=FAIR_PLAN_STATE_ORDER.indexOf(agendaStateIndex(r.estat));
- return priority<0?FAIR_PLAN_STATE_ORDER.length:priority;
-}
+function fairPlanPriority(r){const e=String(r.estat||'').toLowerCase();return /hi anem|confirmada/.test(e)?0:/ens hi volen/.test(e)?1:/sol·licitada/.test(e)?2:3;}
+function fairPlanScore(r){let score=[0,16,37,58][fairPlanPriority(r)];const km=fairDistanceKm(r);score+=km===null?14:Math.min(35,km*.16);const price=r.preu!==''&&r.preu!=null&&Number.isFinite(Number(r.preu))?Number(r.preu):null;score+=price===null?12:Math.min(35,price*.16);const age=fairRequestAge(r);if(fairPlanPriority(r)===2&&age!==null)score+=age>=14?24:age>=7?12:0;return score;}
 function fairIsoAddDays(iso,days){
  const d=new Date(iso+'T12:00:00');d.setDate(d.getDate()+days);
  return d.toISOString().slice(0,10);
@@ -2354,22 +2439,19 @@ function fairPlannerWeekends(){
 function renderWeekendPlan(){
  const host=document.getElementById('weekPlanGrid');if(!host)return;
  const weekends=fairPlannerWeekends();
- const today=fairToday();
+ const rejected=/aut[oò]nom|no hi anem|no ens volen|sense places|inscripci[oó] tancada|hem fet tard|descart|passem|no hi som|rebutjad/i;
  host.innerHTML=weekends.map(w=>{
   // Regla de bloc:
   // divendres -> cap de setmana següent
   // dilluns/dimarts -> cap de setmana anterior
   // per tant cada finestra útil és divendres-dimarts.
   const blocked=w.sat==='2026-11-28';
-  const entries=AGENDA_ITEMS.filter(r=>r.inici&&r.inici<=w.tue&&(r.fi||r.inici)>=w.fri);
-  const uniq=new Map();
-  for(const r of entries){
-   const key=JSON.stringify([r.nom,r.poble,r.inici,r.fi||r.inici,agendaState(r.estat)]).toLowerCase();
-   if(!uniq.has(key))uniq.set(key,r);
-  }
+  const entries=AGENDA_ITEMS.filter(r=>r.inici&&r.inici<=w.tue&&(r.fi||r.inici)>=w.fri&&!agendaIsDiscarded(r)&&!fairIsPast(r));
+  const uniq=new Map();for(const r of entries){const key=[r.nom,r.poble].join('|').toLowerCase();if(!uniq.has(key)||fairPlanScore(r)<fairPlanScore(uniq.get(key)))uniq.set(key,r);}
   const list=[...uniq.values()].sort((a,b)=>
+   String(a.inici||'9999-12-31').localeCompare(String(b.inici||'9999-12-31'))||
    fairPlanPriority(a)-fairPlanPriority(b)||
-   a.inici.localeCompare(b.inici)||
+   fairPlanScore(a)-fairPlanScore(b)||
    String(a.nom).localeCompare(String(b.nom),'ca')
   );
 
@@ -2382,54 +2464,65 @@ function renderWeekendPlan(){
    if(rs<=w.mon&&re>=w.mon&&titleTo<w.mon)titleTo=w.mon;
    if(rs<=w.tue&&re>=w.tue&&titleTo<w.tue)titleTo=w.tue;
   }
-  const past=titleTo<today;
   const title=fairPlanRangeLabel(titleFrom,titleTo);
   const extended=titleFrom!==w.sat||titleTo!==w.sun;
   const bridgeLabel=extended?'<span class="week-plan-bridge">Pont / bloc ampliat</span>':'';
 
-  const top=list.find(r=>!fairIsPast(r)&&agendaStateIndex(r.estat)<4);
-  const hasAccepted=top&&fairPlanPriority(top)<=1;
-  let advice=hasAccepted?'Prioritzeu les invitacions i comproveu si les dues marques poden cobrir fires diferents.':'Cap plaça acceptada: feu seguiment i manteniu una segona opció.';
-  if(extended)advice='Hi ha opcions més enllà del dissabte i diumenge. Valoreu combinacions dins del mateix bloc de dates. '+advice;
-  if(top&&fairPlanPriority(top)===2&&fairRequestAge(top)>=14)advice+=' La primera opció fa 14 dies o més que espera resposta.';
+  const top=list[0],hasAccepted=list.some(r=>fairPlanPriority(r)<=1);
+  let advice=!list.length?'Sense alternatives actives: valorar producció o buscar una fira.':hasAccepted?'Prioritzeu les invitacions i comproveu si les dues marques poden cobrir fires diferents.':'Cap plaça acceptada: feu seguiment i manteniu una segona opció.';
+  if(extended&&list.length)advice='Hi ha opcions més enllà del dissabte i diumenge. Valoreu combinacions dins del mateix bloc de dates. '+advice;
+  if(blocked)advice='No disponible: ni Confeccions Ribera ni @ByNuska poden participar aquest bloc. No cal buscar alternatives.';
+  if(!blocked&&top&&fairPlanPriority(top)===2&&fairRequestAge(top)>=14)advice+=' La primera opció fa 14 dies o més que espera resposta.';
 
-  const items=list.map(r=>{const km=fairDistanceKm(r),price=r.preu!==''&&r.preu!=null&&Number.isFinite(Number(r.preu))?Number(r.preu):null,age=fairRequestAge(r),requested=fairPlanPriority(r)===2;
+  const items=list.map((r,i)=>{const km=fairDistanceKm(r),price=r.preu!==''&&r.preu!=null&&Number.isFinite(Number(r.preu))?Number(r.preu):null,age=fairRequestAge(r),requested=fairPlanPriority(r)===2;
    const follow=requested?(age===null?' · 📅 Falta data de petició':age>=14?' · 🔴 '+age+' dies sense resposta: insistir i activar alternativa':age>=7?' · 🟠 '+age+' dies sense resposta: fer seguiment':' · '+age+' dies des de la petició'):'';
    const priceText=price===null?'Preu pendent':Math.round(price)+' € parada';const distanceText=km===null?'Distància pendent':'~'+(km*2)+' km anada i tornada';
-   const priority=fairPlanPriority(r);
-   const rejected=agendaState(r.estat)==='No ens volen';
-   const statusClass=rejected?'rejected':['going','wanted','requested','possible'][priority]||'';
-   const statusIcon=rejected?'💔':['✅','💚','📨','🔎','🏁'][priority]||(agendaIsDiscarded(r)?'⛔':'');
+   const priority=fairPlanPriority(r);const statusClass=['going','wanted','requested','possible'][priority];const statusIcon=['✅','💚','📨','🔎'][priority];
    const dates=(r.inici&&r.fi&&r.fi!==r.inici)?agendaDate(r.inici)+'–'+agendaDate(r.fi):(r.inici?agendaDate(r.inici):'');
-   return '<div class="week-plan-item '+statusClass+'"><div class="week-plan-item-head"><strong>'+(r===top&&!blocked&&!past?'⭐ ':'')+agendaEsc(r.nom)+'</strong><span class="week-plan-pill '+statusClass+'">'+statusIcon+' '+agendaEsc(agendaState(r.estat))+'</span></div>'+(dates?'<div class="week-plan-date">📅 <strong>'+agendaEsc(dates)+'</strong></div>':'')+'<div class="week-plan-town">📍 '+agendaEsc(r.poble||'—')+' · '+agendaEsc(r.marca||'Marca per definir')+'</div><div class="week-plan-metrics"><span>💶 '+agendaEsc(priceText)+'</span><span>🚗 '+agendaEsc(distanceText)+'</span></div>'+(requested?'<div class="week-plan-follow">'+agendaEsc(follow.replace(/^ · /,''))+'</div>':'')+'</div>';
+   return '<div class="week-plan-item '+statusClass+'"><div class="week-plan-item-head"><strong>'+(i===0?'⭐ ':'')+agendaEsc(r.nom)+'</strong><span class="week-plan-pill '+statusClass+'">'+statusIcon+' '+agendaEsc(r.estat||'Per consultar')+'</span></div>'+(dates?'<div class="week-plan-date">📅 <strong>'+agendaEsc(dates)+'</strong></div>':'')+'<div class="week-plan-town">📍 '+agendaEsc(r.poble||'—')+' · '+agendaEsc(r.marca||'Marca per definir')+'</div><div class="week-plan-metrics"><span>💶 '+agendaEsc(priceText)+'</span><span>🚗 '+agendaEsc(distanceText)+'</span></div>'+(requested?'<div class="week-plan-follow">'+agendaEsc(follow.replace(/^ · /,''))+'</div>':'')+'</div>';
   }).join('');
-  if(blocked||past||!top){
-   const reason=blocked?'No disponibles':past?'Passat':list.length?'Sense opcions actives':'Sense fires';
-   const availability=blocked?'<p class="week-plan-empty">Ni Confeccions Ribera ni @ByNuska poden fer fires en aquest bloc.</p>':'';
-   const content=items||'<p class="week-plan-empty">No hi ha fires a l’agenda per a aquestes dates.</p>';
-   const tone=blocked?'blocked':'empty';
-   return '<details class="week-plan-card compact '+tone+'"><summary class="week-plan-card-head"><span>📅 '+title+'</span><span class="week-plan-count">'+reason+'</span></summary>'+availability+content+'</details>';
-  }
-  const tone=fairPlanPriority(top)===0?'going':fairPlanPriority(top)===1?'wanted':'pending';
-  return '<div class="week-plan-card '+tone+'"><div class="week-plan-card-head"><h4>📅 '+title+' '+bridgeLabel+'</h4><span class="week-plan-count">'+list.length+' opcions'+'</span></div>'+items+'<div class="week-plan-advice">💡 '+advice+'</div></div>';
+  const tone=blocked?'blocked':!list.length?'empty':fairPlanPriority(top)===0?'going':fairPlanPriority(top)===1?'wanted':'pending';
+  return '<div class="week-plan-card '+tone+'"><div class="week-plan-card-head"><h4>📅 '+title+' '+bridgeLabel+'</h4><span class="week-plan-count">'+(blocked?'⛔ No disponibles':list.length+' opcions')+'</span></div>'+(blocked?'<div class="week-plan-blocked">🚫 <strong>Bloc no disponible</strong><span>Ni Confeccions Ribera ni @ByNuska poden fer fires.</span></div>':(list.length?items:'<p class="week-plan-empty">Sense fires disponibles a l’agenda.</p>'))+'<div class="week-plan-advice">💡 '+advice+'</div></div>';
  }).join('');
 }
-function renderAgenda(){renderWeekendPlan();agendaKpiSync();refreshHomeStats();renderFairCalendar();const compact=document.getElementById("agendaCompactSort");if(compact)compact.value=agendaSortField;const p=document.getElementById('agendaPoble');if(!p)return;const chosen=p.value;p.innerHTML='<option value="">Totes</option>'+[...new Set(AGENDA_ITEMS.filter(r=>!fairIsPast(r)).map(r=>r.poble).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ca')).map(x=>'<option value="'+agendaEsc(x)+'">'+agendaEsc(x)+'</option>').join('');p.value=chosen;
-const view=document.getElementById('agendaVista').value,state=document.getElementById('agendaEstat')?.value||'',town=p.value,q=document.getElementById('agendaCerca').value.toLocaleLowerCase('ca');const baseData=AGENDA_ITEMS.filter(r=>!fairIsPast(r)&&fairDateMatches(r,'agenda')&&(!state||r.estat===state)&&(!town||r.poble===town)&&(!q||[r.nom,r.poble,r.notes].join(' ').toLocaleLowerCase('ca').includes(q))&&(view==='all'||(view==='active'&&!agendaIsDiscarded(r))||(view==='discarded'&&agendaIsDiscarded(r)))).sort((a,b)=>{const k=agendaSortField;const x=a[k],y=b[k];if(k==='estat')return (agendaStateIndex(x)-agendaStateIndex(y))*agendaSortDirection;if(k==='preu'){const nx=x===''||x==null?Infinity:Number(x),ny=y===''||y==null?Infinity:Number(y);return (nx-ny)*agendaSortDirection;}return String(x||'').localeCompare(String(y||''),'ca',{numeric:true,sensitivity:'base'})*agendaSortDirection;});
+function renderAgenda(){renderWeekendPlan();agendaKpiSync();refreshHomeStats();renderFairCalendar();renderAgendaRadar();agendaSyncUi();const compact=document.getElementById("agendaCompactSort");if(compact)compact.value=agendaSortField;const p=document.getElementById('agendaPoble');if(!p)return;const chosen=p.value;p.innerHTML='<option value="">Totes</option>'+[...new Set(AGENDA_ITEMS.filter(r=>!fairIsPast(r)).map(r=>r.poble).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ca')).map(x=>'<option value="'+agendaEsc(x)+'">'+agendaEsc(x)+'</option>').join('');p.value=chosen;
+const view=document.getElementById('agendaVista').value,state=document.getElementById('agendaEstat')?.value||'',town=p.value,q=document.getElementById('agendaCerca').value.toLocaleLowerCase('ca');const baseData=AGENDA_ITEMS.filter(r=>!fairIsPast(r)&&fairDateMatches(r,'agenda')&&(!state||r.estat===state)&&(!town||r.poble===town)&&(!q||[r.nom,r.poble,r.notes,r.motiu,r.submotiu].join(' ').toLocaleLowerCase('ca').includes(q))&&(view==='all'||(view==='active'&&!agendaIsDiscarded(r))||(view==='discarded'&&agendaIsDiscarded(r)))).sort((a,b)=>{const k=agendaSortField;const x=a[k],y=b[k];if(k==='estat')return (agendaStateIndex(x)-agendaStateIndex(y))*agendaSortDirection;if(k==='preu'){const nx=x===''||x==null?Infinity:Number(x),ny=y===''||y==null?Infinity:Number(y);return (nx-ny)*agendaSortDirection;}return String(x||'').localeCompare(String(y||''),'ca',{numeric:true,sensitivity:'base'})*agendaSortDirection;});
 const data=agendaKpiActive==='urgent'?baseData.filter(r=>agendaAlert(r).includes('⚠️')):baseData;
-document.getElementById('agendaKpis').innerHTML=[['all','Fires a la vista',baseData.length],['wanted','Ens hi volen',baseData.filter(x=>x.estat==='Ens hi volen').length],['confirmed','Hi anem',baseData.filter(x=>x.estat==='Hi anem').length],['urgent','Terminis urgents',baseData.filter(x=>agendaAlert(x).includes('⚠️')).length]].map(([id,k,v])=>'<button type="button" class="kc agenda-kpi-btn'+(agendaKpiActive===id?' agenda-kpi-active':'')+'" onclick="agendaKpiSelect(\''+id+'\')" aria-pressed="'+(agendaKpiActive===id)+'" title="Filtra les fires: '+k+'"><span class="kl">'+k+'</span><span class="kv">'+v+'</span></button>').join('');
-document.getElementById('agendaRows').innerHTML=data.map(r=>'<tr'+(agendaReviewReason(r)?' class="fair-review-row"':'')+'><td data-label="Fira"><strong>'+agendaEsc(r.nom)+'</strong>'+agendaReviewMark(r)+'</td><td data-label="Població">'+agendaEsc(r.poble)+'</td><td data-label="Data inici">'+agendaDate(r.inici)+'</td><td data-label="Data fi">'+agendaDate(r.fi)+'</td><td data-label="Termini inscripció">'+agendaDeadlineChip(r)+'</td><td data-label="Estat">'+agendaEsc(agendaStateLabel(r.estat))+agendaReviewMark(r)+'</td><td data-label="Marca">'+agendaBrandIcons(r)+'</td><td data-label="Preu">'+((r.preu!==''&&r.preu!=null&&Number.isFinite(Number(r.preu)))?Math.round(Number(r.preu))+' €':'—')+'</td><td data-label="Contacte">'+agendaContactCell(r)+'</td><td data-label="Enllaços">'+agendaLinks(r)+'</td><td data-label="Accions"><span class="fair-row-actions"><button class="rb fair-icon-btn" type="button" title="Editar aquesta fira" aria-label="Editar aquesta fira" onclick="agendaShow('+JSON.stringify(r.id).replace(/"/g,'&quot;')+')">✏️</button><button class="rb fair-icon-btn" type="button" title="Duplicar aquesta fira" aria-label="Duplicar aquesta fira" onclick="agendaDuplicate('+JSON.stringify(r.id).replace(/"/g,'&quot;')+')">📋</button>'+agendaExtraNotesButton(r)+'</span></td></tr>').join('')||'<tr><td colspan="11">No hi ha fires en aquesta vista.</td></tr>';}
+document.getElementById('agendaKpis').innerHTML=[['all','Fires a la vista',baseData.length],['wanted','Ens hi volen',baseData.filter(x=>x.estat==='Ens hi volen').length],['confirmed','Hi anem / Confirmades',baseData.filter(x=>x.estat==='Hi anem').length],['urgent','Terminis urgents',baseData.filter(x=>agendaAlert(x).includes('⚠️')).length]].map(([id,k,v])=>'<button type="button" class="kc agenda-kpi-btn'+(agendaKpiActive===id?' agenda-kpi-active':'')+'" onclick="agendaKpiSelect(\''+id+'\')" aria-pressed="'+(agendaKpiActive===id)+'" title="Filtra les fires: '+k+'"><span class="kl">'+k+'</span><span class="kv">'+v+'</span></button>').join('');
+document.getElementById('agendaRows').innerHTML=data.map(r=>'<tr'+(agendaReviewReason(r)?' class="fair-review-row"':'')+'><td data-label="Fira"><strong>'+agendaEsc(r.nom)+'</strong>'+agendaReviewMark(r)+'</td><td data-label="Població">'+agendaEsc(r.poble)+'</td><td data-label="Data inici">'+agendaDate(r.inici)+'</td><td data-label="Data fi">'+agendaDate(r.fi)+'</td><td data-label="Termini inscripció">'+agendaDeadlineChip(r)+'</td><td data-label="Estat">'+agendaEsc(agendaStateLabel(r.estat))+(agendaReasonLabel(r)?'<span class="agenda-reason-line">'+agendaEsc(agendaReasonLabel(r))+'</span>':'')+agendaReviewMark(r)+'</td><td data-label="Marca">'+agendaBrandIcons(r)+'</td><td data-label="Preu">'+((r.preu!==''&&r.preu!=null&&Number.isFinite(Number(r.preu)))?Math.round(Number(r.preu))+' €':'—')+'</td><td data-label="Contacte">'+agendaContactCell(r)+'</td><td data-label="Enllaços">'+agendaLinks(r)+'</td><td data-label="Accions"><span class="fair-row-actions"><button class="rb fair-icon-btn" type="button" title="Editar aquesta fira" aria-label="Editar aquesta fira" onclick="agendaShow('+JSON.stringify(r.id).replace(/"/g,'&quot;')+')">✏️</button><button class="rb fair-icon-btn" type="button" title="Duplicar aquesta fira" aria-label="Duplicar aquesta fira" onclick="agendaDuplicate('+JSON.stringify(r.id).replace(/"/g,'&quot;')+')">📋</button>'+agendaExtraNotesButton(r)+'</span></td></tr>').join('')||'<tr><td colspan="11">No hi ha fires en aquesta vista.</td></tr>';}
 
 function agendaDuplicate(id){
  const source=AGENDA_ITEMS.find(r=>r.id===id);if(!source)return;
- const copy={...source,id:'copy-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),inici:'',fi:'',termini:'',estat:'Per Consultar',notes:'',duplicadaDe:id};
+ const copy={...source,id:'copy-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),inici:'',fi:'',termini:'',estat:'Per consultar',motiu:'',submotiu:'',notes:'',revisarAnySeguent:true,duplicadaDe:id};
  AGENDA_ITEMS.push(copy);agendaSave();
  const view=document.getElementById('agendaVista');if(view)view.value='all';
  renderAgenda();initFairHistory();agendaShow(copy.id);
 }
-function agendaNew(){const id='new-'+Date.now();AGENDA_ITEMS.push({id,nom:'Nova fira',poble:'',inici:'',fi:'',termini:'',estat:'Per Consultar',marca:'Ambdues',preu:'',notes:'',contacte:'',url:'',urlInscripcio:''});agendaSave();document.getElementById('agendaVista').value='all';renderAgenda();agendaShow(id);}
+function agendaNew(){const id='new-'+Date.now();AGENDA_ITEMS.push({id,nom:'Nova fira',poble:'',inici:'',fi:'',termini:'',estat:'Per consultar',motiu:'',submotiu:'',marca:'Ambdues',revisarAnySeguent:true,preu:'',notes:'',contacte:'',url:'',urlInscripcio:''});agendaSave();document.getElementById('agendaVista').value='all';renderAgenda();agendaShow(id);}
 function agendaCloseEditor(){for(const k of ["agendaDetail","historyDetail"]){const el=document.getElementById(k);if(el)el.style.display="none";}}
-function agendaShow(id){const r=AGENDA_ITEMS.find(x=>x.id===id);if(!r)return;const e=document.getElementById(document.getElementById('tab-history')?.hidden===false?'historyDetail':'agendaDetail');e.style.display='block';const fields=[['nom','Nom','text'],['poble','Població','text'],['inici','Data inici','date'],['fi','Data fi','date'],['termini','Termini inscripció','date'],['dataContacte','Data de contacte (si hem contactat)','date'],['preu','Preu de la fira (€)','number'],['url','Web de la fira','url'],['urlInscripcio','Enllaç d’inscripció','url']];e.innerHTML='<div class="tht">Editar fira</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:12px 0">'+fields.map(([key,label,type])=>'<label style="display:grid;gap:5px">'+label+'<input class="fgs" style="width:100%" type="'+type+'" id="ag-'+key+'" value="'+agendaEsc(r[key]??'')+'"'+(key==='preu'?' min="0" max="100" step="1"':'')+'></label>').join('')+'<label style="display:grid;gap:5px">Marca / disponibilitat<select class="fgs" id="ag-marca">'+AGENDA_BRANDS.map(v=>'<option value="'+agendaEsc(v)+'" '+(v===r.marca||v==='ConfeccionsRibera'&&r.marca==='Confeccions Ribera'||v==='@ByNuska'&&r.marca==='ByNuska'?'selected':'')+'>'+agendaEsc(v)+'</option>').join('')+'</select></label><label style="display:grid;gap:5px">Com hem contactat?<select class="fgs" id="ag-contacte">'+AGENDA_CONTACTS.map(v=>'<option value="'+agendaEsc(v)+'" '+(v===(r.contacte||'')?'selected':'')+'>'+(v?agendaEsc(v):'Sense contactar / No indicat')+'</option>').join('')+'</select></label><label style="display:grid;gap:5px">Estat de la fira<select class="fgs" id="ag-estat">'+AGENDA_STATES.map((v,i)=>'<option value="'+agendaEsc(v)+'" '+(v===agendaState(r.estat)?'selected':'')+'>'+i+'. '+agendaEsc(v)+'</option>').join('')+'</select></label></div><label style="display:grid;gap:5px;margin:10px 0">Altres dates / edicions periòdiques (una per línia: AAAA-MM-DD o AAAA-MM-DD / AAAA-MM-DD)<textarea id="ag-repeticions" class="fgs" style="width:100%;min-height:62px" placeholder=""></textarea></label><label style="display:grid;gap:5px;margin:10px 0">Observacions ampliades (visibles amb la icona 📝)<textarea id="ag-notesAmpliades" class="fgs" style="display:block;width:100%;min-height:110px">'+agendaEsc(agendaAllNotes(r))+'</textarea></label><p style="margin:12px 0;color:#a05246">'+agendaEsc(agendaOverlaps(r))+'</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="rb" onclick="agendaUpdate('+JSON.stringify(id).replace(/"/g,'&quot;')+')">Desa i Tanca</button><button class="rb" onclick="agendaCloseEditor()">Tanca</button><button class="rb" style="margin-left:auto;color:#a52e30;border-color:#d9a1a1" onclick="agendaDelete('+JSON.stringify(id).replace(/"/g,'&quot;')+')">🗑️ Elimina la fira</button></div>';e.scrollIntoView({behavior:'smooth',block:'nearest'});}
+function agendaReasonSelectHtml(r){
+ const reasons=AGENDA_REASONS[agendaState(r.estat)]||[];
+ if(!reasons.length)return '';
+ return '<label id="ag-motiu-wrap" style="display:grid;gap:5px">Motiu<select class="fgs" id="ag-motiu" onchange="agendaMotiuUI()"><option value="">— Sense especificar —</option>'+reasons.map(v=>'<option value="'+agendaEsc(v)+'" '+(v===(r.motiu||'')?'selected':'')+'>'+agendaEsc(v)+'</option>').join('')+'</select></label>';
+}
+function agendaSubreasonSelectHtml(r){
+ const key=agendaState(r.estat)+'|'+(r.motiu||'');const subs=AGENDA_SUBREASONS[key]||[];
+ if(!subs.length)return '';
+ return '<label id="ag-submotiu-wrap" style="display:grid;gap:5px">Detall<select class="fgs" id="ag-submotiu"><option value="">— Sense especificar —</option>'+subs.map(v=>'<option value="'+agendaEsc(v)+'" '+(v===(r.submotiu||'')?'selected':'')+'>'+agendaEsc(v)+'</option>').join('')+'</select></label>';
+}
+function agendaMotiuUI(){
+ const state=document.getElementById('ag-estat')?.value||'Per consultar';
+ const area=document.getElementById('ag-reason-area');if(!area)return;
+ const tmp={estat:state,motiu:document.getElementById('ag-motiu')?.value||'',submotiu:document.getElementById('ag-submotiu')?.value||''};
+ area.innerHTML=agendaReasonSelectHtml(tmp)+agendaSubreasonSelectHtml(tmp);
+}
+function agendaShow(id){
+ const r=AGENDA_ITEMS.find(x=>x.id===id);if(!r)return;agendaNormalizeRecord(r);
+ const e=document.getElementById(document.getElementById('tab-history')?.hidden===false?'historyDetail':'agendaDetail');e.style.display='block';
+ const fields=[['nom','Nom','text'],['poble','Població','text'],['inici','Data inici','date'],['fi','Data fi','date'],['termini','Termini inscripció','date'],['dataContacte','Data de contacte (si hem contactat)','date'],['preu','Preu de la fira (€)','number'],['url','Web de la fira','url'],['urlInscripcio','Enllaç d’inscripció','url']];
+ e.innerHTML='<div class="tht">Editar fira</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:12px 0">'+fields.map(([key,label,type])=>'<label style="display:grid;gap:5px">'+label+'<input class="fgs" style="width:100%" type="'+type+'" id="ag-'+key+'" value="'+agendaEsc(r[key]??'')+'"'+(key==='preu'?' min="0" step="1"':'')+'></label>').join('')+'<label style="display:grid;gap:5px">Marca / disponibilitat<select class="fgs" id="ag-marca">'+AGENDA_BRANDS.map(v=>'<option value="'+agendaEsc(v)+'" '+(v===r.marca||v==='ConfeccionsRibera'&&r.marca==='Confeccions Ribera'||v==='@ByNuska'&&r.marca==='ByNuska'?'selected':'')+'>'+agendaEsc(v)+'</option>').join('')+'</select></label><label style="display:grid;gap:5px">Com hem contactat?<select class="fgs" id="ag-contacte">'+AGENDA_CONTACTS.map(v=>'<option value="'+agendaEsc(v)+'" '+(v===(r.contacte||'')?'selected':'')+'>'+(v?agendaEsc(v):'Sense contactar / No indicat')+'</option>').join('')+'</select></label><label style="display:grid;gap:5px">Estat de la fira<select class="fgs" id="ag-estat" onchange="agendaMotiuUI()">'+AGENDA_STATES.map((v,i)=>'<option value="'+agendaEsc(v)+'" '+(v===agendaState(r.estat)?'selected':'')+'>'+(i+1)+'. '+agendaEsc(v)+'</option>').join('')+'</select></label><div id="ag-reason-area" style="display:contents">'+agendaReasonSelectHtml(r)+agendaSubreasonSelectHtml(r)+'</div><label style="display:flex;align-items:center;gap:8px;margin-top:22px"><input type="checkbox" id="ag-revisarAnySeguent" '+(r.revisarAnySeguent!==false?'checked':'')+'> Tornar-la a revisar l’any següent</label></div><label style="display:grid;gap:5px;margin:10px 0">Altres dates / edicions periòdiques (una per línia: AAAA-MM-DD o AAAA-MM-DD / AAAA-MM-DD)<textarea id="ag-repeticions" class="fgs" style="width:100%;min-height:62px" placeholder=""></textarea></label><label style="display:grid;gap:5px;margin:10px 0">Observacions ampliades (visibles amb la icona 📝)<textarea id="ag-notesAmpliades" class="fgs" style="display:block;width:100%;min-height:110px">'+agendaEsc(agendaAllNotes(r))+'</textarea></label><p style="margin:12px 0;color:#a05246">'+agendaEsc(agendaOverlaps(r))+'</p><div id="ag-save-note"></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="rb" onclick="agendaUpdate('+JSON.stringify(id).replace(/"/g,'&quot;')+')">Desa i Tanca</button><button class="rb" onclick="agendaCloseEditor()">Tanca</button><button class="rb" style="margin-left:auto;color:#a52e30;border-color:#d9a1a1" onclick="agendaDelete('+JSON.stringify(id).replace(/"/g,'&quot;')+')">🗑️ Elimina la fira</button></div>';
+ e.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
 function agendaShowNotes(id){
  const r=AGENDA_ITEMS.find(x=>String(x.id)===String(id));if(!r)return;
  let d=document.getElementById('fairExtraNotesDialog');
@@ -2453,6 +2546,9 @@ function agendaUpdate(id){
  const updated={};
  for(const k of ['nom','poble','inici','fi','termini','marca','preu','url','urlInscripcio','contacte','dataContacte','notesAmpliades','estat'])updated[k]=document.getElementById('ag-'+k).value;
  updated.estat=agendaState(updated.estat);
+ updated.motiu=document.getElementById('ag-motiu')?.value||'';
+ updated.submotiu=document.getElementById('ag-submotiu')?.value||'';
+ updated.revisarAnySeguent=document.getElementById('ag-revisarAnySeguent')?.checked!==false;
  if(updated.inici&&updated.fi&&updated.fi<updated.inici){alert('La data fi no pot ser anterior a la data inici.');return;}
  const repText=document.getElementById('ag-repeticions')?.value.trim()||'';
  const repDates=repText?repText.split(/\n+/).map(line=>line.trim()).filter(Boolean):[];
@@ -2462,28 +2558,33 @@ function agendaUpdate(id){
   if(!m||!Number.isFinite(Date.parse(m[1]))||(m[2]&&(!Number.isFinite(Date.parse(m[2]))||m[2]<m[1]))){alert('Data periòdica no vàlida: '+line);return;}
   repetitions.push({inici:m[1],fi:m[2]||m[1]});
  }
- updated.notes='';Object.assign(r,updated);r.revisarEstat=false;
+ updated.notes='';Object.assign(r,updated);agendaNormalizeRecord(r);r.revisarEstat=false;
  for(const dates of repetitions){
   if(AGENDA_ITEMS.some(x=>x.nom===r.nom&&x.poble===r.poble&&x.inici===dates.inici&&x.fi===dates.fi))continue;
-  AGENDA_ITEMS.push({...r,...dates,id:'repet-'+Date.now()+'-'+Math.random().toString(36).slice(2,8),termini:'',notes:(r.notes||'')+' · Edició periòdica'});
+  AGENDA_ITEMS.push({...r,...dates,id:'repet-'+Date.now()+'-'+Math.random().toString(36).slice(2,8),termini:'',estat:'Per consultar',motiu:'',submotiu:'',dataContacte:'',notes:(r.notes||'')+' · Edició periòdica'});
  }
+ const movedToHistory=fairIsPast(r);
  agendaSave();renderAgenda();initFairHistory();agendaCloseEditor();agendaBackupBanner();
+ if(movedToHistory){
+   const btn=document.querySelector('#groupTabs button:nth-child(2)');
+   if(confirm('Fira desada correctament. Com que la data ja ha passat, ara la trobaràs a l’Històric de fires.\n\nVols obrir l’Històric ara?'))openSection('history');
+ }
 }
-function exportAgenda(){const a=document.createElement('a'),url=URL.createObjectURL(new Blob([JSON.stringify({format:'ordits-trames-agenda',version:1,exported:new Date().toISOString(),fires:AGENDA_ITEMS},null,2)],{type:'application/json'}));a.href=url;a.download='agenda_fires_ordits_i_trames.json';a.click();agendaBackupPending(false);setTimeout(()=>URL.revokeObjectURL(url),1500);}
+function exportAgenda(){const a=document.createElement('a'),url=URL.createObjectURL(new Blob([JSON.stringify({format:'ordits-trames-agenda',version:2,exported:new Date().toISOString(),fires:AGENDA_ITEMS},null,2)],{type:'application/json'}));a.href=url;a.download='agenda_fires_ordits_i_trames.json';a.click();agendaBackupPending(false);setTimeout(()=>URL.revokeObjectURL(url),1500);}
 async function importAgenda(input){const f=input.files[0];if(!f)return;try{const data=JSON.parse(await f.text());if(data.format!=='ordits-trames-agenda'||!Array.isArray(data.fires))throw Error('Format no reconegut');if(!confirm('Substituir l’agenda actual per la còpia importada? Exporta primer una còpia si vols conservar els canvis.'))return;AGENDA_ITEMS=data.fires;try{localStorage.removeItem(AGENDA_DELETED_KEY);}catch(e){}agendaNormalizeStates();agendaSave(false);agendaBackupPending(false);renderAgenda();initFairHistory();agendaCloseEditor();}catch(e){alert('No s’ha pogut importar la còpia: '+e.message);}finally{input.value='';}}
 let historySortField='inici',historySortDirection=-1;
 function historySortBy(k){historySortDirection=historySortField===k?-historySortDirection:1;historySortField=k;renderFairHistory();}
 function initFairHistory(){const y=document.getElementById('historyYear'),st=document.getElementById('historyState');if(!y||!st)return;
-const years=[...new Set(AGENDA_ITEMS.filter(r=>r.inici && (r.inici<'2026-01-01'||r.estat==='Celebrada')).map(r=>r.inici.slice(0,4)))].sort().reverse();
+const years=[...new Set(AGENDA_ITEMS.filter(r=>r.inici&&fairIsPast(r)).map(r=>r.inici.slice(0,4)))].sort().reverse();
 y.innerHTML='<option value="">Tots els anys</option>'+years.map(v=>'<option>'+v+'</option>').join('');
-st.innerHTML='<option value="">Tots els estats</option>'+AGENDA_STATES.map((v,i)=>'<option value="'+agendaEsc(v)+'">'+i+'. '+agendaEsc(v)+'</option>').join('');renderFairHistory();}
+st.innerHTML='<option value="">Tots els estats</option>'+AGENDA_STATES.map((v,i)=>'<option value="'+agendaEsc(v)+'">'+(i+1)+'. '+agendaEsc(v)+'</option>').join('');renderFairHistory();}
 function renderFairHistory(){const compact=document.getElementById("historyCompactSort");if(compact)compact.value=historySortField;const body=document.getElementById('historyRows');if(!body)return;
 const historyView=document.getElementById('historyView')?.value||'active';const excluded=AGENDA_STATES.slice(5);const q=(document.getElementById('historySearch').value||'').toLocaleLowerCase('ca'),year=document.getElementById('historyYear').value,state=document.getElementById('historyState').value;
-const data=AGENDA_ITEMS.filter(r=>fairIsPast(r)&&fairDateMatches(r,'history')&&(historyView==='all'||(historyView==='active'&&!excluded.includes(r.estat))||(historyView==='discarded'&&excluded.includes(r.estat)))&&(!year||r.inici.startsWith(year))&&(!state||r.estat===state)&&(!q||[r.nom,r.poble,r.notes].join(' ').toLocaleLowerCase('ca').includes(q))).sort((a,b)=>{const x=a[historySortField],y=b[historySortField];if(historySortField==='estat')return (agendaStateIndex(x)-agendaStateIndex(y))*historySortDirection;if(historySortField==='preu')return ((x==null||x===''?Infinity:Number(x))-(y==null||y===''?Infinity:Number(y)))*historySortDirection;return String(x||'').localeCompare(String(y||''),'ca',{numeric:true,sensitivity:'base'})*historySortDirection;});
+const data=AGENDA_ITEMS.filter(r=>fairIsPast(r)&&fairDateMatches(r,'history')&&(historyView==='all'||(historyView==='active'&&!agendaIsDiscarded(r))||(historyView==='discarded'&&agendaIsDiscarded(r)))&&(!year||r.inici.startsWith(year))&&(!state||r.estat===state)&&(!q||[r.nom,r.poble,r.notes,r.motiu,r.submotiu].join(' ').toLocaleLowerCase('ca').includes(q))).sort((a,b)=>{const x=a[historySortField],y=b[historySortField];if(historySortField==='estat')return (agendaStateIndex(x)-agendaStateIndex(y))*historySortDirection;if(historySortField==='preu')return ((x==null||x===''?Infinity:Number(x))-(y==null||y===''?Infinity:Number(y)))*historySortDirection;return String(x||'').localeCompare(String(y||''),'ca',{numeric:true,sensitivity:'base'})*historySortDirection;});
 document.getElementById('historyCount').textContent=data.length+' fires a l’històric';
-body.innerHTML=data.map(r=>'<tr'+(agendaReviewReason(r)?' class="fair-review-row"':'')+'><td data-label="Fira"><strong>'+agendaEsc(r.nom)+'</strong>'+agendaReviewMark(r)+'</td><td data-label="Població">'+agendaEsc(r.poble)+'</td><td data-label="Data inici">'+agendaDate(r.inici)+'</td><td data-label="Data fi">'+agendaDate(r.fi)+'</td><td data-label="Estat">'+agendaEsc(agendaStateLabel(r.estat))+agendaReviewMark(r)+'</td><td data-label="Marca">'+agendaBrandIcons(r)+'</td><td data-label="Preu">'+((r.preu!==''&&r.preu!=null&&Number.isFinite(Number(r.preu)))?Math.round(Number(r.preu))+' €':'—')+'</td><td data-label="Contacte">'+agendaContactCell(r)+'</td><td data-label="Enllaços">'+agendaLinks(r)+'</td><td data-label="Accions"><span class="fair-row-actions"><button class="rb fair-icon-btn" type="button" title="Editar aquesta fira" aria-label="Editar aquesta fira" onclick="agendaShow('+JSON.stringify(r.id).replace(/"/g,'&quot;')+')">✏️</button><button class="rb fair-icon-btn" type="button" title="Duplicar aquesta fira" aria-label="Duplicar aquesta fira" onclick="agendaDuplicate('+JSON.stringify(r.id).replace(/"/g,'&quot;')+')">📋</button>'+agendaExtraNotesButton(r)+'</span></td></tr>').join('')||'<tr><td colspan="10">No hi ha fires amb aquests filtres.</td></tr>';
+body.innerHTML=data.map(r=>'<tr'+(agendaReviewReason(r)?' class="fair-review-row"':'')+'><td data-label="Fira"><strong>'+agendaEsc(r.nom)+'</strong>'+agendaReviewMark(r)+'</td><td data-label="Població">'+agendaEsc(r.poble)+'</td><td data-label="Data inici">'+agendaDate(r.inici)+'</td><td data-label="Data fi">'+agendaDate(r.fi)+'</td><td data-label="Estat">'+agendaEsc(agendaStateLabel(r.estat))+(agendaReasonLabel(r)?'<span class="agenda-reason-line">'+agendaEsc(agendaReasonLabel(r))+'</span>':'')+agendaReviewMark(r)+'</td><td data-label="Marca">'+agendaBrandIcons(r)+'</td><td data-label="Preu">'+((r.preu!==''&&r.preu!=null&&Number.isFinite(Number(r.preu)))?Math.round(Number(r.preu))+' €':'—')+'</td><td data-label="Contacte">'+agendaContactCell(r)+'</td><td data-label="Enllaços">'+agendaLinks(r)+'</td><td data-label="Accions"><span class="fair-row-actions"><button class="rb fair-icon-btn" type="button" title="Editar aquesta fira" aria-label="Editar aquesta fira" onclick="agendaShow('+JSON.stringify(r.id).replace(/"/g,'&quot;')+')">✏️</button><button class="rb fair-icon-btn" type="button" title="Duplicar aquesta fira" aria-label="Duplicar aquesta fira" onclick="agendaDuplicate('+JSON.stringify(r.id).replace(/"/g,'&quot;')+')">📋</button>'+agendaExtraNotesButton(r)+'</span></td></tr>').join('')||'<tr><td colspan="10">No hi ha fires amb aquests filtres.</td></tr>';
 }
-document.addEventListener('DOMContentLoaded',()=>{initAgendaStateFilter();agendaLoad();renderAgenda();initFairHistory();agendaBackupBanner();});
+document.addEventListener('DOMContentLoaded',()=>{agendaLoad();renderAgenda();initFairHistory();agendaBackupBanner();});
 </script>
 
 
@@ -2624,7 +2725,7 @@ document.addEventListener('DOMContentLoaded',()=>{initAgendaStateFilter();agenda
       call("/rest/v1/productes?select=*&order=ordre.asc.nullslast,nom.asc",{},SB_KEY),
       call("/rest/v1/producte_imatges?select=*&order=ordre.asc",{},SB_KEY)
     ]);
-    products=Array.isArray(p)?p:[];images=Array.isArray(i)?i:[];render();
+    products=Array.isArray(p)?p:[];images=Array.isArray(i)?i:[];render();window.agendaSyncUi?.();
   }
 
   async function loadAuthenticated(){
@@ -2635,7 +2736,7 @@ document.addEventListener('DOMContentLoaded',()=>{initAgendaStateFilter();agenda
       call("/rest/v1/productes?select=*&order=ordre.asc.nullslast,nom.asc",{},session.access_token),
       call("/rest/v1/producte_imatges?select=*&order=ordre.asc",{},session.access_token)
     ]);
-    products=Array.isArray(p)?p:[];images=Array.isArray(i)?i:[];mode="admin";render();
+    products=Array.isArray(p)?p:[];images=Array.isArray(i)?i:[];mode="admin";render();window.agendaSyncUi?.();
   }
 
   async function signIn(email,password){
@@ -2751,22 +2852,31 @@ document.addEventListener('DOMContentLoaded',()=>{initAgendaStateFilter();agenda
     },session.access_token);
   }
   function showRecoverySetPasswordMode(){
-    const dlg=$("#sbCatalogRecoveryDialog");
-    if(!dlg)return;
-
-    // El diàleg original és dins d'una pestanya que pot estar oculta quan
-    // Supabase redirigeix directament a la portada. El movem al body.
-    if(dlg.parentElement!==document.body){
-      document.body.appendChild(dlg);
-    }
-
     $("#sbRecoveryNewPasswordWrap").hidden=false;
     $("#sbRecoverySendBtn").hidden=true;
     $("#sbRecoverySaveBtn").hidden=false;
     $("#sbRecoveryMsg").textContent="Enllaç validat. Escriu ara la nova contrasenya.";
-
-    if(!dlg.open)dlg.showModal();
+    if(!$("#sbCatalogRecoveryDialog").open)$("#sbCatalogRecoveryDialog").showModal();
   }
+
+
+  window.orditsAgendaSupabase={
+    status(){return {admin:mode==='admin'&&!!session?.access_token,email:currentUser?.email||''};},
+    async get(){
+      if(mode!=='admin'||!session?.access_token)throw new Error('Cal iniciar sessió com a administrador.');
+      const rows=await call('/rest/v1/ordits_dashboard_data?kind=eq.fires&select=payload,updated_at,updated_by',{},session.access_token);
+      return Array.isArray(rows)&&rows.length?rows[0]:null;
+    },
+    async save(payload,expectedUpdatedAt){
+      if(mode!=='admin'||!session?.access_token||!currentUser?.id)throw new Error('Cal iniciar sessió com a administrador.');
+      let path='/rest/v1/ordits_dashboard_data?kind=eq.fires';
+      if(expectedUpdatedAt)path+='&updated_at=eq.'+encodeURIComponent(expectedUpdatedAt);
+      const body={payload,updated_at:new Date().toISOString(),updated_by:currentUser.id};
+      const rows=await call(path,{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify(body)},session.access_token);
+      if(!Array.isArray(rows)||!rows.length)throw new Error('La versió compartida ha canviat. Carrega Supabase abans de tornar a desar.');
+      return rows[0];
+    }
+  };
 
   async function start(){
     const isRecovery=parseRecoverySessionFromUrl();
