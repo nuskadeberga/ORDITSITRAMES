@@ -599,6 +599,15 @@ td[data-label="Marca"]{white-space:nowrap;font-size:19px}
 .week-plan-item[role="button"], .agenda-radar-row[role="button"], .agenda-radar-item[role="button"]{cursor:pointer}
 .week-plan-item[role="button"]:hover, .agenda-radar-row[role="button"]:hover, .agenda-radar-item[role="button"]:hover{outline:2px solid rgba(90,70,55,.12);outline-offset:-2px}
 .week-plan-item[role="button"]:focus-visible, .agenda-radar-row[role="button"]:focus-visible, .agenda-radar-item[role="button"]:focus-visible{outline:2px solid #8a6a55;outline-offset:2px}
+</style><style id="ordits-v6-css">
+.week-plan-card{overflow:hidden}
+.week-plan-card>summary{list-style:none;cursor:pointer}
+.week-plan-card>summary::-webkit-details-marker{display:none}
+.week-plan-card>summary:before{content:"▸";font-size:12px;margin-right:7px;transition:transform .15s ease}
+.week-plan-card[open]>summary:before{transform:rotate(90deg)}
+.week-plan-card.empty>summary:before{opacity:.55}
+.week-plan-card.empty{min-height:0!important;height:auto!important}
+.week-plan-card.empty .week-plan-card-head{min-height:0!important}
 </style></head>
 <body>
 
@@ -2266,6 +2275,7 @@ function agendaNormalizeRecord(r){
    else if(!AGENDA_SUBREASONS[subkey].includes(r.submotiu||''))r.submotiu='';
  }
  if(r.revisarAnySeguent===undefined)r.revisarAnySeguent=true;
+ if(r.amagarPlanificador===undefined)r.amagarPlanificador=(r.estat==='No ens hi volen');
  if(r.revisarEstat!==true)r.revisarEstat=false;
  return r;
 }
@@ -2632,7 +2642,7 @@ function renderWeekendPlan(){
   // dilluns/dimarts -> cap de setmana anterior
   // per tant cada finestra útil és divendres-dimarts.
   const blocked=w.sat==='2026-11-28';
-  const entries=AGENDA_ITEMS.filter(r=>r.inici&&r.inici<=w.tue&&(r.fi||r.inici)>=w.fri&&!agendaIsDiscarded(r)&&!fairIsPast(r));
+  const entries=AGENDA_ITEMS.filter(r=>r.inici&&r.inici<=w.tue&&(r.fi||r.inici)>=w.fri&&!agendaIsDiscarded(r)&&!r.amagarPlanificador&&!fairIsPast(r));
   const uniq=new Map();for(const r of entries){const key=[r.nom,r.poble].join('|').toLowerCase();if(!uniq.has(key)||fairPlanScore(r)<fairPlanScore(uniq.get(key)))uniq.set(key,r);}
   // ORDRE ACORDAT: estat/prioritat primer; després data dins de cada nivell.
   const list=[...uniq.values()].sort((a,b)=>
@@ -2669,8 +2679,10 @@ function renderWeekendPlan(){
    return '<div class="week-plan-item '+statusClass+'" role="button" tabindex="0" onclick="agendaOpenFairById('+JSON.stringify(r.id).replace(/"/g,'&quot;')+')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();agendaOpenFairById('+JSON.stringify(r.id).replace(/"/g,'&quot;')+')}"><div class="week-plan-item-head"><strong>'+(i===0?'⭐ ':'')+agendaEsc(r.nom)+'</strong><span class="week-plan-pill '+statusClass+'">'+statusIcon+' '+agendaEsc(r.estat||'Per consultar')+'</span></div>'+(dates?'<div class="week-plan-date">📅 <strong>'+agendaEsc(dates)+'</strong></div>':'')+'<div class="week-plan-town">📍 '+agendaEsc(r.poble||'—')+' · '+agendaEsc(r.marca||'Marca per definir')+'</div><div class="week-plan-metrics"><span>💶 '+agendaEsc(priceText)+'</span><span>🚗 '+agendaEsc(distanceText)+'</span></div>'+(requested?'<div class="week-plan-follow">'+agendaEsc(follow.replace(/^ · /,''))+'</div>':'')+'</div>';
   }).join('');
   const tone=blocked?'blocked':!list.length?'empty':fairPlanPriority(top)===0?'going':fairPlanPriority(top)===1?'wanted':'pending';
-  if(!blocked&&!list.length)return '<div class="week-plan-card empty" title="Sense fires disponibles a l’agenda"><div class="week-plan-card-head"><h4>📅 '+title+'</h4><span class="week-plan-count">0 opcions</span></div></div>';
-  return '<div class="week-plan-card '+tone+'"><div class="week-plan-card-head"><h4>📅 '+title+' '+bridgeLabel+'</h4><span class="week-plan-count">'+(blocked?'⛔ No disponibles':list.length+' opcions')+'</span></div>'+(blocked?'<div class="week-plan-blocked">🚫 <strong>Bloc no disponible</strong><span>Ni Confeccions Ribera ni @ByNuska poden fer fires.</span></div>':items)+'<div class="week-plan-advice">💡 '+advice+'</div></div>';
+  if(!blocked&&!list.length)return '<details class="week-plan-card empty" title="Sense fires disponibles a l’agenda"><summary class="week-plan-card-head"><h4>📅 '+title+'</h4><span class="week-plan-count">0 opcions</span></summary></details>';
+  const today=agendaToday();
+  const defaultOpen=titleTo>=today;
+  return '<details class="week-plan-card '+tone+'" '+(defaultOpen?'open':'')+'><summary class="week-plan-card-head"><h4>📅 '+title+' '+bridgeLabel+'</h4><span class="week-plan-count">'+(blocked?'⛔ No disponibles':list.length+' opcions')+'</span></summary>'+(blocked?'<div class="week-plan-blocked">🚫 <strong>Bloc no disponible</strong><span>Ni Confeccions Ribera ni @ByNuska poden fer fires.</span></div>':items)+'<div class="week-plan-advice">💡 '+advice+'</div></details>';
  }).join('');
 }
 function renderAgenda(){renderWeekendPlan();agendaKpiSync();refreshHomeStats();renderFairCalendar();renderAgendaRadar();agendaSyncUi();const compact=document.getElementById("agendaCompactSort");if(compact)compact.value=agendaSortField;const p=document.getElementById('agendaPoble');if(!p)return;
@@ -2689,7 +2701,7 @@ function agendaDuplicate(id){
  const view=document.getElementById('agendaVista');if(view)view.value='all';
  renderAgenda();initFairHistory();agendaShow(copy.id);
 }
-function agendaNew(){const id='new-'+Date.now();AGENDA_ITEMS.push({id,nom:'Nova fira',poble:'',inici:'',fi:'',termini:'',estat:'Per consultar',motiu:'',submotiu:'',marca:'Ambdues',revisarAnySeguent:true,preu:'',notes:'',contacte:'',url:'',urlInscripcio:''});agendaSave();document.getElementById('agendaVista').value='all';renderAgenda();agendaShow(id);}
+function agendaNew(){const id='new-'+Date.now();AGENDA_ITEMS.push({id,nom:'Nova fira',poble:'',inici:'',fi:'',termini:'',estat:'Per consultar',motiu:'',submotiu:'',marca:'Ambdues',revisarAnySeguent:true,amagarPlanificador:false,preu:'',notes:'',contacte:'',url:'',urlInscripcio:''});agendaSave();document.getElementById('agendaVista').value='all';renderAgenda();agendaShow(id);}
 function agendaCloseEditor(){for(const k of ["agendaDetail","historyDetail"]){const el=document.getElementById(k);if(el)el.style.display="none";}}
 function agendaReasonSelectHtml(r){
  const reasons=AGENDA_REASONS[agendaState(r.estat)]||[];
@@ -2706,12 +2718,14 @@ function agendaMotiuUI(){
  const area=document.getElementById('ag-reason-area');if(!area)return;
  const tmp={estat:state,motiu:document.getElementById('ag-motiu')?.value||'',submotiu:document.getElementById('ag-submotiu')?.value||''};
  area.innerHTML=agendaReasonSelectHtml(tmp)+agendaSubreasonSelectHtml(tmp);
+ const hide=document.getElementById('ag-amagarPlanificador');
+ if(hide&&state==='No ens hi volen')hide.checked=true;
 }
 function agendaShow(id){
  const r=AGENDA_ITEMS.find(x=>x.id===id);if(!r)return;agendaNormalizeRecord(r);
  const e=document.getElementById(document.getElementById('tab-history')?.hidden===false?'historyDetail':'agendaDetail');e.style.display='block';
  const fields=[['nom','Nom','text'],['poble','Població','text'],['inici','Data inici','date'],['fi','Data fi','date'],['termini','Termini inscripció','date'],['dataContacte','Data de contacte (si hem contactat)','date'],['preu','Preu de la fira (€)','number'],['url','Web de la fira','url'],['urlInscripcio','Enllaç d’inscripció','url']];
- e.innerHTML='<div class="tht">Editar fira</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:12px 0">'+fields.map(([key,label,type])=>'<label style="display:grid;gap:5px">'+label+'<input class="fgs" style="width:100%" type="'+type+'" id="ag-'+key+'" value="'+agendaEsc(r[key]??'')+'"'+(key==='preu'?' min="0" step="1"':'')+'></label>').join('')+'<label style="display:grid;gap:5px">Marca / disponibilitat<select class="fgs" id="ag-marca">'+AGENDA_BRANDS.map(v=>'<option value="'+agendaEsc(v)+'" '+(v===r.marca||v==='ConfeccionsRibera'&&r.marca==='Confeccions Ribera'||v==='@ByNuska'&&r.marca==='ByNuska'?'selected':'')+'>'+agendaEsc(v)+'</option>').join('')+'</select></label><label style="display:grid;gap:5px">Com hem contactat?<select class="fgs" id="ag-contacte">'+AGENDA_CONTACTS.map(v=>'<option value="'+agendaEsc(v)+'" '+(v===(r.contacte||'')?'selected':'')+'>'+(v?agendaEsc(v):'Sense contactar / No indicat')+'</option>').join('')+'</select></label><label style="display:grid;gap:5px">Estat de la fira<select class="fgs" id="ag-estat" onchange="agendaMotiuUI()">'+AGENDA_STATES.map((v,i)=>'<option value="'+agendaEsc(v)+'" '+(v===agendaState(r.estat)?'selected':'')+'>'+(i+1)+'. '+agendaEsc(v)+'</option>').join('')+'</select></label><div id="ag-reason-area" style="display:contents">'+agendaReasonSelectHtml(r)+agendaSubreasonSelectHtml(r)+'</div><label style="display:flex;align-items:center;gap:8px;margin-top:22px"><input type="checkbox" id="ag-revisarAnySeguent" '+(r.revisarAnySeguent!==false?'checked':'')+'> Tornar-la a revisar l’any següent</label></div><label style="display:grid;gap:5px;margin:10px 0">Observacions ampliades (visibles amb la icona 📝)<textarea id="ag-notesAmpliades" class="fgs" style="display:block;width:100%;min-height:110px">'+agendaEsc(agendaAllNotes(r))+'</textarea></label><p style="margin:12px 0;color:#a05246">'+agendaEsc(agendaOverlaps(r))+'</p><div id="ag-save-note"></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="rb" onclick="agendaUpdate('+JSON.stringify(id).replace(/"/g,'&quot;')+')">Desa i Tanca</button><button class="rb" onclick="agendaCloseEditor()">Tanca</button><button class="rb" style="margin-left:auto;color:#a52e30;border-color:#d9a1a1" onclick="agendaDelete('+JSON.stringify(id).replace(/"/g,'&quot;')+')">🗑️ Elimina la fira</button></div>';
+ e.innerHTML='<div class="tht">Editar fira</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:12px 0">'+fields.map(([key,label,type])=>'<label style="display:grid;gap:5px">'+label+'<input class="fgs" style="width:100%" type="'+type+'" id="ag-'+key+'" value="'+agendaEsc(r[key]??'')+'"'+(key==='preu'?' min="0" step="1"':'')+'></label>').join('')+'<label style="display:grid;gap:5px">Marca / disponibilitat<select class="fgs" id="ag-marca">'+AGENDA_BRANDS.map(v=>'<option value="'+agendaEsc(v)+'" '+(v===r.marca||v==='ConfeccionsRibera'&&r.marca==='Confeccions Ribera'||v==='@ByNuska'&&r.marca==='ByNuska'?'selected':'')+'>'+agendaEsc(v)+'</option>').join('')+'</select></label><label style="display:grid;gap:5px">Com hem contactat?<select class="fgs" id="ag-contacte">'+AGENDA_CONTACTS.map(v=>'<option value="'+agendaEsc(v)+'" '+(v===(r.contacte||'')?'selected':'')+'>'+(v?agendaEsc(v):'Sense contactar / No indicat')+'</option>').join('')+'</select></label><label style="display:grid;gap:5px">Estat de la fira<select class="fgs" id="ag-estat" onchange="agendaMotiuUI()">'+AGENDA_STATES.map((v,i)=>'<option value="'+agendaEsc(v)+'" '+(v===agendaState(r.estat)?'selected':'')+'>'+(i+1)+'. '+agendaEsc(v)+'</option>').join('')+'</select></label><div id="ag-reason-area" style="display:contents">'+agendaReasonSelectHtml(r)+agendaSubreasonSelectHtml(r)+'</div><label style="display:flex;align-items:center;gap:8px;margin-top:22px"><input type="checkbox" id="ag-revisarAnySeguent" '+(r.revisarAnySeguent!==false?'checked':'')+'> Tornar-la a revisar l’any següent</label><label style="display:flex;align-items:center;gap:8px;margin-top:22px"><input type="checkbox" id="ag-amagarPlanificador" '+(r.amagarPlanificador?'checked':'')+'> No mostrar al planificador</label></div><label style="display:grid;gap:5px;margin:10px 0">Observacions ampliades (visibles amb la icona 📝)<textarea id="ag-notesAmpliades" class="fgs" style="display:block;width:100%;min-height:110px">'+agendaEsc(agendaAllNotes(r))+'</textarea></label><p style="margin:12px 0;color:#a05246">'+agendaEsc(agendaOverlaps(r))+'</p><div id="ag-save-note"></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="rb" onclick="agendaUpdate('+JSON.stringify(id).replace(/"/g,'&quot;')+')">Desa i Tanca</button><button class="rb" onclick="agendaCloseEditor()">Tanca</button><button class="rb" style="margin-left:auto;color:#a52e30;border-color:#d9a1a1" onclick="agendaDelete('+JSON.stringify(id).replace(/"/g,'&quot;')+')">🗑️ Elimina la fira</button></div>';
  e.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 function agendaShowNotes(id){
@@ -2740,20 +2754,9 @@ function agendaUpdate(id){
  updated.motiu=document.getElementById('ag-motiu')?.value||'';
  updated.submotiu=document.getElementById('ag-submotiu')?.value||'';
  updated.revisarAnySeguent=document.getElementById('ag-revisarAnySeguent')?.checked!==false;
+ updated.amagarPlanificador=!!document.getElementById('ag-amagarPlanificador')?.checked;
  if(updated.inici&&updated.fi&&updated.fi<updated.inici){alert('La data fi no pot ser anterior a la data inici.');return;}
- const repText=document.getElementById('ag-repeticions')?.value.trim()||'';
- const repDates=repText?repText.split(/\n+/).map(line=>line.trim()).filter(Boolean):[];
- const repetitions=[];
- for(const line of repDates){
-  const m=line.match(/^(\d{4}-\d{2}-\d{2})(?:\s*(?:\/|a|—|–)\s*(\d{4}-\d{2}-\d{2}))?$/i);
-  if(!m||!Number.isFinite(Date.parse(m[1]))||(m[2]&&(!Number.isFinite(Date.parse(m[2]))||m[2]<m[1]))){alert('Data periòdica no vàlida: '+line);return;}
-  repetitions.push({inici:m[1],fi:m[2]||m[1]});
- }
  updated.notes='';Object.assign(r,updated);agendaNormalizeRecord(r);r.revisarEstat=false;
- for(const dates of repetitions){
-  if(AGENDA_ITEMS.some(x=>x.nom===r.nom&&x.poble===r.poble&&x.inici===dates.inici&&x.fi===dates.fi))continue;
-  AGENDA_ITEMS.push({...r,...dates,id:'repet-'+Date.now()+'-'+Math.random().toString(36).slice(2,8),termini:'',estat:'Per consultar',motiu:'',submotiu:'',dataContacte:'',notes:(r.notes||'')+' · Edició periòdica'});
- }
  const movedToHistory=fairIsPast(r);
  agendaSave();renderAgenda();initFairHistory();agendaCloseEditor();agendaBackupBanner();
  if(movedToHistory){
