@@ -2680,7 +2680,7 @@ function renderWeekendPlan(){
   }).join('');
   const tone=blocked?'blocked':!list.length?'empty':fairPlanPriority(top)===0?'going':fairPlanPriority(top)===1?'wanted':'pending';
   if(!blocked&&!list.length)return '<details class="week-plan-card empty" title="Sense fires disponibles a l’agenda"><summary class="week-plan-card-head"><h4>📅 '+title+'</h4><span class="week-plan-count">0 opcions</span></summary></details>';
-  const today=agendaToday();
+  const today=fairToday();
   const defaultOpen=titleTo>=today;
   return '<details class="week-plan-card '+tone+'" '+(defaultOpen?'open':'')+'><summary class="week-plan-card-head"><h4>📅 '+title+' '+bridgeLabel+'</h4><span class="week-plan-count">'+(blocked?'⛔ No disponibles':list.length+' opcions')+'</span></summary>'+(blocked?'<div class="week-plan-blocked">🚫 <strong>Bloc no disponible</strong><span>Ni Confeccions Ribera ni @ByNuska poden fer fires.</span></div>':items)+'<div class="week-plan-advice">💡 '+advice+'</div></details>';
  }).join('');
