@@ -576,7 +576,30 @@ td[data-label="Marca"]{white-space:nowrap;font-size:19px}
 .agenda-sync-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:12px 0;padding:12px 14px;border:1px solid #d9e8e1;border-radius:12px;background:#f5fbf8}.agenda-sync-bar>div:first-child{display:grid;gap:3px}.agenda-sync-bar span{font-size:.78rem;color:var(--tx2)}.agenda-sync-actions{display:flex;gap:8px;flex-wrap:wrap}.agenda-radar{margin:14px 0;border:1px solid #eadfd9;border-radius:12px;background:#fff}.agenda-radar>summary{cursor:pointer;padding:12px 14px;font-weight:700}.agenda-radar-intro{margin:0;padding:0 14px 10px;color:var(--tx2);font-size:.82rem}.agenda-radar-grid{display:grid;gap:8px;padding:0 12px 12px}.agenda-radar-row{display:grid;grid-template-columns:minmax(180px,1.5fr) minmax(120px,.7fr) minmax(145px,.8fr) minmax(170px,1fr) auto;gap:10px;align-items:center;padding:10px;border:1px solid #eee4df;border-radius:10px}.agenda-radar-row small{display:block;color:var(--tx2);margin-top:2px}.agenda-radar-prio{font-weight:700}.agenda-reason-line{display:block;margin-top:3px;font-size:.72rem;color:#786660}.agenda-save-note{margin:10px 0;padding:9px 11px;border-radius:9px;background:#eef8f3;border:1px solid #cfe7da;color:#315d4c;font-size:.8rem}
 @media(max-width:800px){.agenda-sync-bar{align-items:stretch;flex-direction:column}.agenda-sync-actions{display:grid;grid-template-columns:1fr 1fr}.agenda-radar-row{grid-template-columns:1fr}.agenda-radar-row .rb{width:100%}}
 </style>
-</head>
+<style id="ordits-v3-css">
+.agenda-tools-compact{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 8px}
+.agenda-tool-btn{padding:7px 12px!important;font-size:13px!important;border-radius:9px!important}
+.agenda-tool-panel{margin:8px 0 12px;border:1px solid #e5d8cb;border-radius:12px;background:#fff;padding:12px}
+.agenda-tool-panel[hidden]{display:none!important}
+.agenda-tool-panel .week-plan,.agenda-tool-panel .agenda-radar{border:0!important;padding:0!important;margin:0!important;background:transparent!important}
+.agenda-tool-panel-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.agenda-help-compact{font-size:12px;color:var(--tx2);margin:4px 0 10px}
+.config-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-top:14px}
+.config-grid .cc{margin:0}
+.config-sync{display:block!important;padding:0!important;border:0!important;background:transparent!important}
+.config-sync>div:first-child{margin-bottom:10px}
+.config-actions,.config-sync .agenda-sync-actions{display:flex;gap:8px;flex-wrap:wrap}
+#tab-config .agenda-sync-actions .rb{white-space:normal}
+@media(max-width:700px){
+ .agenda-tools-compact{position:sticky;top:0;z-index:4;background:var(--bg);padding:6px 0}
+ .agenda-tool-btn{flex:1}
+ .config-grid{grid-template-columns:1fr}
+}
+</style><style id="ordits-v5-css">
+.week-plan-item[role="button"], .agenda-radar-row[role="button"], .agenda-radar-item[role="button"]{cursor:pointer}
+.week-plan-item[role="button"]:hover, .agenda-radar-row[role="button"]:hover, .agenda-radar-item[role="button"]:hover{outline:2px solid rgba(90,70,55,.12);outline-offset:-2px}
+.week-plan-item[role="button"]:focus-visible, .agenda-radar-row[role="button"]:focus-visible, .agenda-radar-item[role="button"]:focus-visible{outline:2px solid #8a6a55;outline-offset:2px}
+</style></head>
 <body>
 
 <div class="hd">
@@ -628,6 +651,7 @@ document.addEventListener('click',e=>{const p=document.getElementById('websPanel
       <button class="home-card c2" onclick="openGroup('productes')"><span class="home-card-top"><span class="hico">🧶</span><span><strong>Productes i estoc</strong><small>Què es ven, què tenim i què convé fabricar</small></span></span><span class="home-card-bottom"><span class="home-card-stat" id="homeStatProducts">Consultant dades…</span><span class="home-card-arrow" aria-hidden="true">→</span></span></button>
       <button class="home-card c3" onclick="openGroup('botigues')"><span class="home-card-top"><span class="hico">🏷️</span><span><strong>Les nostres marques</strong><small>ByNuska, Carlitus i Confeccions Ribera</small></span></span><span class="home-card-bottom"><span class="home-card-stat" id="homeStatBrands">Consultant dades…</span><span class="home-card-arrow" aria-hidden="true">→</span></span></button>
       <button class="home-card c4" onclick="openGroup('fires')"><span class="home-card-top"><span class="hico">🎪</span><span><strong>Fires</strong><small>Rendiment, historial i oportunitats futures</small></span></span><span class="home-card-bottom"><span class="home-card-stat" id="homeStatFairs">Consultant dades…</span><span class="home-card-arrow" aria-hidden="true">→</span></span></button>
+      <button class="home-card c2" onclick="openGroup('config')"><span class="home-card-top"><span class="hico">⚙️</span><span><strong>Configuració</strong><small>Sincronització, còpies i dades compartides</small></span></span><span class="home-card-bottom"><span class="home-card-stat">Supabase i còpies</span><span class="home-card-arrow" aria-hidden="true">→</span></span></button>
     </div><p class="home-foot" id="homeDataStatus">Pots consultar les fires; per a les vendes, carrega l'Excel des de la cantonada superior dreta.</p>
   </div>
   <div id="dash" class="in-home"><div id="sectionNav"><button class="section-home" onclick="goHome()">← Tornar a inici</button><h2 id="sectionTitle"></h2></div><div class="group-tabs" id="groupTabs"></div>
@@ -642,6 +666,7 @@ document.addEventListener('click',e=>{const p=document.getElementById('websPanel
       <div class="tab"     onclick="showT('stk','mt')">📦 Stock i producció</div>
       <div class="tab" onclick="showT('preus','mt')">💶 Preus i rendibilitat</div>
       <div class="tab"     onclick="showT('tbl','mt')">Taules</div>
+      <div class="tab" onclick="showT('config','mt')">⚙️ Configuració</div>
     </div>
 
     <!-- ── RESUM ── -->
@@ -913,36 +938,79 @@ document.addEventListener('click',e=>{const p=document.getElementById('websPanel
       </div>
     </div>
 
-<div id="tab-agenda" class="tc" hidden><div class="sec"><div class="sec-t">🗓️ Agenda de fires <span style="font-size:11px;font-weight:500;color:var(--tx2)">· radar i planificador flexible</span></div>
-<details class="week-plan" open>
-<summary>🧭 Planificació de blocs de fires <span style="font-size:12px;font-weight:400;color:#6b625d">(segons les fires desades)</span></summary>
-<div class="week-plan-controls">
-  <label><span>Període</span><select class="fgs" id="weekPlanPreset" onchange="weekPlanApplyPreset()">
-    <option value="novdec2026">Novembre–desembre 2026</option>
-    <option value="next8">Propers 8 caps de setmana</option>
-    <option value="year">Any complet</option>
-    <option value="custom">Personalitzat</option>
-  </select></label>
-  <label><span>Des de</span><input class="fgs" type="date" id="weekPlanFrom" value="2026-11-01" onchange="weekPlanCustomChanged()"></label>
-  <label><span>Fins a</span><input class="fgs" type="date" id="weekPlanTo" value="2026-12-31" onchange="weekPlanCustomChanged()"></label>
+<div id="tab-agenda" class="tc" hidden><div class="sec"><div class="sec-t">🗓️ Agenda de fires <span style="font-size:11px;font-weight:500;color:var(--tx2)">· consulta i edició</span></div>
+<div class="agenda-tools-compact">
+  <button class="rb agenda-tool-btn" type="button" onclick="agendaToggleTool('planner')">🧭 Planificació</button>
+  <button class="rb agenda-tool-btn" type="button" onclick="agendaToggleTool('radar')">🔭 Radar <span id="agendaRadarYear"></span></button>
 </div>
-<p class="week-plan-intro">Primer les fires on ja hi anem, després les que ens hi volen. Dins de cada nivell, comparació orientativa per cost, proximitat a Berga i temps d’espera de les sol·licituds. Una sol·licitud no equival a una plaça confirmada. Les distàncies són aproximacions per carretera, no rutes verificades.</p>
-<div id="weekPlanGrid" class="week-plan-grid"></div>
-<p class="week-plan-note">ℹ️ Els caps de setmana sense fires queden minimitzats. El període és configurable perquè aquesta planificació pugui reutilitzar-se més endavant amb altres filtres.</p>
-</details>
-<p style="color:var(--tx2)">Edita les dates, els terminis, l'estat i les observacions. Les dades es desen en aquest navegador i, quan tens <strong>Admin online</strong> iniciat, les pots compartir amb Supabase.</p>
-<div class="agenda-sync-bar"><div><strong>☁️ Fires compartides · Supabase</strong><span id="agendaSyncStatus">Comprovant sessió…</span></div><div class="agenda-sync-actions"><button class="rb" type="button" onclick="agendaLoadFromSupabase()">↓ Carrega de Supabase</button><button class="rb" type="button" onclick="agendaMergeWithSupabase()">⇄ Fusiona local + Supabase</button><button class="rb sb-primary" type="button" onclick="agendaPushToSupabase()">↑ Actualitzar Supabase</button></div></div>
-<details class="agenda-radar" open><summary>🔭 Radar <span id="agendaRadarYear"></span> · fires per recuperar amb temps</summary><p class="agenda-radar-intro">Recupera l’històric de l’any anterior i proposa una data orientativa per tornar-la a revisar. <strong>No descarta permanentment cap fira</strong>: una coincidència o una decisió d’un any no s’hereta automàticament al següent.</p><div id="agendaRadar"></div></details>
+<div id="agendaPlannerPanel" class="agenda-tool-panel" hidden>
+  <div class="week-plan">
+    <div class="agenda-tool-panel-head"><strong>🧭 Planificació de blocs de fires</strong><button class="rb fair-icon-btn" onclick="agendaToggleTool('planner')" aria-label="Tancar">✕</button></div>
+    <div class="week-plan-controls">
+      <label><span>Període</span><select class="fgs" id="weekPlanPreset" onchange="weekPlanApplyPreset()">
+        <option value="novdec2026">Novembre–desembre 2026</option>
+        <option value="next8">Propers 8 caps de setmana</option>
+        <option value="year">Any complet</option>
+        <option value="custom">Personalitzat</option>
+      </select></label>
+      <label><span>Des de</span><input class="fgs" type="date" id="weekPlanFrom" value="2026-11-01" onchange="weekPlanCustomChanged()"></label>
+      <label><span>Fins a</span><input class="fgs" type="date" id="weekPlanTo" value="2026-12-31" onchange="weekPlanCustomChanged()"></label>
+    </div>
+    <p class="week-plan-intro">Primer les fires on ja hi anem, després les que ens hi volen. Els caps de setmana buits queden minimitzats.</p>
+    <div id="weekPlanGrid" class="week-plan-grid"></div>
+  </div>
+</div>
+<div id="agendaRadarPanel" class="agenda-tool-panel" hidden>
+  <div class="agenda-radar">
+    <div class="agenda-tool-panel-head"><strong>🔭 Radar · fires per recuperar amb temps</strong><button class="rb fair-icon-btn" onclick="agendaToggleTool('radar')" aria-label="Tancar">✕</button></div>
+    <p class="agenda-radar-intro">Recupera l’històric i proposa una data orientativa per tornar-la a revisar. Cap decisió puntual d’un any es converteix automàticament en un descart permanent.</p>
+    <div id="agendaRadar"></div>
+  </div>
+</div>
+<p class="agenda-help-compact">Edita i consulta les fires aquí. La sincronització amb Supabase ara és a <strong>⚙️ Configuració</strong>.</p>
 <div class="fg" style="gap:10px;margin:12px 0;flex-wrap:wrap">
-<div class="fgi"><span class="fgl">Vista</span><select class="fgs" id="agendaVista" onchange="renderAgenda()"><option value="active">Sense descartades</option><option value="all">Totes les fires</option><option value="discarded">Només descartades</option></select></div>
+<div class="fgi"><span class="fgl">Vista</span><select class="fgs" id="agendaVista" onchange="renderAgenda()"><option value="all">Totes les fires</option><option value="active">Només futures actives</option><option value="discarded">Només futures descartades</option></select></div>
 <div class="fgi"><span class="fgl">Estat de la fira</span><select class="fgs" id="agendaEstat" onchange="renderAgenda()"><option value="">Tots els estats</option><option value="Per consultar">1. Per consultar</option><option value="Sol·licitada">2. Sol·licitada</option><option value="Ens hi volen">3. Ens hi volen</option><option value="Hi anem">4. Hi anem</option><option value="No hi anem">5. No hi anem</option><option value="No ens hi volen">6. No ens hi volen</option></select></div>
 <div class="fgi"><span class="fgl">Població</span><select class="fgs" id="agendaPoble" onchange="renderAgenda()"><option value="">Totes</option></select></div>
 <div class="fgi"><span class="fgl">Cerca</span><input class="fgs" id="agendaCerca" oninput="renderAgenda()" placeholder="Nom, poble, notes…"></div>
-<div class="fgi fair-range-wrap"><span class="fgl">Dates</span><button class="fgs fair-range-trigger" type="button" id="agendaRangeTrigger" onclick="fairRangeToggle('agenda')" aria-label="Seleccionar inici i fi del període" aria-expanded="false">📅 Qualsevol data ▾</button><input type="hidden" id="agendaDateFrom"><input type="hidden" id="agendaDateTo"><div class="fair-range-pop" id="agendaRangePop" hidden></div></div><button class="rb" type="button" onclick="clearFairDateFilters('agenda')">Neteja dates</button><button class="rb" onclick="agendaNew()">+ Afegir fira</button><button class="rb" onclick="exportAgenda()">Exportar còpia JSON</button><button class="rb" onclick="document.getElementById('agendaImport').click()">Importar còpia JSON</button><input id="agendaImport" type="file" accept=".json,application/json" hidden onchange="importAgenda(this)"></div><div id="agendaBackupWarning" role="status" style="display:none;margin:12px 0;padding:12px;border:1px solid #e8b96c;border-radius:10px;background:#fff7e8;color:#754d16">⚠️ Has fet canvis a les fires que encara no has exportat. <button class="rb" onclick="exportAgenda()">Descarregar còpia JSON</button></div>
+<div class="fgi fair-range-wrap"><span class="fgl">Dates</span><button class="fgs fair-range-trigger" type="button" id="agendaRangeTrigger" onclick="fairRangeToggle('agenda')" aria-label="Seleccionar inici i fi del període" aria-expanded="false">📅 Qualsevol data ▾</button><input type="hidden" id="agendaDateFrom"><input type="hidden" id="agendaDateTo"><div class="fair-range-pop" id="agendaRangePop" hidden></div></div><button class="rb" type="button" onclick="clearFairDateFilters('agenda')">Neteja dates</button><button class="rb" onclick="agendaNew()">+ Afegir fira</button></div><div id="agendaBackupWarning" role="status" style="display:none;margin:12px 0;padding:12px;border:1px solid #e8b96c;border-radius:10px;background:#fff7e8;color:#754d16">⚠️ Has fet canvis a les fires que encara no has exportat. <button class="rb" onclick="exportAgenda()">Descarregar còpia JSON</button></div>
 
 <div class="fair-cal-toolbar"><div class="fair-cal-switch"><button type="button" class="rb" id="fairTableBtn" onclick="setFairView('table')">☷ Taula</button><button type="button" class="rb" id="fairCalendarBtn" onclick="setFairView('calendar')">▦ Calendari</button></div><div id="fairCalendarNav" class="fair-cal-nav" hidden><button class="rb" onclick="moveFairMonth(-1)" aria-label="Mes anterior">‹</button><strong id="fairMonthTitle"></strong><button class="rb" onclick="moveFairMonth(1)" aria-label="Mes següent">›</button><button class="rb" onclick="goFairCurrentMonth()">Avui</button></div></div>
 <div id="fairCalendar" class="fair-calendar" hidden></div>
 <div id="agendaTableView"><div class="kg" id="agendaKpis"></div><div class="fair-mobile-sort"><label for="agendaCompactSort">Ordena les fires per</label><select id="agendaCompactSort" onchange="agendaSortBy(this.value)"><option value="inici">Data inici</option><option value="nom">Nom de la fira</option><option value="poble">Població</option><option value="fi">Data fi</option><option value="termini">Termini d'inscripció</option><option value="estat">Estat</option><option value="marca">Marca</option><option value="preu">Preu</option><option value="notes">Observacions</option><option value="contacte">Contacte</option></select></div><div class="tw"><div class="tsc" style="overflow-x:auto"><table style="min-width:0"><thead><tr><th onclick="agendaSortBy('nom')" style="cursor:pointer" title="Ordenar">Fira ↕</th><th onclick="agendaSortBy('poble')" style="cursor:pointer" title="Ordenar">Població ↕</th><th onclick="agendaSortBy('inici')" style="cursor:pointer" title="Ordenar">Data inici ↕</th><th onclick="agendaSortBy('fi')" style="cursor:pointer" title="Ordenar">Data fi ↕</th><th onclick="agendaSortBy('termini')" style="cursor:pointer" title="Ordenar">Termini inscripció ↕</th><th onclick="agendaSortBy('estat')" style="cursor:pointer" title="Ordenar">Estat de la fira ↕</th><th onclick="agendaSortBy('marca')" style="cursor:pointer" title="Ordenar">Marca ↕</th><th onclick="agendaSortBy('preu')" style="cursor:pointer" title="Ordenar">€ ↕</th><th onclick="agendaSortBy('contacte')" style="cursor:pointer">Contacte ↕</th><th>Enllaços</th><th>Detalls</th></tr></thead><tbody id="agendaRows"></tbody></table></div></div></div><div id="agendaDetail" class="cc" style="display:none;margin-top:14px"></div></div></div>
+<div id="tab-config" class="tc" hidden>
+  <div class="sec">
+    <div class="sec-t">⚙️ Configuració</div>
+    <div class="config-grid">
+      <div class="cc">
+        <div class="ct">☁️ Sincronització amb Supabase</div>
+        <p class="ks">Les fires es desen primer en aquest navegador. Des d’aquí pots fusionar-les i compartir-les amb la base comuna.</p>
+        <div class="agenda-sync-bar config-sync">
+          <div><strong>Fires compartides</strong><span id="agendaSyncStatus">Comprovant sessió…</span></div>
+          <div class="agenda-sync-actions">
+            <button class="rb" type="button" onclick="agendaLoadFromSupabase()">↓ Carrega de Supabase</button>
+            <button class="rb" type="button" onclick="agendaMergeWithSupabase()">⇄ Fusiona local + Supabase</button>
+            <button class="rb sb-primary" type="button" onclick="agendaPushToSupabase()">↑ Actualitzar Supabase</button>
+          </div>
+        </div>
+      </div>
+      <div class="cc">
+        <div class="ct">💾 Còpies de seguretat de fires</div>
+        <p class="ks">Una còpia JSON permet recuperar l’agenda encara que canviïs de navegador o dispositiu.</p>
+        <div class="config-actions">
+          <button class="rb" onclick="exportAgenda()">Exportar còpia JSON</button>
+          <button class="rb" onclick="document.getElementById('agendaImportConfig').click()">Importar còpia JSON</button>
+          <input id="agendaImportConfig" type="file" accept=".json,application/json" hidden onchange="importAgenda(this)">
+        </div>
+      </div>
+      <div class="cc">
+        <div class="ct">📊 Dades del dashboard</div>
+        <p class="ks">L’Excel de vendes i stock continua sent independent de l’agenda compartida de fires.</p>
+        <div class="config-actions"><button class="rb" onclick="exportSavedExcel().catch(e=>alert(e.message))">Descarregar còpia de l’Excel</button></div>
+      </div>
+    </div>
+  </div>
+</div>
 <div id="tab-history" class="tc" hidden><div class="sec"><div class="sec-t">📚 Històric de fires</div>
 <div class="fg" style="gap:10px;margin:12px 0;flex-wrap:wrap"><div class="fgi"><span class="fgl">Cerca</span><input class="fgs" id="historySearch" oninput="renderFairHistory()" placeholder="Fira, població, observacions…"></div><div class="fgi"><span class="fgl">Any</span><select class="fgs" id="historyYear" onchange="renderFairHistory()"><option value="">Tots els anys</option></select></div><div class="fgi"><span class="fgl">Mostrar</span><select class="fgs" id="historyView" onchange="renderFairHistory()"><option value="active">Sense descartades</option><option value="all">Totes les fires</option><option value="discarded">Només descartades</option></select></div><div class="fgi"><span class="fgl">Estat de la fira</span><select class="fgs" id="historyState" onchange="renderFairHistory()"><option value="">Tots els estats</option></select></div></div>
 <div class="fg" style="gap:10px;margin:8px 0 14px;flex-wrap:wrap"><div class="fgi fair-range-wrap"><span class="fgl">Dates</span><button class="fgs fair-range-trigger" type="button" id="historyRangeTrigger" onclick="fairRangeToggle('history')" aria-label="Seleccionar inici i fi del període" aria-expanded="false">📅 Qualsevol data ▾</button><input type="hidden" id="historyDateFrom"><input type="hidden" id="historyDateTo"><div class="fair-range-pop" id="historyRangePop" hidden></div></div><button class="rb" type="button" onclick="clearFairDateFilters('history')">Neteja dates</button></div><div id="historyCount" style="margin:8px 0;color:var(--tx2)"></div><div class="fair-mobile-sort"><label for="historyCompactSort">Ordena les fires per</label><select id="historyCompactSort" onchange="historySortBy(this.value)"><option value="inici">Data inici</option><option value="nom">Nom de la fira</option><option value="poble">Població</option><option value="fi">Data fi</option><option value="estat">Estat</option><option value="marca">Marca</option><option value="preu">Preu</option><option value="notes">Observacions</option><option value="contacte">Contacte</option></select></div>
@@ -2024,8 +2092,8 @@ function fmt(v){ return (v||0).toLocaleString('ca-ES',{minimumFractionDigits:2,m
 function bxc(b){ return b==='ByNuska'?'b-bn':b==='Confeccions Ribera'?'b-cr':b==='Carlitus'?'b-ca':''; }
 
 
-const HOME_GROUPS={resum:[['ov','Resum'],['tbl','Taules']],productes:[['pr','Productes'],['stk','Stock i producció'],['preus','Preus i rendibilitat']],botigues:[['cmp','Les nostres marques']],fires:[['fi','Rendiment de fires'],['history','Històric de fires'],['agenda','Agenda de fires']]};
-const HOME_TITLES={resum:'📊 Resum i taules',productes:'🧶 Productes i stock',botigues:'Les nostres marques',fires:'🎪 Fires'};
+const HOME_GROUPS={resum:[['ov','Resum'],['tbl','Taules']],productes:[['pr','Productes'],['stk','Stock i producció'],['preus','Preus i rendibilitat']],botigues:[['cmp','Les nostres marques']],fires:[['fi','Rendiment de fires'],['history','Històric de fires'],['agenda','Agenda de fires']],config:[['config','Configuració']]};
+const HOME_TITLES={resum:'📊 Resum i taules',productes:'🧶 Productes i stock',botigues:'Les nostres marques',fires:'🎪 Fires',config:'⚙️ Configuració'};
 let currentHomeGroup='';
 function refreshHomeStats(){
  const put=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=value;};
@@ -2401,10 +2469,34 @@ function agendaRadarCandidates(){
  for(const r of AGENDA_ITEMS){if(!r.inici||r.inici>=cut||r.revisarAnySeguent===false)continue;const k=agendaFairKey(r),prev=latest.get(k);if(!prev||r.inici>prev.inici)latest.set(k,r);}
  return [...latest.values()].filter(r=>!existing.has(agendaFairKey(r))).map(r=>{const delta=target-Number(r.inici.slice(0,4));const approx=agendaShiftYear(r.inici,delta);const prevDeadline=r.termini?agendaShiftYear(r.termini,delta):'';const [prio,why]=agendaRadarPriority(r);const contactBy=prevDeadline?agendaAddDays(prevDeadline,-45):agendaAddDays(approx,prio==='Alta'?-150:prio==='Baixa'?-60:-100);return {r,target,approx,prevDeadline,prio,why,contactBy};}).sort((a,b)=>(a.contactBy||a.approx).localeCompare(b.contactBy||b.approx));
 }
+
+function agendaOpenFairById(id){
+  const rec=AGENDA_ITEMS.find(r=>String(r.id)===String(id));
+  if(!rec){alert('No trobo aquesta fira a l’agenda.');return;}
+  const planner=document.getElementById('agendaPlannerPanel');
+  const radar=document.getElementById('agendaRadarPanel');
+  if(planner)planner.hidden=true;
+  if(radar)radar.hidden=true;
+
+  const vista=document.getElementById('agendaVista');
+  if(vista)vista.value='all';
+  const state=document.getElementById('agendaEstat'); if(state)state.value='';
+  const town=document.getElementById('agendaPoble'); if(town)town.value='';
+  const search=document.getElementById('agendaCerca'); if(search)search.value='';
+
+  renderAgenda();
+  agendaShow(rec.id);
+}
+
+function agendaToggleTool(which){
+ const planner=document.getElementById('agendaPlannerPanel'),radar=document.getElementById('agendaRadarPanel');
+ if(which==='planner'&&planner){const willOpen=planner.hidden;planner.hidden=!willOpen;if(radar)radar.hidden=true;if(willOpen)renderWeekendPlan();}
+ if(which==='radar'&&radar){const willOpen=radar.hidden;radar.hidden=!willOpen;if(planner)planner.hidden=true;if(willOpen)renderAgendaRadar();}
+}
 function renderAgendaRadar(){
  const year=document.getElementById('agendaRadarYear'),box=document.getElementById('agendaRadar');if(!box)return;const target=agendaRadarTargetYear();if(year)year.textContent=target;
  const data=agendaRadarCandidates();
- box.innerHTML='<div class="agenda-radar-grid">'+(data.length?data.map(x=>'<div class="agenda-radar-row"><div><strong>'+agendaEsc(x.r.nom)+'</strong><small>'+agendaEsc(x.r.poble||'')+' · '+agendaEsc(agendaFullStateLabel(x.r))+'</small></div><div><span class="agenda-radar-prio">'+x.prio+'</span><small>'+agendaEsc(x.why)+'</small></div><div><strong>≈ '+agendaDate(x.approx)+'</strong><small>data orientativa</small></div><div><strong>Revisar: '+agendaDate(x.contactBy)+'</strong><small>'+(x.prevDeadline?'basat en el termini anterior':'estimació preventiva')+'</small></div><button class="rb" type="button" onclick="agendaCreateNextEdition('+JSON.stringify(x.r.id).replace(/"/g,'&quot;')+')">+ Crear '+target+'</button></div>').join(''):'<div style="padding:10px;color:var(--tx2)">No hi ha fires pendents de recuperar per '+target+'.</div>')+'</div>';
+ box.innerHTML='<div class="agenda-radar-grid">'+(data.length?data.map(x=>'<div class="agenda-radar-row" role="button" tabindex="0" onclick="agendaOpenFairById(\''+agendaEsc(x.r.id)+'\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();agendaOpenFairById(\''+agendaEsc(x.r.id)+'\')}"><div><strong>'+agendaEsc(x.r.nom)+'</strong><small>'+agendaEsc(x.r.poble||'')+' · '+agendaEsc(agendaFullStateLabel(x.r))+'</small></div><div><span class="agenda-radar-prio">'+x.prio+'</span><small>'+agendaEsc(x.why)+'</small></div><div><strong>≈ '+agendaDate(x.approx)+'</strong><small>data orientativa</small></div><div><strong>Revisar: '+agendaDate(x.contactBy)+'</strong><small>'+(x.prevDeadline?'basat en el termini anterior':'estimació preventiva')+'</small></div><button class="rb" type="button" onclick="event.stopPropagation();agendaCreateNextEdition('+JSON.stringify(x.r.id).replace(/"/g,'&quot;')+')">+ Crear '+target+'</button></div>').join(''):'<div style="padding:10px;color:var(--tx2)">No hi ha fires pendents de recuperar per '+target+'.</div>')+'</div>';
 }
 function agendaCreateNextEdition(id){
  const source=AGENDA_ITEMS.find(r=>String(r.id)===String(id));if(!source||!source.inici)return;const target=agendaRadarTargetYear(),delta=target-Number(source.inici.slice(0,4));const copy={...source,id:'radar-'+target+'-'+Date.now(),inici:agendaShiftYear(source.inici,delta),fi:agendaShiftYear(source.fi||source.inici,delta),termini:'',dataContacte:'',estat:'Per consultar',motiu:'',submotiu:'',revisarAnySeguent:true,referenciaAnyAnterior:source.id,dataOrientativa:true,notesAmpliades:[source.notesAmpliades,'Edició '+target+' creada des del radar. Dates orientatives fins que es confirmi la convocatòria.'].filter(Boolean).join('\n')};AGENDA_ITEMS.push(copy);agendaSave();renderAgenda();initFairHistory();agendaShow(copy.id);
@@ -2542,9 +2634,10 @@ function renderWeekendPlan(){
   const blocked=w.sat==='2026-11-28';
   const entries=AGENDA_ITEMS.filter(r=>r.inici&&r.inici<=w.tue&&(r.fi||r.inici)>=w.fri&&!agendaIsDiscarded(r)&&!fairIsPast(r));
   const uniq=new Map();for(const r of entries){const key=[r.nom,r.poble].join('|').toLowerCase();if(!uniq.has(key)||fairPlanScore(r)<fairPlanScore(uniq.get(key)))uniq.set(key,r);}
+  // ORDRE ACORDAT: estat/prioritat primer; després data dins de cada nivell.
   const list=[...uniq.values()].sort((a,b)=>
-   String(a.inici||'9999-12-31').localeCompare(String(b.inici||'9999-12-31'))||
    fairPlanPriority(a)-fairPlanPriority(b)||
+   String(a.inici||'9999-12-31').localeCompare(String(b.inici||'9999-12-31'))||
    fairPlanScore(a)-fairPlanScore(b)||
    String(a.nom).localeCompare(String(b.nom),'ca')
   );
@@ -2573,15 +2666,18 @@ function renderWeekendPlan(){
    const priceText=price===null?'Preu pendent':Math.round(price)+' € parada';const distanceText=km===null?'Distància pendent':'~'+(km*2)+' km anada i tornada';
    const priority=fairPlanPriority(r);const statusClass=['going','wanted','requested','possible'][priority];const statusIcon=['✅','💚','📨','🔎'][priority];
    const dates=(r.inici&&r.fi&&r.fi!==r.inici)?agendaDate(r.inici)+'–'+agendaDate(r.fi):(r.inici?agendaDate(r.inici):'');
-   return '<div class="week-plan-item '+statusClass+'"><div class="week-plan-item-head"><strong>'+(i===0?'⭐ ':'')+agendaEsc(r.nom)+'</strong><span class="week-plan-pill '+statusClass+'">'+statusIcon+' '+agendaEsc(r.estat||'Per consultar')+'</span></div>'+(dates?'<div class="week-plan-date">📅 <strong>'+agendaEsc(dates)+'</strong></div>':'')+'<div class="week-plan-town">📍 '+agendaEsc(r.poble||'—')+' · '+agendaEsc(r.marca||'Marca per definir')+'</div><div class="week-plan-metrics"><span>💶 '+agendaEsc(priceText)+'</span><span>🚗 '+agendaEsc(distanceText)+'</span></div>'+(requested?'<div class="week-plan-follow">'+agendaEsc(follow.replace(/^ · /,''))+'</div>':'')+'</div>';
+   return '<div class="week-plan-item '+statusClass+'" role="button" tabindex="0" onclick="agendaOpenFairById('+JSON.stringify(r.id).replace(/"/g,'&quot;')+')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();agendaOpenFairById('+JSON.stringify(r.id).replace(/"/g,'&quot;')+')}"><div class="week-plan-item-head"><strong>'+(i===0?'⭐ ':'')+agendaEsc(r.nom)+'</strong><span class="week-plan-pill '+statusClass+'">'+statusIcon+' '+agendaEsc(r.estat||'Per consultar')+'</span></div>'+(dates?'<div class="week-plan-date">📅 <strong>'+agendaEsc(dates)+'</strong></div>':'')+'<div class="week-plan-town">📍 '+agendaEsc(r.poble||'—')+' · '+agendaEsc(r.marca||'Marca per definir')+'</div><div class="week-plan-metrics"><span>💶 '+agendaEsc(priceText)+'</span><span>🚗 '+agendaEsc(distanceText)+'</span></div>'+(requested?'<div class="week-plan-follow">'+agendaEsc(follow.replace(/^ · /,''))+'</div>':'')+'</div>';
   }).join('');
   const tone=blocked?'blocked':!list.length?'empty':fairPlanPriority(top)===0?'going':fairPlanPriority(top)===1?'wanted':'pending';
   if(!blocked&&!list.length)return '<div class="week-plan-card empty" title="Sense fires disponibles a l’agenda"><div class="week-plan-card-head"><h4>📅 '+title+'</h4><span class="week-plan-count">0 opcions</span></div></div>';
   return '<div class="week-plan-card '+tone+'"><div class="week-plan-card-head"><h4>📅 '+title+' '+bridgeLabel+'</h4><span class="week-plan-count">'+(blocked?'⛔ No disponibles':list.length+' opcions')+'</span></div>'+(blocked?'<div class="week-plan-blocked">🚫 <strong>Bloc no disponible</strong><span>Ni Confeccions Ribera ni @ByNuska poden fer fires.</span></div>':items)+'<div class="week-plan-advice">💡 '+advice+'</div></div>';
  }).join('');
 }
-function renderAgenda(){renderWeekendPlan();agendaKpiSync();refreshHomeStats();renderFairCalendar();renderAgendaRadar();agendaSyncUi();const compact=document.getElementById("agendaCompactSort");if(compact)compact.value=agendaSortField;const p=document.getElementById('agendaPoble');if(!p)return;const chosen=p.value;p.innerHTML='<option value="">Totes</option>'+[...new Set(AGENDA_ITEMS.filter(r=>!fairIsPast(r)).map(r=>r.poble).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ca')).map(x=>'<option value="'+agendaEsc(x)+'">'+agendaEsc(x)+'</option>').join('');p.value=chosen;
-const view=document.getElementById('agendaVista').value,state=document.getElementById('agendaEstat')?.value||'',town=p.value,q=document.getElementById('agendaCerca').value.toLocaleLowerCase('ca');const baseData=AGENDA_ITEMS.filter(r=>!fairIsPast(r)&&fairDateMatches(r,'agenda')&&(!state||r.estat===state)&&(!town||r.poble===town)&&(!q||[r.nom,r.poble,r.notes,r.motiu,r.submotiu].join(' ').toLocaleLowerCase('ca').includes(q))&&(view==='all'||(view==='active'&&!agendaIsDiscarded(r))||(view==='discarded'&&agendaIsDiscarded(r)))).sort((a,b)=>{const k=agendaSortField;const x=a[k],y=b[k];if(k==='estat')return (agendaStateIndex(x)-agendaStateIndex(y))*agendaSortDirection;if(k==='preu'){const nx=x===''||x==null?Infinity:Number(x),ny=y===''||y==null?Infinity:Number(y);return (nx-ny)*agendaSortDirection;}return String(x||'').localeCompare(String(y||''),'ca',{numeric:true,sensitivity:'base'})*agendaSortDirection;});
+function renderAgenda(){renderWeekendPlan();agendaKpiSync();refreshHomeStats();renderFairCalendar();renderAgendaRadar();agendaSyncUi();const compact=document.getElementById("agendaCompactSort");if(compact)compact.value=agendaSortField;const p=document.getElementById('agendaPoble');if(!p)return;
+const view=document.getElementById('agendaVista').value;
+const pool=view==='all'?AGENDA_ITEMS:AGENDA_ITEMS.filter(r=>!fairIsPast(r));
+const chosen=p.value;p.innerHTML='<option value="">Totes</option>'+[...new Set(pool.map(r=>r.poble).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ca')).map(x=>'<option value="'+agendaEsc(x)+'">'+agendaEsc(x)+'</option>').join('');p.value=chosen;
+const state=document.getElementById('agendaEstat')?.value||'',town=p.value,q=document.getElementById('agendaCerca').value.toLocaleLowerCase('ca');const baseData=AGENDA_ITEMS.filter(r=>(view==='all'||!fairIsPast(r))&&fairDateMatches(r,'agenda')&&(!state||r.estat===state)&&(!town||r.poble===town)&&(!q||[r.nom,r.poble,r.notes,r.motiu,r.submotiu].join(' ').toLocaleLowerCase('ca').includes(q))&&(view==='all'||(view==='active'&&!agendaIsDiscarded(r))||(view==='discarded'&&agendaIsDiscarded(r)))).sort((a,b)=>{const k=agendaSortField;const x=a[k],y=b[k];if(k==='estat')return (agendaStateIndex(x)-agendaStateIndex(y))*agendaSortDirection;if(k==='preu'){const nx=x===''||x==null?Infinity:Number(x),ny=y===''||y==null?Infinity:Number(y);return (nx-ny)*agendaSortDirection;}return String(x||'').localeCompare(String(y||''),'ca',{numeric:true,sensitivity:'base'})*agendaSortDirection;});
 const data=agendaKpiActive==='urgent'?baseData.filter(r=>agendaAlert(r).includes('⚠️')):baseData;
 document.getElementById('agendaKpis').innerHTML=[['all','Fires a la vista',baseData.length],['wanted','Ens hi volen',baseData.filter(x=>x.estat==='Ens hi volen').length],['confirmed','Hi anem / Confirmades',baseData.filter(x=>x.estat==='Hi anem').length],['urgent','Terminis urgents',baseData.filter(x=>agendaAlert(x).includes('⚠️')).length]].map(([id,k,v])=>'<button type="button" class="kc agenda-kpi-btn'+(agendaKpiActive===id?' agenda-kpi-active':'')+'" onclick="agendaKpiSelect(\''+id+'\')" aria-pressed="'+(agendaKpiActive===id)+'" title="Filtra les fires: '+k+'"><span class="kl">'+k+'</span><span class="kv">'+v+'</span></button>').join('');
 document.getElementById('agendaRows').innerHTML=data.map(r=>'<tr'+(agendaReviewReason(r)?' class="fair-review-row"':'')+'><td data-label="Fira"><strong>'+agendaEsc(r.nom)+'</strong>'+agendaReviewMark(r)+'</td><td data-label="Població">'+agendaEsc(r.poble)+'</td><td data-label="Data inici">'+agendaDate(r.inici)+'</td><td data-label="Data fi">'+agendaDate(r.fi)+'</td><td data-label="Termini inscripció">'+agendaDeadlineChip(r)+'</td><td data-label="Estat">'+agendaEsc(agendaStateLabel(r.estat))+(agendaReasonLabel(r)?'<span class="agenda-reason-line">'+agendaEsc(agendaReasonLabel(r))+'</span>':'')+agendaReviewMark(r)+'</td><td data-label="Marca">'+agendaBrandIcons(r)+'</td><td data-label="Preu">'+((r.preu!==''&&r.preu!=null&&Number.isFinite(Number(r.preu)))?Math.round(Number(r.preu))+' €':'—')+'</td><td data-label="Contacte">'+agendaContactCell(r)+'</td><td data-label="Enllaços">'+agendaLinks(r)+'</td><td data-label="Accions"><span class="fair-row-actions"><button class="rb fair-icon-btn" type="button" title="Editar aquesta fira" aria-label="Editar aquesta fira" onclick="agendaShow('+JSON.stringify(r.id).replace(/"/g,'&quot;')+')">✏️</button><button class="rb fair-icon-btn" type="button" title="Duplicar aquesta fira" aria-label="Duplicar aquesta fira" onclick="agendaDuplicate('+JSON.stringify(r.id).replace(/"/g,'&quot;')+')">📋</button>'+agendaExtraNotesButton(r)+'</span></td></tr>').join('')||'<tr><td colspan="11">No hi ha fires en aquesta vista.</td></tr>';}
@@ -2615,7 +2711,7 @@ function agendaShow(id){
  const r=AGENDA_ITEMS.find(x=>x.id===id);if(!r)return;agendaNormalizeRecord(r);
  const e=document.getElementById(document.getElementById('tab-history')?.hidden===false?'historyDetail':'agendaDetail');e.style.display='block';
  const fields=[['nom','Nom','text'],['poble','Població','text'],['inici','Data inici','date'],['fi','Data fi','date'],['termini','Termini inscripció','date'],['dataContacte','Data de contacte (si hem contactat)','date'],['preu','Preu de la fira (€)','number'],['url','Web de la fira','url'],['urlInscripcio','Enllaç d’inscripció','url']];
- e.innerHTML='<div class="tht">Editar fira</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:12px 0">'+fields.map(([key,label,type])=>'<label style="display:grid;gap:5px">'+label+'<input class="fgs" style="width:100%" type="'+type+'" id="ag-'+key+'" value="'+agendaEsc(r[key]??'')+'"'+(key==='preu'?' min="0" step="1"':'')+'></label>').join('')+'<label style="display:grid;gap:5px">Marca / disponibilitat<select class="fgs" id="ag-marca">'+AGENDA_BRANDS.map(v=>'<option value="'+agendaEsc(v)+'" '+(v===r.marca||v==='ConfeccionsRibera'&&r.marca==='Confeccions Ribera'||v==='@ByNuska'&&r.marca==='ByNuska'?'selected':'')+'>'+agendaEsc(v)+'</option>').join('')+'</select></label><label style="display:grid;gap:5px">Com hem contactat?<select class="fgs" id="ag-contacte">'+AGENDA_CONTACTS.map(v=>'<option value="'+agendaEsc(v)+'" '+(v===(r.contacte||'')?'selected':'')+'>'+(v?agendaEsc(v):'Sense contactar / No indicat')+'</option>').join('')+'</select></label><label style="display:grid;gap:5px">Estat de la fira<select class="fgs" id="ag-estat" onchange="agendaMotiuUI()">'+AGENDA_STATES.map((v,i)=>'<option value="'+agendaEsc(v)+'" '+(v===agendaState(r.estat)?'selected':'')+'>'+(i+1)+'. '+agendaEsc(v)+'</option>').join('')+'</select></label><div id="ag-reason-area" style="display:contents">'+agendaReasonSelectHtml(r)+agendaSubreasonSelectHtml(r)+'</div><label style="display:flex;align-items:center;gap:8px;margin-top:22px"><input type="checkbox" id="ag-revisarAnySeguent" '+(r.revisarAnySeguent!==false?'checked':'')+'> Tornar-la a revisar l’any següent</label></div><label style="display:grid;gap:5px;margin:10px 0">Altres dates / edicions periòdiques (una per línia: AAAA-MM-DD o AAAA-MM-DD / AAAA-MM-DD)<textarea id="ag-repeticions" class="fgs" style="width:100%;min-height:62px" placeholder=""></textarea></label><label style="display:grid;gap:5px;margin:10px 0">Observacions ampliades (visibles amb la icona 📝)<textarea id="ag-notesAmpliades" class="fgs" style="display:block;width:100%;min-height:110px">'+agendaEsc(agendaAllNotes(r))+'</textarea></label><p style="margin:12px 0;color:#a05246">'+agendaEsc(agendaOverlaps(r))+'</p><div id="ag-save-note"></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="rb" onclick="agendaUpdate('+JSON.stringify(id).replace(/"/g,'&quot;')+')">Desa i Tanca</button><button class="rb" onclick="agendaCloseEditor()">Tanca</button><button class="rb" style="margin-left:auto;color:#a52e30;border-color:#d9a1a1" onclick="agendaDelete('+JSON.stringify(id).replace(/"/g,'&quot;')+')">🗑️ Elimina la fira</button></div>';
+ e.innerHTML='<div class="tht">Editar fira</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:12px 0">'+fields.map(([key,label,type])=>'<label style="display:grid;gap:5px">'+label+'<input class="fgs" style="width:100%" type="'+type+'" id="ag-'+key+'" value="'+agendaEsc(r[key]??'')+'"'+(key==='preu'?' min="0" step="1"':'')+'></label>').join('')+'<label style="display:grid;gap:5px">Marca / disponibilitat<select class="fgs" id="ag-marca">'+AGENDA_BRANDS.map(v=>'<option value="'+agendaEsc(v)+'" '+(v===r.marca||v==='ConfeccionsRibera'&&r.marca==='Confeccions Ribera'||v==='@ByNuska'&&r.marca==='ByNuska'?'selected':'')+'>'+agendaEsc(v)+'</option>').join('')+'</select></label><label style="display:grid;gap:5px">Com hem contactat?<select class="fgs" id="ag-contacte">'+AGENDA_CONTACTS.map(v=>'<option value="'+agendaEsc(v)+'" '+(v===(r.contacte||'')?'selected':'')+'>'+(v?agendaEsc(v):'Sense contactar / No indicat')+'</option>').join('')+'</select></label><label style="display:grid;gap:5px">Estat de la fira<select class="fgs" id="ag-estat" onchange="agendaMotiuUI()">'+AGENDA_STATES.map((v,i)=>'<option value="'+agendaEsc(v)+'" '+(v===agendaState(r.estat)?'selected':'')+'>'+(i+1)+'. '+agendaEsc(v)+'</option>').join('')+'</select></label><div id="ag-reason-area" style="display:contents">'+agendaReasonSelectHtml(r)+agendaSubreasonSelectHtml(r)+'</div><label style="display:flex;align-items:center;gap:8px;margin-top:22px"><input type="checkbox" id="ag-revisarAnySeguent" '+(r.revisarAnySeguent!==false?'checked':'')+'> Tornar-la a revisar l’any següent</label></div><label style="display:grid;gap:5px;margin:10px 0">Observacions ampliades (visibles amb la icona 📝)<textarea id="ag-notesAmpliades" class="fgs" style="display:block;width:100%;min-height:110px">'+agendaEsc(agendaAllNotes(r))+'</textarea></label><p style="margin:12px 0;color:#a05246">'+agendaEsc(agendaOverlaps(r))+'</p><div id="ag-save-note"></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="rb" onclick="agendaUpdate('+JSON.stringify(id).replace(/"/g,'&quot;')+')">Desa i Tanca</button><button class="rb" onclick="agendaCloseEditor()">Tanca</button><button class="rb" style="margin-left:auto;color:#a52e30;border-color:#d9a1a1" onclick="agendaDelete('+JSON.stringify(id).replace(/"/g,'&quot;')+')">🗑️ Elimina la fira</button></div>';
  e.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 function agendaShowNotes(id){
