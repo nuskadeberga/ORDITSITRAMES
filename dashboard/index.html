@@ -463,6 +463,24 @@ td[data-label="Marca"]{white-space:nowrap;font-size:19px}
 .week-plan-town{font-size:12px;color:#665f58;margin-top:5px}.week-plan-metrics{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.week-plan-metrics span{font-size:11px;border-radius:7px;padding:5px 7px;background:#f3f6fa;color:#39495d}
 .week-plan-follow{margin-top:7px;font-size:11px;font-weight:600;color:#9a5418}.week-plan-advice{margin:10px 12px 12px;background:#f1f5ff;color:#384b78;line-height:1.5}.week-plan-empty{padding:12px 14px!important}
 .week-plan-blocked{display:flex;flex-direction:column;gap:5px;margin:12px;padding:17px;border-radius:10px;background:#fff0f2;color:#923e53;font-size:13px}.week-plan-blocked span{font-size:12px}
+
+.week-plan-controls{display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin:12px 0}
+.week-plan-controls label{display:grid;gap:4px;font-size:12px;color:#685e55}
+.week-plan-controls .fgs{min-width:155px}
+.week-plan-grid{align-items:start}
+.week-plan-card.empty{align-self:start}
+.week-plan-card.empty .week-plan-card-head{padding:10px 12px}
+.week-plan-card.empty .week-plan-empty,
+.week-plan-card.empty .week-plan-advice{display:none}
+.week-plan-card.empty .week-plan-count{background:transparent;padding:0;font-size:10px;opacity:.72}
+.week-plan-card.empty .week-plan-card-head h4{font-size:13px;margin:0}
+@media(max-width:800px){
+  .week-plan-controls{display:grid;grid-template-columns:1fr 1fr}
+  .week-plan-controls label:first-child{grid-column:1/-1}
+  .week-plan-controls .fgs{min-width:0;width:100%}
+  .agenda-sync-actions{grid-template-columns:1fr}
+}
+
 </style>
 <style>
 .fair-cal-toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin:15px 0}
@@ -895,10 +913,25 @@ document.addEventListener('click',e=>{const p=document.getElementById('websPanel
       </div>
     </div>
 
-<div id="tab-agenda" class="tc" hidden><div class="sec"><div class="sec-t">🗓️ Agenda de fires</div>
-<details class="week-plan"><summary>🧭 Planificació de blocs de fires · novembre i desembre 2026 <span style="font-size:12px;font-weight:400;color:#6b625d">(segons les fires desades)</span></summary><p class="week-plan-intro">Primer les fires on ja hi anem, després les que ens hi volen. Dins de cada nivell, comparació orientativa per cost, proximitat a Berga i temps d’espera de les sol·licituds. Una sol·licitud no equival a una plaça confirmada. Les distàncies són aproximacions per carretera, no rutes verificades.</p><div id="weekPlanGrid" class="week-plan-grid"></div><p class="week-plan-note">ℹ️ Els quilòmetres són orientatius d’anada i tornada; no inclouen carburant, peatges ni allotjament. Si falta el preu o la data de contacte, es marca com a pendent i no s’inventa. Actualitzeu aquests camps en editar cada fira.</p></details>
+<div id="tab-agenda" class="tc" hidden><div class="sec"><div class="sec-t">🗓️ Agenda de fires <span style="font-size:11px;font-weight:500;color:var(--tx2)">· radar i planificador flexible</span></div>
+<details class="week-plan" open>
+<summary>🧭 Planificació de blocs de fires <span style="font-size:12px;font-weight:400;color:#6b625d">(segons les fires desades)</span></summary>
+<div class="week-plan-controls">
+  <label><span>Període</span><select class="fgs" id="weekPlanPreset" onchange="weekPlanApplyPreset()">
+    <option value="novdec2026">Novembre–desembre 2026</option>
+    <option value="next8">Propers 8 caps de setmana</option>
+    <option value="year">Any complet</option>
+    <option value="custom">Personalitzat</option>
+  </select></label>
+  <label><span>Des de</span><input class="fgs" type="date" id="weekPlanFrom" value="2026-11-01" onchange="weekPlanCustomChanged()"></label>
+  <label><span>Fins a</span><input class="fgs" type="date" id="weekPlanTo" value="2026-12-31" onchange="weekPlanCustomChanged()"></label>
+</div>
+<p class="week-plan-intro">Primer les fires on ja hi anem, després les que ens hi volen. Dins de cada nivell, comparació orientativa per cost, proximitat a Berga i temps d’espera de les sol·licituds. Una sol·licitud no equival a una plaça confirmada. Les distàncies són aproximacions per carretera, no rutes verificades.</p>
+<div id="weekPlanGrid" class="week-plan-grid"></div>
+<p class="week-plan-note">ℹ️ Els caps de setmana sense fires queden minimitzats. El període és configurable perquè aquesta planificació pugui reutilitzar-se més endavant amb altres filtres.</p>
+</details>
 <p style="color:var(--tx2)">Edita les dates, els terminis, l'estat i les observacions. Les dades es desen en aquest navegador i, quan tens <strong>Admin online</strong> iniciat, les pots compartir amb Supabase.</p>
-<div class="agenda-sync-bar"><div><strong>☁️ Fires compartides · Supabase</strong><span id="agendaSyncStatus">Comprovant sessió…</span></div><div class="agenda-sync-actions"><button class="rb" type="button" onclick="agendaLoadFromSupabase()">↓ Carrega de Supabase</button><button class="rb sb-primary" type="button" onclick="agendaPushToSupabase()">↑ Actualitzar Supabase</button></div></div>
+<div class="agenda-sync-bar"><div><strong>☁️ Fires compartides · Supabase</strong><span id="agendaSyncStatus">Comprovant sessió…</span></div><div class="agenda-sync-actions"><button class="rb" type="button" onclick="agendaLoadFromSupabase()">↓ Carrega de Supabase</button><button class="rb" type="button" onclick="agendaMergeWithSupabase()">⇄ Fusiona local + Supabase</button><button class="rb sb-primary" type="button" onclick="agendaPushToSupabase()">↑ Actualitzar Supabase</button></div></div>
 <details class="agenda-radar" open><summary>🔭 Radar <span id="agendaRadarYear"></span> · fires per recuperar amb temps</summary><p class="agenda-radar-intro">Recupera l’històric de l’any anterior i proposa una data orientativa per tornar-la a revisar. <strong>No descarta permanentment cap fira</strong>: una coincidència o una decisió d’un any no s’hereta automàticament al següent.</p><div id="agendaRadar"></div></details>
 <div class="fg" style="gap:10px;margin:12px 0;flex-wrap:wrap">
 <div class="fgi"><span class="fgl">Vista</span><select class="fgs" id="agendaVista" onchange="renderAgenda()"><option value="active">Sense descartades</option><option value="all">Totes les fires</option><option value="discarded">Només descartades</option></select></div>
@@ -2297,6 +2330,42 @@ async function agendaLoadFromSupabase(){
   AGENDA_ITEMS=row.payload;agendaNormalizeStates();agendaSave(false);agendaSyncSeen(row.updated_at||'');agendaBackupPending(false);renderAgenda();initFairHistory();agendaSyncUi('Carregat de Supabase · '+new Date(row.updated_at).toLocaleString('ca-ES'));
  }catch(e){agendaSyncUi('Error: '+(e.message||e));alert('No s’ha pogut carregar Supabase: '+(e.message||e));}
 }
+
+function agendaMergeRecords(remote,local){
+ const map=new Map();
+ const add=(r,preferLocal=false)=>{
+  agendaNormalizeRecord(r);
+  const fp=agendaRecordFingerprint(r);
+  const prev=map.get(fp);
+  if(!prev){map.set(fp,{...r});return;}
+  // Conserva la informació més rica. La còpia local preval quan hi ha conflicte,
+  // perquè pot contenir canvis encara no sincronitzats.
+  const merged={...prev};
+  for(const [k,v] of Object.entries(r)){
+   const nonEmpty=!(v===''||v===null||v===undefined||(Array.isArray(v)&&!v.length));
+   if(nonEmpty && (preferLocal || merged[k]===''||merged[k]===null||merged[k]===undefined)) merged[k]=v;
+  }
+  map.set(fp,merged);
+ };
+ (remote||[]).forEach(r=>add({...r},false));
+ (local||[]).forEach(r=>add({...r},true));
+ return [...map.values()];
+}
+async function agendaMergeWithSupabase(){
+ try{
+  if(!window.orditsAgendaSupabase?.status?.().admin)throw new Error('Cal iniciar sessió a Catàleg Supabase → Admin online.');
+  agendaSyncUi('Fusionant còpia local i Supabase…');
+  const row=await window.orditsAgendaSupabase.get();
+  if(!row||!Array.isArray(row.payload))throw new Error('Supabase no ha retornat una agenda vàlida.');
+  const beforeLocal=AGENDA_ITEMS.length,beforeRemote=row.payload.length;
+  AGENDA_ITEMS=agendaMergeRecords(row.payload,AGENDA_ITEMS);
+  agendaNormalizeStates();agendaSave(false);agendaSyncSeen(row.updated_at||'');agendaBackupPending(true);
+  renderAgenda();initFairHistory();
+  agendaSyncUi('Fusió feta: '+AGENDA_ITEMS.length+' fires · local '+beforeLocal+' + Supabase '+beforeRemote+'. Revisa i després prem ↑ Actualitzar Supabase.');
+  alert('Fusió completada sense eliminar les fires que només eren al navegador. Revisa el resultat i, quan estigui bé, prem “↑ Actualitzar Supabase”.');
+ }catch(e){agendaSyncUi('Error: '+(e.message||e));alert('No s’ha pogut fusionar: '+(e.message||e));}
+}
+
 async function agendaPushToSupabase(){
  try{
   if(!window.orditsAgendaSupabase?.status?.().admin)throw new Error('Cal iniciar sessió a Catàleg Supabase → Admin online.');
@@ -2310,7 +2379,12 @@ async function agendaPushToSupabase(){
   agendaSyncSeen(saved.updated_at||'');agendaBackupPending(false);agendaSyncUi('Supabase actualitzat · '+new Date(saved.updated_at).toLocaleString('ca-ES'));
  }catch(e){agendaSyncUi('Error: '+(e.message||e));alert('No s’ha pogut actualitzar Supabase: '+(e.message||e));}
 }
-function agendaFairKey(r){return (String(r.poble||'').trim().toLocaleLowerCase('ca')+'|'+String(r.nom||'').replace(/\b20\d{2}\b/g,'').replace(/\s+/g,' ').trim().toLocaleLowerCase('ca'));}
+function agendaNormText(v){
+ return String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('ca')
+  .replace(/\b20\d{2}\b/g,'').replace(/[^a-z0-9]+/g,' ').replace(/\s+/g,' ').trim();
+}
+function agendaFairKey(r){return agendaNormText(r.poble)+'|'+agendaNormText(r.nom);}
+function agendaRecordFingerprint(r){return agendaFairKey(r)+'|'+String(r.inici||'');}
 function agendaShiftYear(iso,years=1){if(!iso||!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(iso))return '';const d=new Date(iso+'T12:00:00');d.setFullYear(d.getFullYear()+years);return fairIsoDay(d);}
 function agendaAddDays(iso,days){if(!iso)return '';const d=new Date(iso+'T12:00:00');d.setDate(d.getDate()+days);return fairIsoDay(d);}
 function agendaRadarTargetYear(){return new Date().getFullYear()+1;}
@@ -2423,14 +2497,34 @@ function fairPlanRangeLabel(from,to){
  if(a.getMonth()===b.getMonth())return String(a.getDate()).padStart(2,'0')+'–'+String(b.getDate()).padStart(2,'0')+' '+mons[b.getMonth()];
  return String(a.getDate()).padStart(2,'0')+' '+mons[a.getMonth()]+' – '+String(b.getDate()).padStart(2,'0')+' '+mons[b.getMonth()];
 }
+function weekPlanIso(d){return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');}
+function weekPlanApplyPreset(){
+ const p=document.getElementById('weekPlanPreset')?.value||'novdec2026';
+ const from=document.getElementById('weekPlanFrom'),to=document.getElementById('weekPlanTo');if(!from||!to)return;
+ const now=new Date();
+ if(p==='novdec2026'){from.value='2026-11-01';to.value='2026-12-31';}
+ else if(p==='next8'){
+  const a=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  const b=new Date(a);b.setDate(b.getDate()+8*7+2);
+  from.value=weekPlanIso(a);to.value=weekPlanIso(b);
+ }else if(p==='year'){
+  from.value=now.getFullYear()+'-01-01';to.value=now.getFullYear()+'-12-31';
+ }
+ renderWeekendPlan();
+}
+function weekPlanCustomChanged(){
+ const p=document.getElementById('weekPlanPreset');if(p)p.value='custom';
+ renderWeekendPlan();
+}
 function fairPlannerWeekends(){
- // Manté el període actual del planificador (novembre-desembre 2026),
- // però genera els dissabtes automàticament per evitar llistes rígides.
- const out=[],start=new Date('2026-11-01T12:00:00'),end=new Date('2026-12-31T12:00:00');
+ const fromEl=document.getElementById('weekPlanFrom'),toEl=document.getElementById('weekPlanTo');
+ const from=fromEl?.value||'2026-11-01',to=toEl?.value||'2026-12-31';
+ const out=[],start=new Date(from+'T12:00:00'),end=new Date(to+'T12:00:00');
+ if(isNaN(start)||isNaN(end)||start>end)return out;
  const d=new Date(start);
  while(d.getDay()!==6)d.setDate(d.getDate()+1);
  while(d<=end){
-  const sat=d.toISOString().slice(0,10);
+  const sat=weekPlanIso(d);
   out.push({sat,sun:fairIsoAddDays(sat,1),fri:fairIsoAddDays(sat,-1),mon:fairIsoAddDays(sat,2),tue:fairIsoAddDays(sat,3)});
   d.setDate(d.getDate()+7);
  }
@@ -2482,7 +2576,8 @@ function renderWeekendPlan(){
    return '<div class="week-plan-item '+statusClass+'"><div class="week-plan-item-head"><strong>'+(i===0?'⭐ ':'')+agendaEsc(r.nom)+'</strong><span class="week-plan-pill '+statusClass+'">'+statusIcon+' '+agendaEsc(r.estat||'Per consultar')+'</span></div>'+(dates?'<div class="week-plan-date">📅 <strong>'+agendaEsc(dates)+'</strong></div>':'')+'<div class="week-plan-town">📍 '+agendaEsc(r.poble||'—')+' · '+agendaEsc(r.marca||'Marca per definir')+'</div><div class="week-plan-metrics"><span>💶 '+agendaEsc(priceText)+'</span><span>🚗 '+agendaEsc(distanceText)+'</span></div>'+(requested?'<div class="week-plan-follow">'+agendaEsc(follow.replace(/^ · /,''))+'</div>':'')+'</div>';
   }).join('');
   const tone=blocked?'blocked':!list.length?'empty':fairPlanPriority(top)===0?'going':fairPlanPriority(top)===1?'wanted':'pending';
-  return '<div class="week-plan-card '+tone+'"><div class="week-plan-card-head"><h4>📅 '+title+' '+bridgeLabel+'</h4><span class="week-plan-count">'+(blocked?'⛔ No disponibles':list.length+' opcions')+'</span></div>'+(blocked?'<div class="week-plan-blocked">🚫 <strong>Bloc no disponible</strong><span>Ni Confeccions Ribera ni @ByNuska poden fer fires.</span></div>':(list.length?items:'<p class="week-plan-empty">Sense fires disponibles a l’agenda.</p>'))+'<div class="week-plan-advice">💡 '+advice+'</div></div>';
+  if(!blocked&&!list.length)return '<div class="week-plan-card empty" title="Sense fires disponibles a l’agenda"><div class="week-plan-card-head"><h4>📅 '+title+'</h4><span class="week-plan-count">0 opcions</span></div></div>';
+  return '<div class="week-plan-card '+tone+'"><div class="week-plan-card-head"><h4>📅 '+title+' '+bridgeLabel+'</h4><span class="week-plan-count">'+(blocked?'⛔ No disponibles':list.length+' opcions')+'</span></div>'+(blocked?'<div class="week-plan-blocked">🚫 <strong>Bloc no disponible</strong><span>Ni Confeccions Ribera ni @ByNuska poden fer fires.</span></div>':items)+'<div class="week-plan-advice">💡 '+advice+'</div></div>';
  }).join('');
 }
 function renderAgenda(){renderWeekendPlan();agendaKpiSync();refreshHomeStats();renderFairCalendar();renderAgendaRadar();agendaSyncUi();const compact=document.getElementById("agendaCompactSort");if(compact)compact.value=agendaSortField;const p=document.getElementById('agendaPoble');if(!p)return;const chosen=p.value;p.innerHTML='<option value="">Totes</option>'+[...new Set(AGENDA_ITEMS.filter(r=>!fairIsPast(r)).map(r=>r.poble).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ca')).map(x=>'<option value="'+agendaEsc(x)+'">'+agendaEsc(x)+'</option>').join('');p.value=chosen;
