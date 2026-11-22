@@ -620,6 +620,8 @@ td[data-label="Marca"]{white-space:nowrap;font-size:19px}
 .fair-edit-btn{padding:5px 9px!important;white-space:nowrap!important;font-size:12px!important}
 .fair-name-link{appearance:none;border:0;background:none;padding:0;margin:0;font:inherit;font-weight:700;color:inherit;cursor:pointer;text-align:left}
 .fair-name-link:hover{text-decoration:underline}
+</style><style id="ordits-v11-css">
+.stock-current-note{margin:8px 0 14px;padding:10px 12px;border:1px solid var(--bd);border-radius:10px;background:#fffdf9}
 </style></head>
 <body>
 
@@ -684,7 +686,7 @@ document.addEventListener('click',e=>{const p=document.getElementById('websPanel
       <div class="tab"     onclick="showT('fi','mt')">Fires</div>
       <div class="tab"     onclick="showT('cmp','mt')">Botigues</div>
       <div class="tab" onclick="showT('agenda','mt')">🗓️ Agenda de fires</div>
-      <div class="tab"     onclick="showT('stk','mt')">📦 Stock i producció</div>
+      <div class="tab"     onclick="showT('stk','mt')">📦 Stock i producció</div><p class="ks stock-current-note">ℹ️ “Ordre web” pertany al catàleg. L’estoc es gestionarà amb un camp separat <strong>Stock actual</strong>; no utilitzis “Ordre web” com a quantitat.</p>
       <div class="tab" onclick="showT('preus','mt')">💶 Preus i rendibilitat</div>
       <div class="tab"     onclick="showT('tbl','mt')">Taules</div>
       <div class="tab" onclick="showT('config','mt')">⚙️ Configuració</div>
@@ -756,7 +758,7 @@ document.addEventListener('click',e=>{const p=document.getElementById('websPanel
         </div>
         <div class="kg sb-catalog-kpis" id="sbCatalogKpis"></div>
         <div class="fb sb-catalog-filters"><div class="fbt">Filtres del catàleg Supabase</div><div class="fg"><div class="fgi"><span class="fgl">Marca</span><select class="fgs" id="sbCatalogBrand"><option value="">Totes</option><option value="BN">ByNuska</option><option value="CR">Confeccions Ribera</option></select></div><div class="fgi"><span class="fgl">Visibilitat</span><select class="fgs" id="sbCatalogVisibility"><option value="">Tots els carregats</option><option value="visible">Visibles a la web</option><option value="hidden">No visibles</option></select></div><div class="fgi"><span class="fgl">Cerca</span><input class="fgs" id="sbCatalogSearch" type="search" placeholder="Nom, categoria, subcategoria…"></div><button class="rb" type="button" id="sbCatalogReset">↺ Reiniciar</button></div></div>
-        <div class="tw"><div class="th"><span class="tht">Productes del catàleg mestre</span><span class="ks" id="sbCatalogCount"></span></div><div class="tsc sb-catalog-table-wrap"><table id="sbCatalogTable"><thead><tr><th>Foto</th><th>Marca</th><th>Producte</th><th>Tècnica / família</th><th>Categoria</th><th>Subcategoria</th><th>Visible a la web</th><th>Destacat</th><th>Principal</th><th>Ordre</th></tr></thead><tbody><tr><td colspan="12">Carregant catàleg…</td></tr></tbody></table></div></div>
+        <div class="tw"><div class="th"><span class="tht">Productes del catàleg mestre</span><span class="ks" id="sbCatalogCount"></span></div><div class="tsc sb-catalog-table-wrap"><table id="sbCatalogTable"><thead><tr><th>Foto</th><th>Marca</th><th>Producte</th><th>Tècnica / família</th><th>Categoria</th><th>Subcategoria</th><th>Visible a la web</th><th>Destacat</th><th>Principal</th><th>Ordre web</th></tr></thead><tbody><tr><td colspan="12">Carregant catàleg…</td></tr></tbody></table></div></div>
         
 <dialog id="sbCatalogAdminDialog" class="sb-admin-dialog">
   <form id="sbCatalogAdminForm">
@@ -2663,7 +2665,6 @@ function fairPlannerOverlap(a,b){
 function fairPlannerSameEvent(a,b){
  if(String(a.id)===String(b.id))return false;
  if(fairPlannerNorm(a.poble)!==fairPlannerNorm(b.poble))return false;
- if(!fairPlannerOverlap(a,b))return false;
  const an=fairPlannerNameStem(a.nom),bn=fairPlannerNameStem(b.nom);
  return an===bn || an.includes(bn) || bn.includes(an);
 }
@@ -2743,18 +2744,16 @@ document.getElementById('agendaRows').innerHTML=data.map(r=>'<tr'+(agendaReviewR
 function agendaTogglePlannerVisibility(id, visible){
  const r=AGENDA_ITEMS.find(x=>String(x.id)===String(id));
  if(!r)return;
- r.amagarPlanificador=!visible;
+ const hidden=!visible;
+ r.amagarPlanificador=hidden;
+ // Si hi ha còpies de la mateixa fira (mateix nom + població), mantén-les coherents.
+ AGENDA_ITEMS.forEach(other=>{
+   if(String(other.id)!==String(r.id)&&fairPlannerSameEvent(r,other))other.amagarPlanificador=hidden;
+ });
  agendaSave();
  agendaBackupBanner();
+ renderAgenda();
  renderWeekendPlan();
- const cb=document.querySelector('input[data-planner-id="'+CSS.escape(String(id))+'"]');
- if(cb){
-   cb.checked=visible;
-   const label=cb.closest('.planner-toggle-cell');
-   const span=label?.querySelector('span');
-   if(span)span.textContent=visible?'Sí':'No';
-   if(label)label.title=visible?'Es mostra al planificador':'No es mostra al planificador';
- }
 }
 
 function agendaDuplicate(id){
@@ -2820,6 +2819,9 @@ function agendaUpdate(id){
  updated.amagarPlanificador=!!document.getElementById('ag-amagarPlanificador')?.checked;
  if(updated.inici&&updated.fi&&updated.fi<updated.inici){alert('La data fi no pot ser anterior a la data inici.');return;}
  updated.notes='';Object.assign(r,updated);agendaNormalizeRecord(r);r.revisarEstat=false;
+ AGENDA_ITEMS.forEach(other=>{
+   if(String(other.id)!==String(r.id)&&fairPlannerSameEvent(r,other))other.amagarPlanificador=r.amagarPlanificador;
+ });
  const movedToHistory=fairIsPast(r);
  agendaSave();renderAgenda();initFairHistory();agendaCloseEditor();agendaBackupBanner();
  if(movedToHistory){
